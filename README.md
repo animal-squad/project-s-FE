@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 # project-s-FE
 Project s Frontend repository입니다.
 =======
@@ -53,3 +54,7 @@ export default tseslint.config({
 })
 ```
 >>>>>>> 2d7e4c5 (Feat : Initial Commit)
+=======
+# project-s-FE
+Project-S Frontend 레포지토리입니다.
+>>>>>>> 39cb284 (Initial commit)
