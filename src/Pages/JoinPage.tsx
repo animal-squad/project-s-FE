@@ -28,10 +28,4 @@ const JoinPage = () => {
   );
 };
 
-<<<<<<< HEAD:src/components/Join.tsx
-export default Join;
-
-// JoinPage
-=======
 export default JoinPage;
->>>>>>> 6ad1fd0 (Merge pull request #9 from animal-squad/feature/#7):src/Pages/JoinPage.tsx
