@@ -3,7 +3,7 @@ import { styled } from "@mui/material/styles";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
-import { useTabStore } from "../store/headerStore"; // Zustand 스토어 불러오기
+import { useTabStore } from "../../store/headerStore"; // Zustand 스토어 불러오기
 
 interface StyledTabsProps {
   children?: React.ReactNode;
@@ -96,9 +96,7 @@ export default function Header() {
           onChange={handleChange}
           aria-label="styled tabs example"
         >
-          <StyledTab label="Storage" href="/main/storage" />
-          <StyledTab label="Links" href="/main/link" />
-          <StyledTab label="Texts" href="/main/text" />
+          <StyledTab label="Text Editor" href="/main/text/editor" />
         </StyledTabs>
         <Box sx={{ p: 3 }} />
       </Box>
