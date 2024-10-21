@@ -1,6 +1,4 @@
-import React from "react";
-
-const JoinPage = () => {
+const Join = () => {
 
   return (
     <div className="flex items-center v-screen w-full">
@@ -28,4 +26,4 @@ const JoinPage = () => {
   );
 };
 
-export default JoinPage;
+export default Join;
