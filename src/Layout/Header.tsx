@@ -3,7 +3,7 @@ import { styled } from "@mui/material/styles";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
-import { useTabStore } from "../store/tabStore"; // Zustand 스토어 불러오기
+import { useTabStore } from "../store/headerStore"; // Zustand 스토어 불러오기
 
 interface StyledTabsProps {
   children?: React.ReactNode;
@@ -81,8 +81,8 @@ const StyledTab = styled((props: StyledTabProps) => (
 }));
 
 export default function Header() {
-  const selectedTab = useTabStore((state) => state.selectedTab); // Zustand에서 상태 불러오기
-  const setSelectedTab = useTabStore((state) => state.setSelectedTab);
+  const selectedTab = useTabStore((state) => state.selectedHeaderTab); // Zustand에서 상태 불러오기
+  const setSelectedTab = useTabStore((state) => state.setSelectedHeaderTab);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setSelectedTab(newValue); // Zustand에 상태 업데이트

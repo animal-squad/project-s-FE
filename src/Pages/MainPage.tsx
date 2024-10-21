@@ -1,7 +1,7 @@
 import React from "react";
 import { Example } from "../Layout/Sidebar";
 import BasicTabs from "../Layout/Header";
-import { useTabStore } from "../store/tabStore"; // Zustand 스토어 불러오기
+import { useTabStore } from "../store/headerStore"; // Zustand 스토어 불러오기
 
 const StoragePage = () => (
   <label className="block text-primary_text text-xl font-bold mb-2 flex justify-center">
@@ -18,9 +18,10 @@ const TextPage = () => (
     Texts
   </label>
 );
+// 임시 화면들. 추후 Pages 내에 만들고 적용 예정
 
 const MainPage = () => {
-  const selectedTab = useTabStore((state) => state.selectedTab); // Zustand에서 상태 불러오기
+  const selectedTab = useTabStore((state) => state.selectedHeaderTab); // Zustand에서 상태 불러오기
 
   // 선택된 탭에 따라 다른 컴포넌트 렌더링
   const renderContent = () => {

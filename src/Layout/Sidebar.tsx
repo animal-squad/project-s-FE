@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction, useState, useEffect } from "react";
 import { IconType } from "react-icons";
 import { FiChevronsRight } from "react-icons/fi";
 import { FaFolder } from "react-icons/fa";
@@ -7,6 +7,8 @@ import { FiFileText } from "react-icons/fi";
 import { CgProfile } from "react-icons/cg";
 import { motion } from "framer-motion";
 import Divider from "@mui/material/Divider";
+import { useSidebarStore } from "../store/sidebarStore";
+import { useNavigate } from "react-router-dom";
 
 export const Example = () => {
   return (
@@ -19,14 +21,36 @@ export const Example = () => {
 
 const Sidebar = () => {
   const [open, setOpen] = useState(true);
-  const [selected, setSelected] = useState("Dashboard");
+
+  const selected = useSidebarStore((state) => state.selectedSidebarItem);
+  const setSelected = useSidebarStore((state)=> state.setSelectedSidebarItem);
+  const navigate = useNavigate(); // useNavigate 훅 사용
+
+  useEffect(() => {
+    switch (selected) {
+      case "Storage":
+        navigate("/main/storage");
+        break;
+      case "Link":
+        navigate("/main/link");
+        break;
+      case "Texts":
+        navigate("/main/texts");
+        break;
+      case "Log Out":
+        navigate("/logout");
+        break;
+      default:
+        break;
+    }
+  }, [selected, navigate]); // selected가 변경될 때마다 실행
 
   return (
     <motion.nav
       layout
       className="sticky top-0 h-screen shrink-0 border-r border-slate-300 bg-light_primary_color p-2"
       style={{
-        width: open ? "225px" : "fit-content",
+        width: open ? "225px" : "fit-content", // 열렸을 때 : 225px, 닫혀있을 때 : fit
       }}
     >
       <TitleSection open={open} />
@@ -86,7 +110,7 @@ const Option = ({
   IconColor: string;
   title: string;
   selected: string;
-  setSelected: Dispatch<SetStateAction<string>>;
+  setSelected: (item: string) => void;
   open: boolean;
   notifs?: number;
 }) => {
@@ -96,8 +120,9 @@ const Option = ({
       onClick={() => setSelected(title)}
       className={`relative flex h-15 w-full items-center rounded-md transition-colors bg-transparent text-primary_text ${
         selected === title
-          ? "bg-indigo-100 text-indigo-800"
-          : "text-slate-500 hover:bg-slate-100"
+          ? "border-primary_color text-primary_text shadow-lg"
+          : "text-secondary_text"
+          // 버튼 눌렸을때 / 안눌렸을때 디자인
       }`}
     >
       <motion.div
@@ -106,7 +131,7 @@ const Option = ({
       >
         <Icon color={IconColor} size="25" />
       </motion.div>
-      {open && (
+      {open && ( // 글씨 애니메이션
         <motion.span
           layout
           initial={{ opacity: 0, y: 12 }}
@@ -118,7 +143,7 @@ const Option = ({
         </motion.span>
       )}
 
-      {notifs && open && (
+      {notifs && open && ( // 알림 숫자 애니메이션
         <motion.span
           initial={{ scale: 0, opacity: 0 }}
           animate={{
@@ -136,7 +161,7 @@ const Option = ({
   );
 };
 
-const TitleSection = ({ open }: { open: boolean }) => {
+const TitleSection = ({ open }: { open: boolean }) => { // Title (프로필)
   return (
     <div className="mb-3 pb-3 ">
       <div className="flex cursor-pointer items-center justify-between rounded-md transition-colors hover:bg-slate-100">
@@ -163,8 +188,7 @@ const TitleSection = ({ open }: { open: boolean }) => {
 
 // {open && <FiChevronDown color='212121' className="mr-2" />} under first </div>
 
-const Logo = () => {
-  // Temp logo from https://logoipsum.com/
+const Logo = () => { // 로고 디자인 
   return (
     <motion.div
       layout
@@ -175,7 +199,7 @@ const Logo = () => {
   );
 };
 
-const ToggleClose = ({
+const ToggleClose = ({ // 열릴때 / 닫힐때 애니메이션
   open,
   setOpen,
 }: {

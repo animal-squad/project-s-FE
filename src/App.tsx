@@ -4,13 +4,17 @@ import Login from "./Pages/LoginPage";
 import Join from "./Pages/JoinPage";
 import MainPage from "./Pages/MainPage";
 
+// endpoint별로 렌더링
+
 const App = () => {
   return (
     <Router>
       <Routes>
         <Route path="" element={<Login />} />
         <Route path="/join" element={<Join />} />
-        <Route path="/main" element={<MainPage />} />
+        <Route path="/main/storage" element={<MainPage />} />
+        <Route path="/main/link" element={<MainPage />} />
+        <Route path="/main/texts" element={<MainPage />} />
       </Routes>
     </Router>
   );
