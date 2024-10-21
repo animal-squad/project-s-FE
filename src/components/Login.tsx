@@ -1,15 +1,6 @@
-import React from "react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
-import { useNavigate } from "react-router-dom";
 
-const LoginPage = () => {
-  const navigate = useNavigate(); // Use the useNavigate hook
-
-  // Handler for navigating to the main page
-  const handleNavigateToMain = () => {
-    navigate("/main"); // Programmatically navigate to /main
-  };
-
+const Login = () => {
   return (
     <div className="relative flex items-center justify-center v-screen w-full">
       <DotLottieReact
@@ -29,7 +20,6 @@ const LoginPage = () => {
             <button
               type="button"
               className="p-0 m-0 border-none bg-transparent"
-              onClick={handleNavigateToMain}
             >
               <img
                 src="src/assets/images/web_neutral_rd_ctn.svg"
@@ -44,4 +34,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default Login;
