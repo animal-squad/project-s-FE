@@ -54,7 +54,7 @@ const Sidebar = () => {
   return (
     <motion.nav
       layout
-      className="sticky top-0 h-screen shrink-0 border-r border-slate-300 bg-light_primary_color p-2"
+      className="sticky top-0 h-screen shrink-0 border-r border-slate-300 bg-light_primary_color p-2 shadow-2xl"
       style={{
         width: open ? "225px" : "fit-content", // 열렸을 때 : 225px, 닫혀있을 때 : fit
       }}

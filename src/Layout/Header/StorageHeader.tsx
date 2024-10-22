@@ -67,10 +67,11 @@ const StyledTab = styled((props: StyledTabProps) => (
   textTransform: "none",
   fontWeight: theme.typography.fontWeightRegular,
   fontSize: theme.typography.pxToRem(15),
-  marginRight: theme.spacing(1),
+  marginRight: "20px",
   color: "#212121",
   opacity: "0.5",
   height: "60px",
+  marginLeft: "20px",
   "&.Mui-selected": {
     color: "#212121",
     opacity: "1.0",

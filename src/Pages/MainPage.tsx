@@ -26,18 +26,18 @@ const MainPage = () => {
 
   // 선택된 탭에 따라 다른 컴포넌트 렌더링
   const renderContent = () => {
-    if (location.pathname === "/main/storage"){
+    if (location.pathname === "/main/storage") {
       return <StoragePage />;
-    } else if (location.pathname === "/main/texts"){
+    } else if (location.pathname === "/main/texts") {
       return <TextsPage />;
-    } else if (location.pathname === "/main/link"){
-      switch (selectedTab){
+    } else if (location.pathname === "/main/link") {
+      switch (selectedTab) {
         case 0:
-          return <MyBookmarksPage />
+          return <MyBookmarksPage />;
         case 1:
-          return <BookmarksInFilesPage />
+          return <BookmarksInFilesPage />;
         default:
-          return <MyBookmarksPage />
+          return <MyBookmarksPage />;
       }
     }
   };
@@ -45,16 +45,25 @@ const MainPage = () => {
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
-      <Example />
-
+      <div className="z-10">
+        <Example />
+      </div>
       {/* Main Content Area */}
-      <div className="flex flex-col flex-1">
+      <div
+        className="fixed ml-28 flex-col flex-1 w-500
+"
+      >
         {/* Header */}
-        <div className="w-full h-16">
-          {renderHeader()}
+        <div className="flex w-full h-16">
+          {" "}
+          {/* flex 추가 */}
+          <div className="flex-1">
+            {/* 사이드바를 제외한 영역 차지 */}
+            {renderHeader()}
+          </div>
         </div>
         {/* Page Content */}
-        <div className="flex-1 overflow-auto flex justify-center items-center">
+        <div className="flex-auto overflow-auto flex justify-center items-center">
           {renderContent()}
         </div>
       </div>
