@@ -18,6 +18,7 @@ export default {
       light_primary_color: '#bbdefb',
       dark_primary_color: '#1976d2',
       divider: '#bdbdbd',
+      folder_color: '#ebc351'
     }
   },
   plugins: [],
