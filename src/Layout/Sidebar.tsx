@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import Divider from "@mui/material/Divider";
 import { useSidebarStore } from "../store/sidebarStore";
 import { useNavigate } from "react-router-dom";
+import { useTabStore } from "../store/headerStore";
 
 export const Example = () => {
   return (
@@ -23,19 +24,24 @@ const Sidebar = () => {
   const [open, setOpen] = useState(true);
 
   const selected = useSidebarStore((state) => state.selectedSidebarItem);
-  const setSelected = useSidebarStore((state)=> state.setSelectedSidebarItem);
+  const setSelected = useSidebarStore((state) => state.setSelectedSidebarItem);
   const navigate = useNavigate(); // useNavigate 훅 사용
+
+  const setSelectedTab = useTabStore((state) => state.setSelectedHeaderTab);
 
   useEffect(() => {
     switch (selected) {
       case "Storage":
         navigate("/main/storage");
+        setSelectedTab(0);
         break;
       case "Link":
         navigate("/main/link");
+        setSelectedTab(0);
         break;
       case "Texts":
         navigate("/main/texts");
+        setSelectedTab(0);
         break;
       case "Log Out":
         navigate("/logout");
@@ -48,7 +54,7 @@ const Sidebar = () => {
   return (
     <motion.nav
       layout
-      className="sticky top-0 h-screen shrink-0 border-r border-slate-300 bg-light_primary_color p-2"
+      className="sticky top-0 h-screen shrink-0 border-r border-slate-300 bg-light_primary_color p-2 shadow-2xl"
       style={{
         width: open ? "225px" : "fit-content", // 열렸을 때 : 225px, 닫혀있을 때 : fit
       }}
@@ -122,7 +128,7 @@ const Option = ({
         selected === title
           ? "border-primary_color text-primary_text shadow-lg"
           : "text-secondary_text"
-          // 버튼 눌렸을때 / 안눌렸을때 디자인
+        // 버튼 눌렸을때 / 안눌렸을때 디자인
       }`}
     >
       <motion.div
@@ -143,25 +149,27 @@ const Option = ({
         </motion.span>
       )}
 
-      {notifs && open && ( // 알림 숫자 애니메이션
-        <motion.span
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{
-            opacity: 1,
-            scale: 1,
-          }}
-          style={{ y: "-50%" }}
-          transition={{ delay: 0.5 }}
-          className="absolute right-2 top-1/2 size-4 rounded bg-indigo-500 text-xs text-primary_text"
-        >
-          {notifs}
-        </motion.span>
-      )}
+      {notifs &&
+        open && ( // 알림 숫자 애니메이션
+          <motion.span
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{
+              opacity: 1,
+              scale: 1,
+            }}
+            style={{ y: "-50%" }}
+            transition={{ delay: 0.5 }}
+            className="absolute right-2 top-1/2 size-4 rounded bg-indigo-500 text-xs text-primary_text"
+          >
+            {notifs}
+          </motion.span>
+        )}
     </motion.button>
   );
 };
 
-const TitleSection = ({ open }: { open: boolean }) => { // Title (프로필)
+const TitleSection = ({ open }: { open: boolean }) => {
+  // Title (프로필)
   return (
     <div className="mb-3 pb-3 ">
       <div className="flex cursor-pointer items-center justify-between rounded-md transition-colors hover:bg-slate-100">
@@ -188,7 +196,8 @@ const TitleSection = ({ open }: { open: boolean }) => { // Title (프로필)
 
 // {open && <FiChevronDown color='212121' className="mr-2" />} under first </div>
 
-const Logo = () => { // 로고 디자인 
+const Logo = () => {
+  // 로고 디자인
   return (
     <motion.div
       layout
@@ -199,7 +208,8 @@ const Logo = () => { // 로고 디자인
   );
 };
 
-const ToggleClose = ({ // 열릴때 / 닫힐때 애니메이션
+const ToggleClose = ({
+  // 열릴때 / 닫힐때 애니메이션
   open,
   setOpen,
 }: {
