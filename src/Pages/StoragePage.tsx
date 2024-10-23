@@ -1,16 +1,18 @@
 // StoragePage.tsx
-import React from 'react';
-import FolderList from '../components/FolderList';
+import React from "react";
+import { useLocation } from "react-router-dom";
+import FolderList from "../components/FolderList";
+import FileList from "../components/FileList";
 
 const StoragePage: React.FC = () => {
+  const location = useLocation();
+
   return (
     <div className="flex h-screen">
-      <div className="flex flex-col w-full p-10 px-32">
-        <main className="flex-grow p-4 px-12 pt-0 mb-28 bg-transparent overflow-auto"> {/* 하단 여백 추가 */}
-          <div className="container mx-auto">
-            <FolderList />
-          </div>
-        </main>
+      <div className="flex-col flex-1 w-500">
+        <div className="flex-auto overflow-auto flex justify-center items-center ml-5">
+          {location.pathname === "/main/storage" ? <FolderList /> : <FileList />}
+        </div>
       </div>
     </div>
   );
