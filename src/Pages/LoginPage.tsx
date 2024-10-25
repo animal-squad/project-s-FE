@@ -1,13 +1,25 @@
 import React from "react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const LoginPage = () => {
-  const navigate = useNavigate(); // useNavigate 훅 사용
+  // const navigate = useNavigate(); // useNavigate 훅 사용
 
   // 메인 페이지로 보내는 핸들러
-  const handleNavigateToMain = () => {
-    navigate("/main/storage");
+  // const handleNavigateToMain = () => {
+  //   navigate("/main/storage");
+  // };
+
+  const handleLogin = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_DOMAIN}/auth/google`);
+      console.log("Login successful:", response.data);
+      // 로그인 성공 시 메인 페이지로 이동
+    } catch (error) {
+      console.error("Login failed:", error);
+      // 로그인 실패 시 필요한 처리
+    }
   };
 
   return (
@@ -29,7 +41,7 @@ const LoginPage = () => {
             <button // Continue with Google 버튼
               type="button"
               className="p-0 m-0 border-none bg-transparent"
-              onClick={handleNavigateToMain} // 메인으로 이동, 추후에 여기에 로그인 기능 추가 예정
+              onClick={handleLogin} // 메인으로 이동, 추후에 여기에 로그인 기능 추가 예정
             >
               <img // Continue with Google 이미지
                 src="src/assets/images/web_neutral_rd_ctn.svg"

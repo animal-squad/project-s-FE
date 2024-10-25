@@ -1,4 +1,5 @@
 import React, { Dispatch, SetStateAction, useState, useEffect } from "react";
+import axios from "axios";
 import { IconType } from "react-icons";
 import { FiChevronsRight } from "react-icons/fi";
 import { FaFolder } from "react-icons/fa";
@@ -8,7 +9,7 @@ import { CgProfile } from "react-icons/cg";
 import { motion } from "framer-motion";
 import Divider from "@mui/material/Divider";
 import { useSidebarStore } from "../store/sidebarStore";
-import { useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useTabStore } from "../store/headerStore";
 
 export const Example = () => {
@@ -25,31 +26,25 @@ const Sidebar = () => {
 
   const selected = useSidebarStore((state) => state.selectedSidebarItem);
   const setSelected = useSidebarStore((state) => state.setSelectedSidebarItem);
-  const navigate = useNavigate(); // useNavigate 훅 사용
 
   const setSelectedTab = useTabStore((state) => state.setSelectedHeaderTab);
+  const location = useLocation();
 
   useEffect(() => {
-    switch (selected) {
-      case "Storage":
-        navigate("/main/storage");
-        setSelectedTab(0);
-        break;
-      case "Link":
-        navigate("/main/link");
-        setSelectedTab(0);
-        break;
-      case "Texts":
-        navigate("/main/texts");
-        setSelectedTab(0);
-        break;
-      case "Log Out":
-        navigate("/logout");
-        break;
-      default:
-        break;
+    setSelectedTab(0);
+
+    // URL과 일치하는 상태로 setSelected 호출
+    if (location.pathname.startsWith("/main/storage")) {
+      setSelected("Storage");
+    } else if (location.pathname === "/main/link") {
+      setSelected("Link");
+    } else if (location.pathname === "/main/texts") {
+      setSelected("Texts");
+    } 
+    else {
+      setSelected(""); // 기본적으로 선택된 것이 없도록 처리
     }
-  }, [selected, navigate]); // selected가 변경될 때마다 실행
+  }, [location, setSelectedTab, setSelected]);
 
   return (
     <motion.nav
@@ -95,6 +90,7 @@ const Sidebar = () => {
           selected={selected}
           setSelected={setSelected}
           open={open}
+          handleLogout
         />
       </div>
 
@@ -111,6 +107,7 @@ const Option = ({
   setSelected,
   open,
   notifs,
+  handleLogout,
 }: {
   Icon: IconType;
   IconColor: string;
@@ -119,52 +116,82 @@ const Option = ({
   setSelected: (item: string) => void;
   open: boolean;
   notifs?: number;
+  handleLogout?: boolean;
 }) => {
-  return (
-    <motion.button
-      layout
-      onClick={() => setSelected(title)}
-      className={`relative flex h-15 w-full items-center rounded-md transition-colors bg-transparent text-primary_text ${
-        selected === title
-          ? "border-primary_color text-primary_text shadow-lg"
-          : "text-secondary_text"
-        // 버튼 눌렸을때 / 안눌렸을때 디자인
-      }`}
-    >
-      <motion.div
-        layout
-        className="grid h-full w-10 place-content-center text-lg"
-      >
-        <Icon color={IconColor} size="25" />
-      </motion.div>
-      {open && ( // 글씨 애니메이션
-        <motion.span
-          layout
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.125 }}
-          className="text-sm font-medium"
-        >
-          {title}
-        </motion.span>
-      )}
+  const getLinkPath = () => {
+    switch (title) {
+      case "Storage":
+        return "/main/storage";
+      case "Link":
+        return "/main/link";
+      case "Texts":
+        return "/main/texts";
+      default:
+        return "#";
+    }
+  };
 
-      {notifs &&
-        open && ( // 알림 숫자 애니메이션
+
+  const handleLogoutClick = async () => {
+    if (handleLogout) {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_DOMAIN}/auth/logout`);
+        console.log("Logout successful:", response.data);
+      } catch (error) {
+        console.error("Logout failed:", error);
+        // 로그아웃 실패 시 처리
+      }
+    } else {
+      setSelected(title);
+    }
+  };
+
+  return (
+    <Link to={handleLogout ? "#" : getLinkPath()} onClick={handleLogoutClick}>
+      <motion.button
+        layout
+        className={`relative flex h-15 w-full items-center rounded-md transition-colors bg-transparent text-primary_text ${
+          selected === title
+            ? "border-primary_color text-primary_text shadow-lg"
+            : "text-secondary_text"
+          // 버튼 눌렸을때 / 안눌렸을때 디자인
+        }`}
+      >
+        <motion.div
+          layout
+          className="grid h-full w-10 place-content-center text-lg"
+        >
+          <Icon color={IconColor} size="25" />
+        </motion.div>
+        {open && ( // 글씨 애니메이션
           <motion.span
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{
-              opacity: 1,
-              scale: 1,
-            }}
-            style={{ y: "-50%" }}
-            transition={{ delay: 0.5 }}
-            className="absolute right-2 top-1/2 size-4 rounded bg-indigo-500 text-xs text-primary_text"
+            layout
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.125 }}
+            className="text-sm font-medium"
           >
-            {notifs}
+            {title}
           </motion.span>
         )}
-    </motion.button>
+
+        {notifs &&
+          open && ( // 알림 숫자 애니메이션
+            <motion.span
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{
+                opacity: 1,
+                scale: 1,
+              }}
+              style={{ y: "-50%" }}
+              transition={{ delay: 0.5 }}
+              className="absolute right-2 top-1/2 size-4 rounded bg-indigo-500 text-xs text-primary_text"
+            >
+              {notifs}
+            </motion.span>
+          )}
+      </motion.button>
+    </Link>
   );
 };
 

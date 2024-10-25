@@ -13,7 +13,7 @@ const MainPage = () => {
   const selectedTab = useTabStore((state) => state.selectedHeaderTab); // Zustand에서 상태 불러오기
 
   const renderHeader = () => {
-    if (location.pathname === "/main/storage") {
+    if (location.pathname.startsWith("/main/storage")) {
       return <StorageHeader />;
     } else if (location.pathname === "/main/link") {
       return <LinkHeader />;
@@ -26,7 +26,7 @@ const MainPage = () => {
 
   // 선택된 탭에 따라 다른 컴포넌트 렌더링
   const renderContent = () => {
-    if (location.pathname === "/main/storage") {
+    if (location.pathname.startsWith("/main/storage")) {
       return <StoragePage />;
     } else if (location.pathname === "/main/texts") {
       return <TextsPage />;
