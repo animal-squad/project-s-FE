@@ -1,4 +1,5 @@
 import React, { Dispatch, SetStateAction, useState, useEffect } from "react";
+import axios from "axios";
 import { IconType } from "react-icons";
 import { FiChevronsRight } from "react-icons/fi";
 import { FaFolder } from "react-icons/fa";
@@ -39,9 +40,8 @@ const Sidebar = () => {
       setSelected("Link");
     } else if (location.pathname === "/main/texts") {
       setSelected("Texts");
-    } else if (location.pathname === "/logout") {
-      setSelected("Log Out");
-    } else {
+    } 
+    else {
       setSelected(""); // 기본적으로 선택된 것이 없도록 처리
     }
   }, [location, setSelectedTab, setSelected]);
@@ -90,6 +90,7 @@ const Sidebar = () => {
           selected={selected}
           setSelected={setSelected}
           open={open}
+          handleLogout
         />
       </div>
 
@@ -106,6 +107,7 @@ const Option = ({
   setSelected,
   open,
   notifs,
+  handleLogout,
 }: {
   Icon: IconType;
   IconColor: string;
@@ -114,6 +116,7 @@ const Option = ({
   setSelected: (item: string) => void;
   open: boolean;
   notifs?: number;
+  handleLogout?: boolean;
 }) => {
   const getLinkPath = () => {
     switch (title) {
@@ -123,15 +126,28 @@ const Option = ({
         return "/main/link";
       case "Texts":
         return "/main/texts";
-      case "Log Out":
-        return "/logout";
       default:
         return "#";
     }
   };
 
+
+  const handleLogoutClick = async () => {
+    if (handleLogout) {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_DOMAIN}/auth/logout`);
+        console.log("Logout successful:", response.data);
+      } catch (error) {
+        console.error("Logout failed:", error);
+        // 로그아웃 실패 시 처리
+      }
+    } else {
+      setSelected(title);
+    }
+  };
+
   return (
-    <Link to={getLinkPath()} onClick={() => setSelected(title)}>
+    <Link to={handleLogout ? "#" : getLinkPath()} onClick={handleLogoutClick}>
       <motion.button
         layout
         className={`relative flex h-15 w-full items-center rounded-md transition-colors bg-transparent text-primary_text ${
