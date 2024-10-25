@@ -1,7 +1,7 @@
 // FileList.tsx
 import React from "react";
 import { useFolderStore } from "../store/FileIndexStore";
-import FileComponent from "./FileComponent";
+import FileComponent from "./FileComponent_GridView";
 
 const files = [
   [
@@ -70,10 +70,12 @@ const files = [
 ];
 
 const FileList: React.FC = () => {
-
-  const selectedFolderIndex = useFolderStore((state) => state.selectedFolderIndex);
+  const selectedFolderIndex = useFolderStore(
+    (state) => state.selectedFolderIndex
+  );
   console.log(selectedFolderIndex);
-  const selectedFiles = selectedFolderIndex !== null ? files[selectedFolderIndex] : [];
+  const selectedFiles =
+    selectedFolderIndex !== null ? files[selectedFolderIndex] : [];
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-9 xl:grid-cols-10 gap-6 justify-center overflow-hidden">

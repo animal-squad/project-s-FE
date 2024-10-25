@@ -2,7 +2,7 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
 import FolderList from "../components/FolderList";
-import FileList from "../components/FileList";
+import FileList from "../components/FileList_ListView";
 
 const StoragePage: React.FC = () => {
   const location = useLocation();
@@ -10,7 +10,7 @@ const StoragePage: React.FC = () => {
   return (
     <div className="flex h-screen">
       <div className="flex-col flex-1 w-500">
-        <div className="flex-auto overflow-auto flex justify-center items-center ml-5">
+        <div className="flex-auto overflow-auto flex justify-center items-center ml-5 pr-16">
           {location.pathname === "/main/storage" ? <FolderList /> : <FileList />}
         </div>
       </div>

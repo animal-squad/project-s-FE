@@ -5,6 +5,8 @@ import { FiFileText } from "react-icons/fi";
 interface FileComponentProps {
   name: string;
   link?: string;
+  type?: string;
+  tags?: string[];
 }
 
 const FileComponent: React.FC<FileComponentProps> = ({ name }) => {
