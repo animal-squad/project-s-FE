@@ -1,7 +1,6 @@
 import React from "react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 // import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
 const LoginPage = () => {
   // const navigate = useNavigate(); // useNavigate 훅 사용
@@ -13,8 +12,7 @@ const LoginPage = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_DOMAIN}/auth/google`);
-      console.log("Login successful:", response.data);
+      window.location.href = `${import.meta.env.VITE_BACKEND_DOMAIN}/auth/google`
       // 로그인 성공 시 메인 페이지로 이동
     } catch (error) {
       console.error("Login failed:", error);
@@ -29,7 +27,7 @@ const LoginPage = () => {
         loop
         autoplay
         className="absolute z-0 items-center"
-      /> 
+      />
       <div className="relative z-10 flex justify-center w-screen">
         <form className="rounded px-8 pt-6 pb-8 mb-4 bg-white bg-opacity-20 backdrop-blur-md shadow-lg">
           <div className="mb-4">

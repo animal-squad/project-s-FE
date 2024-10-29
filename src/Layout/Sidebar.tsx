@@ -1,5 +1,4 @@
 import React, { Dispatch, SetStateAction, useState, useEffect } from "react";
-import axios from "axios";
 import { IconType } from "react-icons";
 import { FiChevronsRight } from "react-icons/fi";
 import { FaFolder } from "react-icons/fa";
@@ -135,8 +134,7 @@ const Option = ({
   const handleLogoutClick = async () => {
     if (handleLogout) {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_DOMAIN}/auth/logout`);
-        console.log("Logout successful:", response.data);
+        window.location.href = `${import.meta.env.VITE_BACKEND_DOMAIN}/auth/logout`
       } catch (error) {
         console.error("Logout failed:", error);
         // 로그아웃 실패 시 처리
