@@ -12,7 +12,9 @@ const LoginPage = () => {
 
   const handleLogin = async () => {
     try {
-      window.location.href = `${import.meta.env.VITE_BACKEND_DOMAIN}/auth/google`
+      window.location.href = `${
+        import.meta.env.VITE_BACKEND_DOMAIN
+      }/auth/google`;
       // 로그인 성공 시 메인 페이지로 이동
     } catch (error) {
       console.error("Login failed:", error);
@@ -20,10 +22,13 @@ const LoginPage = () => {
     }
   };
 
+  const lottieAnimation = import.meta.env.VITE_LOTTIE_FILE;
+  const googleLoginButton = import.meta.env.VITE_GOOGLE_BUTTON;
+
   return (
     <div className="relative flex items-center justify-center v-screen w-full">
       <DotLottieReact // Lottie 애니메이션
-        src="src/assets/animations/fileAnimation.lottie"
+        src={lottieAnimation}
         loop
         autoplay
         className="absolute z-0 items-center"
@@ -42,7 +47,7 @@ const LoginPage = () => {
               onClick={handleLogin} // 메인으로 이동, 추후에 여기에 로그인 기능 추가 예정
             >
               <img // Continue with Google 이미지
-                src="src/assets/images/web_neutral_rd_ctn.svg"
+                src={googleLoginButton}
                 alt="Continue with Google"
                 className="w-auto h-auto"
               />
