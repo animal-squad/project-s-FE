@@ -39,8 +39,7 @@ const Sidebar = () => {
       setSelected("Link");
     } else if (location.pathname === "/main/texts") {
       setSelected("Texts");
-    } 
-    else {
+    } else {
       setSelected(""); // 기본적으로 선택된 것이 없도록 처리
     }
   }, [location, setSelectedTab, setSelected]);
@@ -130,11 +129,12 @@ const Option = ({
     }
   };
 
-
   const handleLogoutClick = async () => {
     if (handleLogout) {
       try {
-        window.location.href = `${import.meta.env.VITE_BACKEND_DOMAIN}/auth/logout`
+        window.location.href = `${
+          import.meta.env.VITE_BACKEND_DOMAIN
+        }/api/auth/logout`;
       } catch (error) {
         console.error("Logout failed:", error);
         // 로그아웃 실패 시 처리
