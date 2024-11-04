@@ -14,7 +14,7 @@ const LoginPage = () => {
     try {
       window.location.href = `${
         import.meta.env.VITE_BACKEND_DOMAIN
-      }/auth/google`;
+      }/api/auth/google`;
       // 로그인 성공 시 메인 페이지로 이동
     } catch (error) {
       console.error("Login failed:", error);
