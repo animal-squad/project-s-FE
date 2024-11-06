@@ -7,7 +7,7 @@ const LoginPage = () => {
 
   // 메인 페이지로 보내는 핸들러
   // const handleNavigateToMain = () => {
-  //   navigate("/main/storage");
+  //   navigate("/main/bucket");
   // };
 
   const handleLogin = async () => {

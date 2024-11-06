@@ -10,8 +10,8 @@ const App = () => {
     <Router>
       <Routes>
         <Route path="" element={<Login />} />
-        <Route path="/main/storage" element={<MainPage />} />
-        <Route path="/main/storage/:folderId" element={<MainPage />} />
+        <Route path="/main/bucket" element={<MainPage />} />
+        <Route path="/main/bucket/:folderId" element={<MainPage />} />
         <Route path="/main/link" element={<MainPage />} />
         <Route path="/main/texts" element={<MainPage />} />
       </Routes>

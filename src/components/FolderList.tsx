@@ -23,7 +23,7 @@ const FolderList: React.FC = () => {
 
   const handleFolderClick = (id: number) => {
     setSelectedFolderIndex(id - 1); // Zustand 상태 업데이트, 배열 인덱스는 0부터 시작하므로 조정
-    navigate(`/main/storage/${id}`);
+    navigate(`/main/bucket/${id}`);
   };
 
   return (
