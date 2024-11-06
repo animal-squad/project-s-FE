@@ -2,7 +2,6 @@ import React, { Dispatch, SetStateAction, useState, useEffect } from "react";
 import { IconType } from "react-icons";
 import { FiChevronsRight } from "react-icons/fi";
 import { IoMdLink, IoIosLogOut } from "react-icons/io";
-import { FiFileText } from "react-icons/fi";
 import { CgProfile } from "react-icons/cg";
 import { motion } from "framer-motion";
 import Divider from "@mui/material/Divider";
