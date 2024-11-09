@@ -1,5 +1,5 @@
 import React from "react";
-import { Space, Table, Tag } from "antd";
+import { Table, Tag, Button } from "antd";
 import type { TableProps } from "antd";
 
 const enum ColorNums {
@@ -57,20 +57,17 @@ interface DataType {
 
 const columns: TableProps<DataType>["columns"] = [
   {
-    title: "File Name",
+    title: "URL",
     dataIndex: "name",
     key: "name",
+    width: "50%",
     render: (text) => <a>{text}</a>,
-  },
-  {
-    title: "Type",
-    dataIndex: "type",
-    key: "type",
   },
   {
     title: "Tags",
     key: "tags",
     dataIndex: "tags",
+    width: "50%",
     render: (_, { tags }) => (
       <>
         {tags.map((tag) => {
@@ -85,16 +82,6 @@ const columns: TableProps<DataType>["columns"] = [
           );
         })}
       </>
-    ),
-  },
-  {
-    title: "Action",
-    key: "action",
-    render: (_, record) => (
-      <Space size="middle">
-        <a>Invite {record.name}</a>
-        <a>Delete</a>
-      </Space>
     ),
   },
 ];
@@ -118,10 +105,73 @@ const data: DataType[] = [
     name: "과학-3",
     tags: ["화학666666", "물리7777777", "SF88888888"],
   },
+  {
+    key: "4",
+    type: "text",
+    name: "과학-3",
+    tags: ["화학666666", "물리7777777", "SF88888888"],
+  },
+  {
+    key: "5",
+    type: "text",
+    name: "과학-3",
+    tags: ["화학666666", "물리7777777", "SF88888888"],
+  },
+  {
+    key: "6",
+    type: "text",
+    name: "과학-3",
+    tags: ["화학666666", "물리7777777", "SF88888888"],
+  },
+  {
+    key: "7",
+    type: "text",
+    name: "과학-3",
+    tags: ["화학666666", "물리7777777", "SF88888888"],
+  },
+  {
+    key: "8",
+    type: "text",
+    name: "과학-3",
+    tags: ["화학666666", "물리7777777", "SF88888888"],
+  },
+  {
+    key: "9",
+    type: "text",
+    name: "과학-3",
+    tags: ["화학666666", "물리7777777", "SF88888888"],
+  },
+  {
+    key: "10",
+    type: "text",
+    name: "과학-3",
+    tags: ["화학666666", "물리7777777", "SF88888888"],
+  },
+  {
+    key: "11",
+    type: "text",
+    name: "과학-3",
+    tags: ["화학666666", "물리7777777", "SF88888888"],
+  },
 ];
 
 const App: React.FC = () => (
-  <Table<DataType> columns={columns} dataSource={data} />
+  <div>
+    <div className="relative flex items-center my-4">
+      <h1 className="absolute left-1/2 transform -translate-x-1/2 text-2xl font-bold text-primary_text">
+        Title
+      </h1>
+      <Button type="primary" className="ml-auto">
+        공유
+      </Button>
+    </div>
+    <Table<DataType>
+      columns={columns}
+      dataSource={data}
+      tableLayout="fixed"
+      pagination={{ pageSize: 10, position: ["bottomCenter"] }}
+    />
+  </div>
 );
 
 export default App;

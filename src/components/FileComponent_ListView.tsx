@@ -1,6 +1,5 @@
 // FileComponent.tsx
 import React from "react";
-import { FiFileText } from "react-icons/fi";
 
 interface FileComponentProps {
   name: string;
