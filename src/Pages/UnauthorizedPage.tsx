@@ -11,7 +11,7 @@ const UnauthorizedPage = () => {
       <div className="flex justify-center w-screen">
         <form className="shadow-md rounded px-8 pt-6 pb-8 mb-4">
           <div className="block text-primary_text text-m font-bold mb-2 flex justify-center">
-            <Bucket_Icon_Black></Bucket_Icon_Black>
+            <Bucket_Icon_Black width={100} height={100}></Bucket_Icon_Black>
           </div>
           <br></br>
           <label className="block text-primary_text text-xl font-bold mb-2 flex justify-center">
