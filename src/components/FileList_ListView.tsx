@@ -1,5 +1,5 @@
 import React from "react";
-import { Space, Table, Tag } from "antd";
+import { Table, Tag, Button } from "antd";
 import type { TableProps } from "antd";
 
 const enum ColorNums {
@@ -49,28 +49,26 @@ const colorMapping = (num: ColorNums): string => {
 };
 
 interface DataType {
-  key: string;
-  name: string;
+  title: string | URL;
   tags: string[];
-  type: string;
+  URL: string;
 }
 
 const columns: TableProps<DataType>["columns"] = [
   {
-    title: "File Name",
-    dataIndex: "name",
-    key: "name",
-    render: (text) => <a>{text}</a>,
-  },
-  {
-    title: "Type",
-    dataIndex: "type",
-    key: "type",
+    title: "URL",
+    dataIndex: "title",
+    key: "title",
+    width: "50%",
+    render: (text, record) => (
+      <a onClick={() => window.open(record.URL)}>{text}</a>
+    ),
   },
   {
     title: "Tags",
     key: "tags",
     dataIndex: "tags",
+    width: "50%",
     render: (_, { tags }) => (
       <>
         {tags.map((tag) => {
@@ -87,41 +85,43 @@ const columns: TableProps<DataType>["columns"] = [
       </>
     ),
   },
-  {
-    title: "Action",
-    key: "action",
-    render: (_, record) => (
-      <Space size="middle">
-        <a>Invite {record.name}</a>
-        <a>Delete</a>
-      </Space>
-    ),
-  },
 ];
 
 const data: DataType[] = [
   {
-    key: "1",
-    type: "text",
-    name: "과학-1",
+    title: "과학-1",
     tags: ["화학", "물리1", "SF22"],
+    URL: "https://www.naver.com/",
   },
   {
-    key: "2",
-    type: "text",
-    name: "과학-2",
+    title: "과학-2",
     tags: ["화학333", "물리4444", "SF55555"],
+    URL: "https://www.erdcloud.com/",
   },
   {
-    key: "3",
-    type: "text",
-    name: "과학-3",
+    title: "과학-3",
     tags: ["화학666666", "물리7777777", "SF88888888"],
+    URL: "https://youtube.com",
   },
 ];
 
 const App: React.FC = () => (
-  <Table<DataType> columns={columns} dataSource={data} />
+  <div>
+    <div className="relative flex items-center my-4">
+      <h1 className="absolute left-1/2 transform -translate-x-1/2 text-2xl font-bold text-primary_text">
+        Title
+      </h1>
+      <Button type="primary" className="ml-auto">
+        공유
+      </Button>
+    </div>
+    <Table<DataType>
+      columns={columns}
+      dataSource={data}
+      tableLayout="fixed"
+      pagination={{ pageSize: 10, position: ["bottomCenter"] }}
+    />
+  </div>
 );
 
 export default App;
