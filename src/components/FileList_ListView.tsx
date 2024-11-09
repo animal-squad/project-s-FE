@@ -49,19 +49,20 @@ const colorMapping = (num: ColorNums): string => {
 };
 
 interface DataType {
-  key: string;
-  name: string;
+  title: string | URL;
   tags: string[];
-  type: string;
+  URL: string;
 }
 
 const columns: TableProps<DataType>["columns"] = [
   {
     title: "URL",
-    dataIndex: "name",
-    key: "name",
+    dataIndex: "title",
+    key: "title",
     width: "50%",
-    render: (text) => <a>{text}</a>,
+    render: (text, record) => (
+      <a onClick={() => window.open(record.URL)}>{text}</a>
+    ),
   },
   {
     title: "Tags",
@@ -88,70 +89,19 @@ const columns: TableProps<DataType>["columns"] = [
 
 const data: DataType[] = [
   {
-    key: "1",
-    type: "text",
-    name: "과학-1",
+    title: "과학-1",
     tags: ["화학", "물리1", "SF22"],
+    URL: "https://www.naver.com/",
   },
   {
-    key: "2",
-    type: "text",
-    name: "과학-2",
+    title: "과학-2",
     tags: ["화학333", "물리4444", "SF55555"],
+    URL: "https://www.erdcloud.com/",
   },
   {
-    key: "3",
-    type: "text",
-    name: "과학-3",
+    title: "과학-3",
     tags: ["화학666666", "물리7777777", "SF88888888"],
-  },
-  {
-    key: "4",
-    type: "text",
-    name: "과학-3",
-    tags: ["화학666666", "물리7777777", "SF88888888"],
-  },
-  {
-    key: "5",
-    type: "text",
-    name: "과학-3",
-    tags: ["화학666666", "물리7777777", "SF88888888"],
-  },
-  {
-    key: "6",
-    type: "text",
-    name: "과학-3",
-    tags: ["화학666666", "물리7777777", "SF88888888"],
-  },
-  {
-    key: "7",
-    type: "text",
-    name: "과학-3",
-    tags: ["화학666666", "물리7777777", "SF88888888"],
-  },
-  {
-    key: "8",
-    type: "text",
-    name: "과학-3",
-    tags: ["화학666666", "물리7777777", "SF88888888"],
-  },
-  {
-    key: "9",
-    type: "text",
-    name: "과학-3",
-    tags: ["화학666666", "물리7777777", "SF88888888"],
-  },
-  {
-    key: "10",
-    type: "text",
-    name: "과학-3",
-    tags: ["화학666666", "물리7777777", "SF88888888"],
-  },
-  {
-    key: "11",
-    type: "text",
-    name: "과학-3",
-    tags: ["화학666666", "물리7777777", "SF88888888"],
+    URL: "https://youtube.com",
   },
 ];
 
