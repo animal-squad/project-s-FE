@@ -1,22 +1,72 @@
-// FolderComponent.tsx
+// ListViewApp.tsx
 import React from "react";
-import { FaFolder } from "react-icons/fa";
+import { Table, Tag } from "antd";
+// import { useFolderStore } from "../store/FileIndexStore"; // Zustand store import
 
-interface FolderComponentProps {
-  name: string;
-  link?: string;
-  onClick: () => void;
+interface Folder {
+  bucketId: string;
+  title: string;
+  linkCount: number;
+  createdAt: Date;
+  isShared: boolean;
 }
 
-const FolderComponent: React.FC<FolderComponentProps> = ({ name, onClick }) => {
+interface FolderComponentProps {
+  folders: Folder[];
+  onFolderClick: (bucketId: string) => void;
+}
+
+const FolderComponent: React.FC<FolderComponentProps> = ({
+  folders,
+  onFolderClick,
+}) => {
+  const columns = [
+    {
+      title: "바구니",
+      dataIndex: "title",
+      key: "title",
+      width: "55%",
+      render: (text: string, record: Folder) => (
+        <a onClick={() => onFolderClick(record.bucketId)}>{text}</a>
+      ),
+    },
+    {
+      title: "링크 수",
+      dataIndex: "linkCount",
+      key: "linkCount",
+      width: "15%",
+    },
+    {
+      title: "생성 일자",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      width: "15%",
+      render: (date: Date) => new Date(date).toLocaleDateString(),
+    },
+    {
+      title: "공유 여부",
+      dataIndex: "isShared",
+      key: "isShared",
+      width: "15%",
+      render: (isShared: boolean) => (
+        <Tag color={isShared ? "green" : "red"}>{isShared ? "Yes" : "No"}</Tag>
+      ),
+    },
+  ];
+
   return (
-    <div
-      className="flex flex-col items-center p-2 bg-transparent hover:bg-gray-100 min-w-28"
-      onClick={onClick} // 클릭 이벤트 처리
-    >
-      <div className="w-16 h-12 bg-yellow-300 rounded-md mb-2"></div>
-      <FaFolder color="ebc351" size="30" />
-      <span className="text-sm text-center text-primary_text">{name}</span>
+    <div>
+      <div className="relative flex items-center my-8">
+        <h1 className="absolute left-1/2 transform -translate-x-1/2 text-2xl font-bold text-primary_text">
+          바구니 목록
+        </h1>
+      </div>
+      <Table<Folder>
+        columns={columns}
+        dataSource={folders}
+        tableLayout="fixed"
+        pagination={{ pageSize: 10, position: ["bottomCenter"] }}
+      />
     </div>
   );
 };

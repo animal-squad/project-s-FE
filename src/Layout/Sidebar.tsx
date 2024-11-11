@@ -1,15 +1,14 @@
 import React, { Dispatch, SetStateAction, useState, useEffect } from "react";
 import { IconType } from "react-icons";
 import { FiChevronsRight } from "react-icons/fi";
-import { FaFolder } from "react-icons/fa";
 import { IoMdLink, IoIosLogOut } from "react-icons/io";
-import { FiFileText } from "react-icons/fi";
 import { CgProfile } from "react-icons/cg";
 import { motion } from "framer-motion";
 import Divider from "@mui/material/Divider";
 import { useSidebarStore } from "../store/sidebarStore";
 import { Link, useLocation } from "react-router-dom";
 import { useTabStore } from "../store/headerStore";
+import { ReactComponent as Bucket_Icon_Bold } from "../../public/assets/icons/Bucket_Icon_Bold.svg";
 
 export const Example = () => {
   return (
@@ -33,8 +32,8 @@ const Sidebar = () => {
     setSelectedTab(0);
 
     // URL과 일치하는 상태로 setSelected 호출
-    if (location.pathname.startsWith("/main/storage")) {
-      setSelected("Storage");
+    if (location.pathname.startsWith("/main/bucket")) {
+      setSelected("Bucket");
     } else if (location.pathname === "/main/link") {
       setSelected("Link");
     } else if (location.pathname === "/main/texts") {
@@ -56,12 +55,14 @@ const Sidebar = () => {
 
       <div className="space-y-1">
         <Option
-          Icon={FaFolder}
+          Icon={Bucket_Icon_Bold}
           IconColor="#2196f3"
-          title="Storage"
+          title="Bucket"
           selected={selected}
           setSelected={setSelected}
           open={open}
+          isCustomIcon
+          notifs={3}
         />
         <Option
           Icon={IoMdLink}
@@ -71,16 +72,7 @@ const Sidebar = () => {
           setSelected={setSelected}
           open={open}
         />
-        <Option
-          Icon={FiFileText}
-          IconColor="#2196f3"
-          title="Texts"
-          selected={selected}
-          setSelected={setSelected}
-          open={open}
-          //notifs={3} : 목록 옆에 숫자 띄울수 있음.
-        />
-        <Divider className="pt-8" />
+        <Divider className="pt-5" />
         <Option
           Icon={IoIosLogOut}
           IconColor="#2196f3"
@@ -106,8 +98,9 @@ const Option = ({
   open,
   notifs,
   handleLogout,
+  isCustomIcon,
 }: {
-  Icon: IconType;
+  Icon: IconType | React.ElementType;
   IconColor: string;
   title: string;
   selected: string;
@@ -115,11 +108,12 @@ const Option = ({
   open: boolean;
   notifs?: number;
   handleLogout?: boolean;
+  isCustomIcon?: boolean;
 }) => {
   const getLinkPath = () => {
     switch (title) {
-      case "Storage":
-        return "/main/storage";
+      case "Bucket":
+        return "/main/bucket";
       case "Link":
         return "/main/link";
       case "Texts":
@@ -159,7 +153,11 @@ const Option = ({
           layout
           className="grid h-full w-10 place-content-center text-lg"
         >
-          <Icon color={IconColor} size="25" />
+          {isCustomIcon ? (
+            <Icon width="25" height="25" />
+          ) : (
+            <Icon color={IconColor} size="25" />
+          )}
         </motion.div>
         {open && ( // 글씨 애니메이션
           <motion.span

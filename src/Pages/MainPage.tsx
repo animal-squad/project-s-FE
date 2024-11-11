@@ -2,9 +2,9 @@ import React from "react";
 import { Example } from "../Layout/Sidebar";
 import { useTabStore } from "../store/headerStore"; // Zustand 스토어 불러오기
 import LinkHeader from "../Layout/Header/LinkHeader";
-import StorageHeader from "../Layout/Header/StorageHeader";
+import BucketHeader from "../Layout/Header/BucketHeader";
 import TextsHeader from "../Layout/Header/TextsHeader";
-import StoragePage from "./StoragePage";
+import BucketPage from "./BucketPage";
 import TextsPage from "./TextsPage";
 import MyBookmarksPage from "./MyBookmarksPage";
 import BookmarksInFilesPage from "./BookmarksInFilesPage";
@@ -13,8 +13,8 @@ const MainPage = () => {
   const selectedTab = useTabStore((state) => state.selectedHeaderTab); // Zustand에서 상태 불러오기
 
   const renderHeader = () => {
-    if (location.pathname.startsWith("/main/storage")) {
-      return <StorageHeader />;
+    if (location.pathname.startsWith("/main/bucket")) {
+      return <BucketHeader />;
     } else if (location.pathname === "/main/link") {
       return <LinkHeader />;
     } else if (location.pathname === "/main/texts") {
@@ -26,8 +26,8 @@ const MainPage = () => {
 
   // 선택된 탭에 따라 다른 컴포넌트 렌더링
   const renderContent = () => {
-    if (location.pathname.startsWith("/main/storage")) {
-      return <StoragePage />;
+    if (location.pathname.startsWith("/main/bucket")) {
+      return <BucketPage />;
     } else if (location.pathname === "/main/texts") {
       return <TextsPage />;
     } else if (location.pathname === "/main/link") {

@@ -97,7 +97,7 @@ export default function Header() {
           onChange={handleChange}
           aria-label="styled tabs example"
         >
-          <StyledTab label="Storage" href="/main/storage/storage" />
+          <StyledTab label="내 바구니" href="/main/bucket/bucket" />
 
         </StyledTabs>
         <Box sx={{ p: 3 }} />

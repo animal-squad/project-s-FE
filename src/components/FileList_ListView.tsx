@@ -1,6 +1,29 @@
-import React from "react";
-import { Space, Table, Tag } from "antd";
+import React, { useEffect, useState } from "react";
+import { Table, Tag, Button, Modal, Switch } from "antd";
 import type { TableProps } from "antd";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
+
+interface Link {
+  linkId: string;
+  userId: number;
+  URL: string;
+  createdAt: Date;
+  openedAt: Date;
+  views: number;
+  tags: string[];
+  title: string | null;
+}
+
+interface FileListResponse {
+  userId: number;
+  title: string;
+  linkCount: number;
+  createdAt: Date;
+  isShared: boolean;
+  isMine: boolean;
+  links: Link[];
+}
 
 const enum ColorNums {
   magenta,
@@ -49,28 +72,46 @@ const colorMapping = (num: ColorNums): string => {
 };
 
 interface DataType {
-  key: string;
-  name: string;
+  title: string | URL;
   tags: string[];
-  type: string;
+  URL: string;
+  linkId: string;
 }
 
 const columns: TableProps<DataType>["columns"] = [
   {
-    title: "File Name",
-    dataIndex: "name",
-    key: "name",
-    render: (text) => <a>{text}</a>,
-  },
-  {
-    title: "Type",
-    dataIndex: "type",
-    key: "type",
+    title: "URL",
+    dataIndex: "title",
+    key: "title",
+    width: "50%",
+    render: (text, record) => (
+      <a
+        onClick={() => {
+          // PUT 요청으로 조회수 증가
+          axios
+            .put(
+              `${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/${
+                record.linkId
+              }/view`
+            )
+            .then(() => {
+              console.log("View count updated for link:", record.linkId);
+            })
+            .catch((error) => {
+              console.error("Failed to update view count:", error);
+            });
+          window.open(record.URL); // URL 열기
+        }}
+      >
+        {text}
+      </a>
+    ),
   },
   {
     title: "Tags",
     key: "tags",
     dataIndex: "tags",
+    width: "50%",
     render: (_, { tags }) => (
       <>
         {tags.map((tag) => {
@@ -87,41 +128,185 @@ const columns: TableProps<DataType>["columns"] = [
       </>
     ),
   },
-  {
-    title: "Action",
-    key: "action",
-    render: (_, record) => (
-      <Space size="middle">
-        <a>Invite {record.name}</a>
-        <a>Delete</a>
-      </Space>
-    ),
-  },
 ];
 
 const data: DataType[] = [
   {
-    key: "1",
-    type: "text",
-    name: "과학-1",
+    title: "과학-1",
     tags: ["화학", "물리1", "SF22"],
+    URL: "https://www.naver.com/",
+    linkId: "n23NmKLT",
   },
   {
-    key: "2",
-    type: "text",
-    name: "과학-2",
+    title: "과학-2",
     tags: ["화학333", "물리4444", "SF55555"],
+    URL: "https://www.erdcloud.com/",
+    linkId: "n23NmKLT",
   },
   {
-    key: "3",
-    type: "text",
-    name: "과학-3",
+    title: "과학-3",
     tags: ["화학666666", "물리7777777", "SF88888888"],
+    URL: "https://youtube.com",
+    linkId: "n23NmKLT",
   },
 ];
 
-const App: React.FC = () => (
-  <Table<DataType> columns={columns} dataSource={data} />
-);
+const FileList_ListView: React.FC = () => {
+  const { bucketId } = useParams<{ bucketId: string }>(); // URL에서 bucketId 추출
+  const [fileData, setFileData] = useState<FileListResponse | null>(null);
+  const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPublic, setIsPublic] = useState(false); // Switch 상태
+  const [url, setUrl] = useState("");
+  const [initialPublicState, setInitialPublicState] = useState(false); // 모달 초기 상태 저장용
 
-export default App;
+  const showModal = () => {
+    setInitialPublicState(isPublic);
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    if (fileData?.isMine) {
+      axios
+        .post(
+          `${import.meta.env.VITE_BACKEND_DOMAIN}/api/bucket/${bucketId}/share`,
+          {
+            permission: isPublic,
+          }
+        )
+        .then((response) => {
+          console.log("Permission updated:", response.data);
+        })
+        .catch((error) => {
+          console.error("Failed to update permission:", error);
+        });
+    } else {
+      axios
+        .post(
+          `${import.meta.env.VITE_BACKEND_DOMAIN}/api/bucket/${bucketId}/paste`,
+          {
+            bucket: fileData,
+          }
+        )
+        .then((response) => {
+          console.log("Bucket copied:", response.data);
+          const newBucketId = response.data.bucketId; // 응답에서 새로운 bucketId 추출
+          if (newBucketId) {
+            // 새 창에서 /main/bucket/:newBucketId 열기
+            window.open(`/main/bucket/${newBucketId}`, "_blank");
+          }
+        })
+        .catch((error) => {
+          console.error("Failed to copy bucket:", error);
+        });
+    }
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    if (fileData?.isMine) {
+      setIsPublic(initialPublicState);
+      setUrl(initialPublicState ? window.location.href : "");
+    }
+    setIsModalOpen(false);
+  };
+
+  const handleSwitchChange = (checked: boolean) => {
+    setIsPublic(checked);
+    setUrl(checked ? window.location.href : "");
+  };
+
+  const handleCopy = () => {
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        console.log("URL copied to clipboard:", url);
+      })
+      .catch((err) => {
+        console.error("Failed to copy URL:", err);
+      });
+  };
+
+  useEffect(() => {
+    if (bucketId) {
+      axios
+        .get<FileListResponse>(
+          `${import.meta.env.VITE_BACKEND_DOMAIN}/api/bucket/${bucketId}`
+        ) // bucketId를 URL에 포함
+        .then((response) => {
+          setFileData(response.data);
+          setIsPublic(response.data.isShared); // isShared 값을 초기값으로 설정
+          setUrl(response.data.isShared ? window.location.href : ""); // 초기 URL 상태 설정
+        })
+        .catch((error) => {
+          if (error.response?.status === 401) {
+            navigate("/unshared"); // 401 에러 발생 시 /unshared로 리디렉션
+          } else {
+            console.error("Failed to fetch file data:", error);
+          }
+        });
+    }
+  }, [bucketId, navigate]);
+
+  const tableData = fileData
+    ? fileData.links.map((link) => ({
+        title: link.title || "Untitled",
+        tags: link.tags,
+        URL: link.URL,
+        linkId: link.linkId,
+      }))
+    : data;
+
+  return (
+    <div>
+      <div className="relative flex items-center my-4">
+        <h1 className="absolute left-1/2 transform -translate-x-1/2 text-2xl font-bold text-primary_text">
+          {fileData?.title || "Title"}
+        </h1>
+        <Button type="primary" className="ml-auto" onClick={showModal}>
+          {fileData?.isMine ? "공유" : "복사"}
+        </Button>
+        <Modal
+          title={fileData?.isMine ? "바구니 공유" : "바구니 복사"}
+          open={isModalOpen}
+          onOk={handleOk}
+          onCancel={handleCancel}
+        >
+          {fileData?.isMine ? (
+            <div className="flex flex-col items-center mt-4 gap-4">
+              <div className="flex justify-center items-center gap-2">
+                <span>Private</span>
+                <Switch
+                  size="small"
+                  onChange={handleSwitchChange}
+                  checked={isPublic}
+                />
+                <span>Public</span>
+              </div>
+              {isPublic && (
+                <div className="flex items-center gap-2 border p-2 rounded-md">
+                  <span>{url}</span>
+                  <Button size="small" onClick={handleCopy}>
+                    복사
+                  </Button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center mt-4 gap-4">
+              <p>바구니를 복사하시겠습니까?</p>
+            </div>
+          )}
+        </Modal>
+      </div>
+      <Table<DataType>
+        columns={columns}
+        dataSource={tableData}
+        tableLayout="fixed"
+        pagination={{ pageSize: 10, position: ["bottomCenter"] }}
+      />
+    </div>
+  );
+};
+
+export default FileList_ListView;
