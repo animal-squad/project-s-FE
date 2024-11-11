@@ -5,23 +5,23 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 
 interface Link {
-  linkId: string,
-  userId: number,
-  URL: string,
-  createdAt: Date,
-  openedAt: Date,
-  views: number,
-  tags: string[],
-  title: string | null,
+  linkId: string;
+  userId: number;
+  URL: string;
+  createdAt: Date;
+  openedAt: Date;
+  views: number;
+  tags: string[];
+  title: string | null;
 }
 
 interface FileListResponse {
-  userId: number,
-  title: string,
-  linkCount: number,
-  createdAt: Date,
-  isShared: boolean,
-  isMine: boolean,
+  userId: number;
+  title: string;
+  linkCount: number;
+  createdAt: Date;
+  isShared: boolean;
+  isMine: boolean;
   links: Link[];
 }
 
@@ -75,6 +75,7 @@ interface DataType {
   title: string | URL;
   tags: string[];
   URL: string;
+  linkId: string;
 }
 
 const columns: TableProps<DataType>["columns"] = [
@@ -84,7 +85,26 @@ const columns: TableProps<DataType>["columns"] = [
     key: "title",
     width: "50%",
     render: (text, record) => (
-      <a onClick={() => window.open(record.URL)}>{text}</a>
+      <a
+        onClick={() => {
+          // PUT 요청으로 조회수 증가
+          axios
+            .put(
+              `${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/${
+                record.linkId
+              }/view`
+            )
+            .then(() => {
+              console.log("View count updated for link:", record.linkId);
+            })
+            .catch((error) => {
+              console.error("Failed to update view count:", error);
+            });
+          window.open(record.URL); // URL 열기
+        }}
+      >
+        {text}
+      </a>
     ),
   },
   {
@@ -115,16 +135,19 @@ const data: DataType[] = [
     title: "과학-1",
     tags: ["화학", "물리1", "SF22"],
     URL: "https://www.naver.com/",
+    linkId: "n23NmKLT",
   },
   {
     title: "과학-2",
     tags: ["화학333", "물리4444", "SF55555"],
     URL: "https://www.erdcloud.com/",
+    linkId: "n23NmKLT",
   },
   {
     title: "과학-3",
     tags: ["화학666666", "물리7777777", "SF88888888"],
     URL: "https://youtube.com",
+    linkId: "n23NmKLT",
   },
 ];
 
@@ -202,6 +225,7 @@ const FileList_ListView: React.FC = () => {
         title: link.title || "Untitled",
         tags: link.tags,
         URL: link.URL,
+        linkId: link.linkId,
       }))
     : data;
 
