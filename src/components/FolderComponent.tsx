@@ -25,7 +25,7 @@ const FolderComponent: React.FC<FolderComponentProps> = ({
       title: "바구니",
       dataIndex: "title",
       key: "title",
-      width: "70%",
+      width: "55%",
       render: (text: string, record: Folder) => (
         <a onClick={() => onFolderClick(record.bucketId)}>{text}</a>
       ),
@@ -34,20 +34,20 @@ const FolderComponent: React.FC<FolderComponentProps> = ({
       title: "링크 수",
       dataIndex: "linkCount",
       key: "linkCount",
-      width: "10%",
+      width: "15%",
     },
     {
       title: "생성 일자",
       dataIndex: "createdAt",
       key: "createdAt",
-      width: "10%",
+      width: "15%",
       render: (date: Date) => new Date(date).toLocaleDateString(),
     },
     {
       title: "공유 여부",
       dataIndex: "isShared",
       key: "isShared",
-      width: "10%",
+      width: "15%",
       render: (isShared: boolean) => (
         <Tag color={isShared ? "green" : "red"}>{isShared ? "Yes" : "No"}</Tag>
       ),

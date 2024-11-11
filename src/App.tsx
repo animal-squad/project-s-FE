@@ -13,7 +13,7 @@ const App = () => {
       <Routes>
         <Route path="" element={<Login />} />
         <Route path="/main/bucket" element={<MainPage />} />
-        <Route path="/main/bucket/:folderId" element={<MainPage />} />
+        <Route path="/main/bucket/:bucketId" element={<MainPage />} />
         <Route path="/main/link" element={<MainPage />} />
         <Route path="/main/texts" element={<MainPage />} />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
