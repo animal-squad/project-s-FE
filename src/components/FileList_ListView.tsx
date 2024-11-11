@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Table, Tag, Button, Modal, Switch } from "antd";
 import type { TableProps } from "antd";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 interface Link {
@@ -154,6 +154,7 @@ const data: DataType[] = [
 const FileList_ListView: React.FC = () => {
   const { bucketId } = useParams<{ bucketId: string }>(); // URL에서 bucketId 추출
   const [fileData, setFileData] = useState<FileListResponse | null>(null);
+  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPublic, setIsPublic] = useState(false); // Switch 상태
   const [url, setUrl] = useState("");
@@ -165,25 +166,48 @@ const FileList_ListView: React.FC = () => {
   };
 
   const handleOk = () => {
-    axios
-      .post(
-        `${import.meta.env.VITE_BACKEND_DOMAIN}/api/bucket/${bucketId}/share`,
-        {
-          permission: isPublic,
-        }
-      )
-      .then((response) => {
-        console.log("Permission updated:", response.data);
-      })
-      .catch((error) => {
-        console.error("Failed to update permission:", error);
-      });
+    if (fileData?.isMine) {
+      axios
+        .post(
+          `${import.meta.env.VITE_BACKEND_DOMAIN}/api/bucket/${bucketId}/share`,
+          {
+            permission: isPublic,
+          }
+        )
+        .then((response) => {
+          console.log("Permission updated:", response.data);
+        })
+        .catch((error) => {
+          console.error("Failed to update permission:", error);
+        });
+    } else {
+      axios
+        .post(
+          `${import.meta.env.VITE_BACKEND_DOMAIN}/api/bucket/${bucketId}/paste`,
+          {
+            bucket: fileData,
+          }
+        )
+        .then((response) => {
+          console.log("Bucket copied:", response.data);
+          const newBucketId = response.data.bucketId; // 응답에서 새로운 bucketId 추출
+          if (newBucketId) {
+            // 새 창에서 /main/bucket/:newBucketId 열기
+            window.open(`/main/bucket/${newBucketId}`, "_blank");
+          }
+        })
+        .catch((error) => {
+          console.error("Failed to copy bucket:", error);
+        });
+    }
     setIsModalOpen(false);
   };
 
   const handleCancel = () => {
-    setIsPublic(initialPublicState);
-    setUrl(initialPublicState ? window.location.href : "");
+    if (fileData?.isMine) {
+      setIsPublic(initialPublicState);
+      setUrl(initialPublicState ? window.location.href : "");
+    }
     setIsModalOpen(false);
   };
 
@@ -215,10 +239,14 @@ const FileList_ListView: React.FC = () => {
           setUrl(response.data.isShared ? window.location.href : ""); // 초기 URL 상태 설정
         })
         .catch((error) => {
-          console.error("Failed to fetch file data:", error);
+          if (error.response?.status === 401) {
+            navigate("/unshared"); // 401 에러 발생 시 /unshared로 리디렉션
+          } else {
+            console.error("Failed to fetch file data:", error);
+          }
         });
     }
-  }, [bucketId]);
+  }, [bucketId, navigate]);
 
   const tableData = fileData
     ? fileData.links.map((link) => ({
@@ -236,36 +264,39 @@ const FileList_ListView: React.FC = () => {
           {fileData?.title || "Title"}
         </h1>
         <Button type="primary" className="ml-auto" onClick={showModal}>
-          공유
+          {fileData?.isMine ? "공유" : "복사"}
         </Button>
         <Modal
-          title="바구니 공유"
+          title={fileData?.isMine ? "바구니 공유" : "바구니 복사"}
           open={isModalOpen}
           onOk={handleOk}
           onCancel={handleCancel}
         >
-          <div className="flex flex-col items-center mt-4 gap-4">
-            {/* Switch와 URL 공개 상태 */}
-            <div className="flex justify-center items-center gap-2">
-              <span>Private</span>
-              <Switch
-                size="small"
-                onChange={handleSwitchChange}
-                checked={isPublic}
-              />
-              <span>Public</span>
-            </div>
-
-            {/* URL과 복사 버튼 */}
-            {isPublic && (
-              <div className="flex items-center gap-2 border p-2 rounded-md">
-                <span>{url}</span>
-                <Button size="small" onClick={handleCopy}>
-                  복사
-                </Button>
+          {fileData?.isMine ? (
+            <div className="flex flex-col items-center mt-4 gap-4">
+              <div className="flex justify-center items-center gap-2">
+                <span>Private</span>
+                <Switch
+                  size="small"
+                  onChange={handleSwitchChange}
+                  checked={isPublic}
+                />
+                <span>Public</span>
               </div>
-            )}
-          </div>
+              {isPublic && (
+                <div className="flex items-center gap-2 border p-2 rounded-md">
+                  <span>{url}</span>
+                  <Button size="small" onClick={handleCopy}>
+                    복사
+                  </Button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center mt-4 gap-4">
+              <p>바구니를 복사하시겠습니까?</p>
+            </div>
+          )}
         </Modal>
       </div>
       <Table<DataType>
