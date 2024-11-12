@@ -33,6 +33,7 @@ export const userStore = create<UserState>((set) => ({
           withCredentials: true,
         }
       );
+      console.log(response.data);
       set(response.data); // 상태 업데이트
     } catch (error) {
       console.error("Error fetching user data:", error);
