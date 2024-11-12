@@ -36,7 +36,7 @@ export const useFolderStore = create<FolderState>((set) => ({
     {
       bucketId: "n23NmKLT",
       userId: 1,
-      title: "과학",
+      title: "2024. 11. 9. 오후 4:05:48에 생성된 Bucket 의 복사본",
       linkCount: 5,
       createdAt: new Date(),
       isShared: true,
@@ -44,7 +44,7 @@ export const useFolderStore = create<FolderState>((set) => ({
     {
       bucketId: "uBMPKxfR",
       userId: 2,
-      title: "공학",
+      title: "2024. 11. 11. 오후 2:14:18에 생성된 Bucket",
       linkCount: 8,
       createdAt: new Date(),
       isShared: false,
@@ -52,7 +52,7 @@ export const useFolderStore = create<FolderState>((set) => ({
     {
       bucketId: "OuAPuTzZ",
       userId: 3,
-      title: "엔터테인먼트",
+      title: "공식 문서",
       linkCount: 12,
       createdAt: new Date(),
       isShared: true,

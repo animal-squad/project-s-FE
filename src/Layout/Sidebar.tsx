@@ -6,9 +6,10 @@ import { CgProfile } from "react-icons/cg";
 import { motion } from "framer-motion";
 import Divider from "@mui/material/Divider";
 import { useSidebarStore } from "../store/sidebarStore";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTabStore } from "../store/headerStore";
 import { ReactComponent as Bucket_Icon_Bold } from "../../public/assets/icons/Bucket_Icon_Bold.svg";
+import { userStore } from "../store/userStore";
 
 export const Example = () => {
   return (
@@ -21,7 +22,9 @@ export const Example = () => {
 
 const Sidebar = () => {
   const [open, setOpen] = useState(true);
+  const navigate = useNavigate();
 
+  const { name, photo, clearUser, userFetch } = userStore();
   const selected = useSidebarStore((state) => state.selectedSidebarItem);
   const setSelected = useSidebarStore((state) => state.setSelectedSidebarItem);
 
@@ -29,6 +32,8 @@ const Sidebar = () => {
   const location = useLocation();
 
   useEffect(() => {
+    userFetch();
+
     setSelectedTab(0);
 
     // URL과 일치하는 상태로 setSelected 호출
@@ -41,7 +46,20 @@ const Sidebar = () => {
     } else {
       setSelected(""); // 기본적으로 선택된 것이 없도록 처리
     }
-  }, [location, setSelectedTab, setSelected]);
+  }, [location, setSelectedTab, setSelected, userFetch]);
+
+  const handleLogout = async () => {
+    try {
+      await fetch(`${import.meta.env.VITE_BACKEND_DOMAIN}/api/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+      clearUser();
+      navigate("/");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
 
   return (
     <motion.nav
@@ -51,7 +69,7 @@ const Sidebar = () => {
         width: open ? "225px" : "fit-content", // 열렸을 때 : 225px, 닫혀있을 때 : fit
       }}
     >
-      <TitleSection open={open} />
+      <TitleSection open={open} name={name} photo={photo} />
 
       <div className="space-y-1">
         <Option
@@ -80,7 +98,7 @@ const Sidebar = () => {
           selected={selected}
           setSelected={setSelected}
           open={open}
-          handleLogout
+          handleLogout={handleLogout} // 로그아웃 함수 전달
         />
       </div>
 
@@ -107,7 +125,7 @@ const Option = ({
   setSelected: (item: string) => void;
   open: boolean;
   notifs?: number;
-  handleLogout?: boolean;
+  handleLogout?: () => void; // handleLogout을 함수로 수정
   isCustomIcon?: boolean;
 }) => {
   const getLinkPath = () => {
@@ -123,30 +141,22 @@ const Option = ({
     }
   };
 
-  const handleLogoutClick = async () => {
+  const handleClick = () => {
     if (handleLogout) {
-      try {
-        window.location.href = `${
-          import.meta.env.VITE_BACKEND_DOMAIN
-        }/api/auth/logout`;
-      } catch (error) {
-        console.error("Logout failed:", error);
-        // 로그아웃 실패 시 처리
-      }
+      handleLogout(); // 로그아웃 함수 호출
     } else {
       setSelected(title);
     }
   };
 
   return (
-    <Link to={handleLogout ? "#" : getLinkPath()} onClick={handleLogoutClick}>
+    <Link to={handleLogout ? "#" : getLinkPath()} onClick={handleClick}>
       <motion.button
         layout
         className={`relative flex h-15 w-full items-center rounded-md transition-colors bg-transparent text-primary_text ${
           selected === title
             ? "border-primary_color text-primary_text shadow-lg"
             : "text-secondary_text"
-          // 버튼 눌렸을때 / 안눌렸을때 디자인
         }`}
       >
         <motion.div
@@ -159,7 +169,7 @@ const Option = ({
             <Icon color={IconColor} size="25" />
           )}
         </motion.div>
-        {open && ( // 글씨 애니메이션
+        {open && (
           <motion.span
             layout
             initial={{ opacity: 0, y: 12 }}
@@ -170,34 +180,47 @@ const Option = ({
             {title}
           </motion.span>
         )}
-
-        {notifs &&
-          open && ( // 알림 숫자 애니메이션
-            <motion.span
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{
-                opacity: 1,
-                scale: 1,
-              }}
-              style={{ y: "-50%" }}
-              transition={{ delay: 0.5 }}
-              className="absolute right-2 top-1/2 size-4 rounded bg-indigo-500 text-xs text-primary_text"
-            >
-              {notifs}
-            </motion.span>
-          )}
+        {notifs && open && (
+          <motion.span
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{
+              opacity: 1,
+              scale: 1,
+            }}
+            style={{ y: "-50%" }}
+            transition={{ delay: 0.5 }}
+            className="absolute right-2 top-1/2 size-4 rounded bg-indigo-500 text-xs text-primary_text"
+          >
+            {notifs}
+          </motion.span>
+        )}
       </motion.button>
     </Link>
   );
 };
 
-const TitleSection = ({ open }: { open: boolean }) => {
-  // Title (프로필)
+const TitleSection = ({
+  open,
+  name,
+  photo,
+}: {
+  open: boolean;
+  name: string;
+  photo: string;
+}) => {
   return (
     <div className="mb-3 pb-3 ">
       <div className="flex cursor-pointer items-center justify-between rounded-md transition-colors hover:bg-slate-100">
         <div className="flex items-center gap-2">
-          <Logo />
+          {photo ? (
+            <img
+              src={photo}
+              alt="User profile"
+              className="w-10 h-10 rounded-full ml-10"
+            />
+          ) : (
+            <Logo />
+          )}
           {open && (
             <motion.div
               layout
@@ -206,7 +229,7 @@ const TitleSection = ({ open }: { open: boolean }) => {
               transition={{ delay: 0.125 }}
             >
               <span className="block text-sm font-semibold text-primary_text ml-7">
-                Hi, UserName!
+                Hi, {name}!
               </span>
             </motion.div>
           )}
@@ -217,10 +240,7 @@ const TitleSection = ({ open }: { open: boolean }) => {
   );
 };
 
-// {open && <FiChevronDown color='212121' className="mr-2" />} under first </div>
-
 const Logo = () => {
-  // 로고 디자인
   return (
     <motion.div
       layout
@@ -232,7 +252,6 @@ const Logo = () => {
 };
 
 const ToggleClose = ({
-  // 열릴때 / 닫힐때 애니메이션
   open,
   setOpen,
 }: {
