@@ -1,5 +1,5 @@
-// userStore.ts
 import { create } from "zustand";
+import axios from "axios";
 
 interface UserState {
   userId: number | null;
@@ -27,17 +27,13 @@ export const userStore = create<UserState>((set) => ({
   // API를 통해 사용자 데이터를 가져오는 함수
   userFetch: async () => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_DOMAIN}/api/auth/user`,
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_DOMAIN}/api/user`,
         {
-          credentials: "include",
+          withCredentials: true,
         }
       );
-      if (!response.ok) {
-        throw new Error("Failed to fetch user data");
-      }
-      const userData = await response.json();
-      set(userData); // 상태 업데이트
+      set(response.data); // 상태 업데이트
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
