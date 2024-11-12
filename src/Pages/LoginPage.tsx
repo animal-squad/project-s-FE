@@ -9,6 +9,18 @@ const LoginPage = () => {
   // const handleNavigateToMain = () => {
   //   navigate("/main/bucket");
   // };
+  function getSessionIdFromCookies() {
+    const cookies = document.cookie.split('; ');
+    const sessionCookie = cookies.find(cookie => cookie.startsWith('sessionId='));
+    if (sessionCookie) {
+      const sessionId = sessionCookie.split('=')[1];
+      console.log('Session ID:', sessionId);
+    } else {
+      console.log('Session ID 쿠키가 존재하지 않습니다.');
+    }
+  }
+  
+  getSessionIdFromCookies();
 
   const handleLogin = async () => {
     try {

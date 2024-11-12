@@ -92,7 +92,8 @@ const columns: TableProps<DataType>["columns"] = [
             .put(
               `${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/${
                 record.linkId
-              }/view`
+              }/view`,
+              { withCredentians: true }
             )
             .then(() => {
               console.log("View count updated for link:", record.linkId);
@@ -172,7 +173,8 @@ const FileList_ListView: React.FC = () => {
           `${import.meta.env.VITE_BACKEND_DOMAIN}/api/bucket/${bucketId}/share`,
           {
             permission: isPublic,
-          }
+          },
+          { withCredentials: true }
         )
         .then((response) => {
           console.log("Permission updated:", response.data);
@@ -186,7 +188,8 @@ const FileList_ListView: React.FC = () => {
           `${import.meta.env.VITE_BACKEND_DOMAIN}/api/bucket/${bucketId}/paste`,
           {
             bucket: fileData,
-          }
+          },
+          { withCredentials: true }
         )
         .then((response) => {
           console.log("Bucket copied:", response.data);
@@ -231,7 +234,8 @@ const FileList_ListView: React.FC = () => {
     if (bucketId) {
       axios
         .get<FileListResponse>(
-          `${import.meta.env.VITE_BACKEND_DOMAIN}/api/bucket/${bucketId}`
+          `${import.meta.env.VITE_BACKEND_DOMAIN}/api/bucket/${bucketId}`,
+          { withCredentials: true }
         ) // bucketId를 URL에 포함
         .then((response) => {
           setFileData(response.data);

@@ -74,6 +74,7 @@ export const useFolderStore = create<FolderState>((set) => ({
     try {
       const response = await axios.get("API_ENDPOINT_HERE", {
         params: { page, take: 10 }, // 페이지와 데이터 수를 파라미터로 전달
+        withCredentials: true,
       });
       set({
         folders: response.data.buckets,
