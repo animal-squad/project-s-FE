@@ -9,10 +9,8 @@ const FolderList: React.FC = () => {
   const { folders, setSelectedFolderIndex, fetchFolders } = useFolderStore();
 
   useEffect(() => {
-    if (folders.length === 0) {
-      fetchFolders(); // folders가 비어 있는 경우에만 데이터 가져오기
-    }
-  }, [fetchFolders, folders]);
+    fetchFolders(); // 컴포넌트 로드 시 항상 데이터 가져오기
+  }, [fetchFolders]);
 
   const handleFolderClick = (bucketId: string) => {
     const index = folders.findIndex((folder) => folder.bucketId === bucketId);
