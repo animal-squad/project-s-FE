@@ -10,6 +10,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTabStore } from "../store/headerStore";
 import { ReactComponent as Bucket_Icon_Bold } from "../../public/assets/icons/Bucket_Icon_Bold.svg";
 import { userStore } from "../store/userStore";
+import { useFolderStore } from "../store/FileIndexStore";
 
 export const Example = () => {
   return (
@@ -30,6 +31,8 @@ const Sidebar = () => {
 
   const setSelectedTab = useTabStore((state) => state.setSelectedHeaderTab);
   const location = useLocation();
+
+  const { meta } = useFolderStore();
 
   useEffect(() => {
     userFetch();
@@ -80,7 +83,7 @@ const Sidebar = () => {
           setSelected={setSelected}
           open={open}
           isCustomIcon
-          notifs={3}
+          notifs={meta?.totalBuckets}
         />
         <Option
           Icon={IoMdLink}
