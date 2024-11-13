@@ -169,7 +169,7 @@ const FileList_ListView: React.FC = () => {
   const handleOk = () => {
     if (fileData?.isMine) {
       axios
-        .post(
+        .put(
           `${import.meta.env.VITE_BACKEND_DOMAIN}/api/bucket/${bucketId}/share`,
           {
             permission: isPublic,
@@ -307,7 +307,11 @@ const FileList_ListView: React.FC = () => {
         columns={columns}
         dataSource={tableData}
         tableLayout="fixed"
-        pagination={{ pageSize: 10, position: ["bottomCenter"] }}
+        pagination={{
+          pageSize: 10,
+          position: ["bottomCenter"],
+          total: fileData?.linkCount,
+        }}
       />
     </div>
   );

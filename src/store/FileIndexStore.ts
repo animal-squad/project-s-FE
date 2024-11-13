@@ -72,10 +72,13 @@ export const useFolderStore = create<FolderState>((set) => ({
   setPage: (page) => set({ page }),
   fetchFolders: async (page = 1) => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_DOMAIN}/api/bucket`, {
-        params: { page, take: 10 }, // 페이지와 데이터 수를 파라미터로 전달
-        withCredentials: true,
-      });
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_DOMAIN}/api/bucket`,
+        {
+          params: { page: Number(page), take: Number(10) }, // 페이지와 데이터 수를 파라미터로 전달
+          withCredentials: true,
+        }
+      );
       set({
         folders: response.data.buckets,
         meta: response.data.meta,
