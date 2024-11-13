@@ -1,7 +1,7 @@
 // ListViewApp.tsx
 import React from "react";
 import { Table, Tag } from "antd";
-// import { useFolderStore } from "../store/FileIndexStore"; // Zustand store import
+import { useFolderStore } from "../store/FileIndexStore"; // Zustand store import
 
 interface Folder {
   bucketId: string;
@@ -20,6 +20,7 @@ const FolderComponent: React.FC<FolderComponentProps> = ({
   folders,
   onFolderClick,
 }) => {
+  const { meta, setPage, fetchFolders } = useFolderStore();
   const columns = [
     {
       title: "바구니",
@@ -54,6 +55,11 @@ const FolderComponent: React.FC<FolderComponentProps> = ({
     },
   ];
 
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage); // 현재 페이지를 상태로 업데이트
+    fetchFolders(newPage); // 새로운 페이지 데이터를 가져오기 위해 fetchFolders 호출
+  };
+
   return (
     <div>
       <div className="relative flex items-center my-8">
@@ -65,7 +71,13 @@ const FolderComponent: React.FC<FolderComponentProps> = ({
         columns={columns}
         dataSource={folders}
         tableLayout="fixed"
-        pagination={{ pageSize: 10, position: ["bottomCenter"] }}
+        pagination={{
+          pageSize: 10,
+          position: ["bottomCenter"],
+          current: meta?.page,
+          total: meta?.totalBuckets,
+          onChange: handlePageChange,
+        }}
       />
     </div>
   );
