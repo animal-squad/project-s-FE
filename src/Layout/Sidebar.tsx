@@ -22,7 +22,7 @@ export const Example = () => {
 };
 
 const Sidebar = () => {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const navigate = useNavigate();
 
   const { name, photo, clearUser, userFetch } = userStore();

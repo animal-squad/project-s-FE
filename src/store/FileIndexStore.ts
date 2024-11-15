@@ -32,34 +32,9 @@ interface FolderState {
 
 export const useFolderStore = create<FolderState>((set) => ({
   // 더미 데이터를 초기값으로 설정
-  folders: [
-    {
-      bucketId: "n23NmKLT",
-      userId: 1,
-      title: "2024. 11. 9. 오후 4:05:48에 생성된 Bucket 의 복사본",
-      linkCount: 5,
-      createdAt: new Date(),
-      isShared: true,
-    },
-    {
-      bucketId: "uBMPKxfR",
-      userId: 2,
-      title: "2024. 11. 11. 오후 2:14:18에 생성된 Bucket",
-      linkCount: 8,
-      createdAt: new Date(),
-      isShared: false,
-    },
-    {
-      bucketId: "OuAPuTzZ",
-      userId: 3,
-      title: "공식 문서",
-      linkCount: 12,
-      createdAt: new Date(),
-      isShared: true,
-    },
-  ],
+  folders: [],
   meta: {
-    totalBuckets: 3,
+    totalBuckets: 1,
     totalPages: 1,
     hasNextPage: false,
     hasPrevPage: false,

@@ -5,7 +5,7 @@ import MainPage from "./Pages/MainPage";
 import UnauthorizedPage from "./Pages/UnauthorizedPage";
 import UnsharedPage from "./Pages/UnsharedPage";
 import { ImagesSliderDemo } from "./Pages/LandingPage";
-
+import PrivacyPolicy from "./Pages/PrivacyPolicyPage";
 // endpoint별로 렌더링
 
 const App = () => {
@@ -13,6 +13,7 @@ const App = () => {
     <Router>
       <Routes>
         <Route path="" element={<ImagesSliderDemo />} />
+        <Route path="/privacypolicy" element={<PrivacyPolicy />} />
         <Route path="/login" element={<Login />} />
         <Route path="/main/bucket" element={<MainPage />} />
         <Route path="/main/bucket/:bucketId" element={<MainPage />} />
