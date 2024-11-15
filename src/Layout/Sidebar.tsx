@@ -219,7 +219,7 @@ const TitleSection = ({
             <img
               src={photo}
               alt="User profile"
-              className="w-10 h-10 rounded-full ml-10"
+              className="w-10 h-10 rounded-full ml-5"
             />
           ) : (
             <Logo />
