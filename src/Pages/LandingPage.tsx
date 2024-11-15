@@ -8,10 +8,12 @@ export function ImagesSliderDemo() {
   const navigate = useNavigate();
 
   const images = [
-    // "/assets/images/Sample_Image.png",
-    "https://images.unsplash.com/photo-1485433592409-9018e83a1f0d?q=80&w=1814&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    "https://images.unsplash.com/photo-1483982258113-b72862e6cff6?q=80&w=3456&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    "https://images.unsplash.com/photo-1482189349482-3defd547e0e9?q=80&w=2848&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "/assets/images/Capture_1.png",
+    "/assets/images/Capture_2.png",
+    "/assets/images/Capture_3.png",
+    // "https://images.unsplash.com/photo-1485433592409-9018e83a1f0d?q=80&w=1814&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    // "https://images.unsplash.com/photo-1483982258113-b72862e6cff6?q=80&w=3456&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    // "https://images.unsplash.com/photo-1482189349482-3defd547e0e9?q=80&w=2848&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   ];
   return (
     <div className="relative flex items-center justify-center w-screen h-screen bg-[#000000]">
@@ -38,7 +40,7 @@ export function ImagesSliderDemo() {
           }}
           className="z-50 flex flex-col justify-center items-center"
         >
-          <motion.p className="font-bold text-xl md:text-6xl text-center bg-clip-text text-ffffff bg-gradient-to-b from-neutral-50 to-neutral-400 py-4">
+          <motion.p className="font-bold text-xl md:text-6xl text-center bg-clip-text text-primary_text bg-gradient-to-b from-neutral-50 to-neutral-400 py-4">
             Link Bucket <br /> 링킷
           </motion.p>
           <button
@@ -50,6 +52,14 @@ export function ImagesSliderDemo() {
           </button>
         </motion.div>
       </ImagesSlider>
+      <footer className="absolute bottom-4 text-center w-full">
+        <span
+          onClick={() => navigate("/privacypolicy")}
+          className="text-gray-400 cursor-pointer hover:underline"
+        >
+          개인정보처리방침
+        </span>
+      </footer>
     </div>
   );
 }
