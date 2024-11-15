@@ -139,12 +139,38 @@ const FileList_ListView: React.FC = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPublic, setIsPublic] = useState(false); // Switch 상태
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // 삭제 모달 상태
   const [url, setUrl] = useState("");
   const [initialPublicState, setInitialPublicState] = useState(false); // 모달 초기 상태 저장용
 
   const showModal = () => {
     setInitialPublicState(isPublic);
     setIsModalOpen(true);
+  };
+
+  const showDeleteModal = () => {
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDelete = () => {
+    axios
+      .delete(`${import.meta.env.VITE_BACKEND_DOMAIN}/api/bucket/${bucketId}`, {
+        withCredentials: true,
+      })
+      .then((response) => {
+        console.log("Bucket deleted:", response.data);
+        navigate("/bucket"); // 삭제 후 메인 페이지로 이동
+      })
+      .catch((error) => {
+        console.error("Failed to delete bucket:", error);
+      })
+      .finally(() => {
+        setIsDeleteModalOpen(false);
+      });
+  };
+
+  const handleDeleteCancel = () => {
+    setIsDeleteModalOpen(false);
   };
 
   const handleOk = () => {
@@ -248,9 +274,16 @@ const FileList_ListView: React.FC = () => {
         <h1 className="absolute left-1/2 transform -translate-x-1/2 text-2xl font-bold text-primary_text">
           {fileData?.title || "Title"}
         </h1>
-        <Button type="primary" className="ml-auto" onClick={showModal}>
-          {fileData?.isMine ? "공유" : "복사"}
-        </Button>
+        <div className="ml-auto flex gap-2">
+          {fileData?.isMine && ( // fileData?.isMine이 true일 때만 삭제 버튼 렌더링
+            <Button danger type="primary" onClick={showDeleteModal}>
+              삭제
+            </Button>
+          )}
+          <Button type="primary" onClick={showModal}>
+            {fileData?.isMine ? "공유" : "복사"}
+          </Button>
+        </div>
         <Modal
           title={fileData?.isMine ? "바구니 공유" : "바구니 복사"}
           open={isModalOpen}
@@ -282,6 +315,19 @@ const FileList_ListView: React.FC = () => {
               <p>바구니를 복사하시겠습니까?</p>
             </div>
           )}
+        </Modal>
+        <Modal
+          title="바구니 삭제"
+          open={isDeleteModalOpen}
+          onOk={handleDelete}
+          onCancel={handleDeleteCancel}
+          okText="Delete"
+          cancelText="Cancel"
+          okButtonProps={{ danger: true }}
+        >
+          <div className="flex flex-col items-center mt-4 gap-4">
+            <p>바구니를 삭제하시겠습니까?</p>
+          </div>
         </Modal>
       </div>
       <Table<DataType>
