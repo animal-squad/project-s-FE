@@ -131,26 +131,7 @@ const columns: TableProps<DataType>["columns"] = [
   },
 ];
 
-const data: DataType[] = [
-  {
-    title: "99클럽 코테 스터디 15일차 TIL Dijkstra",
-    tags: ["컴퓨터 공학 기초", "AI/머신러닝"],
-    URL: "https://wrathlion.tistory.com/31",
-    linkId: "n23NmKLT",
-  },
-  {
-    title: "CS LValue vs RValue",
-    tags: ["컴퓨터 공학 기초"],
-    URL: "https://velog.io/@77ehgus/CS-L-Value-vs-R-Value",
-    linkId: "n23NmKLT",
-  },
-  {
-    title: "카카오테크 부트캠프 한 달 회고",
-    tags: ["AI/머신러닝", "프로젝트 관리 및 협업 도구", "데이터 엔지니어링 "],
-    URL: "https://velog.io/@dev_nueey/%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%85%8C%ED%81%AC-%EB%B6%80%ED%8A%B8%EC%BA%A0%ED%94%84-%ED%95%9C-%EB%8B%AC-%ED%9A%8C%EA%B3%A0",
-    linkId: "n23NmKLT",
-  },
-];
+const data: DataType[] = [];
 
 const FileList_ListView: React.FC = () => {
   const { bucketId } = useParams<{ bucketId: string }>(); // URL에서 bucketId 추출
