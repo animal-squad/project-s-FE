@@ -53,10 +53,9 @@ const Sidebar = () => {
 
   const handleLogout = async () => {
     try {
-      await fetch(`${import.meta.env.VITE_BACKEND_DOMAIN}/api/auth/logout`, {
-        method: "POST",
-        credentials: "include",
-      });
+      window.location.href = `${
+        import.meta.env.VITE_BACKEND_DOMAIN
+      }/api/auth/logout`;
       clearUser();
       navigate("/");
     } catch (error) {
