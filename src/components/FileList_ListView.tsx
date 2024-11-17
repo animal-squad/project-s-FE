@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Table, Tag, Button, Modal, Switch } from "antd";
+import { Table, Tag, Button, Modal, Switch, Input } from "antd";
 import type { TableProps } from "antd";
 import { useParams, useNavigate } from "react-router-dom";
+import { FaPen } from "react-icons/fa";
 import axios from "axios";
 
 interface Link {
@@ -139,9 +140,11 @@ const FileList_ListView: React.FC = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPublic, setIsPublic] = useState(false); // Switch 상태
+  const [isTitleModalOpen, setIsTitleModalOpen] = useState(false); // 제목 수정 모달 상태
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // 삭제 모달 상태
   const [url, setUrl] = useState("");
   const [initialPublicState, setInitialPublicState] = useState(false); // 모달 초기 상태 저장용
+  const [editedTitle, setEditedTitle] = useState(""); // 제목 수정 상태
 
   const showModal = () => {
     setInitialPublicState(isPublic);
@@ -150,6 +153,32 @@ const FileList_ListView: React.FC = () => {
 
   const showDeleteModal = () => {
     setIsDeleteModalOpen(true);
+  };
+
+  const showTitleModal = () => {
+    setEditedTitle(fileData?.title || ""); // 현재 제목을 기본값으로 설정
+    setIsTitleModalOpen(true);
+  };
+
+  const handleTitleChange = () => {
+    if (fileData && editedTitle !== fileData.title) {
+      axios
+        .put(
+          `${import.meta.env.VITE_BACKEND_DOMAIN}/api/bucket/${bucketId}`,
+          { title: editedTitle },
+          { withCredentials: true }
+        )
+        .then((response) => {
+          console.log("Title updated:", response.data);
+          setFileData((prev) =>
+            prev ? { ...prev, title: editedTitle } : prev
+          );
+        })
+        .catch((error) => {
+          console.error("Failed to update title:", error);
+        });
+    }
+    setIsTitleModalOpen(false);
   };
 
   const handleDelete = () => {
@@ -171,6 +200,10 @@ const FileList_ListView: React.FC = () => {
 
   const handleDeleteCancel = () => {
     setIsDeleteModalOpen(false);
+  };
+
+  const handleTitleCancel = () => {
+    setIsTitleModalOpen(false);
   };
 
   const handleOk = () => {
@@ -275,6 +308,12 @@ const FileList_ListView: React.FC = () => {
           {fileData?.title || "Title"}
         </h1>
         <div className="ml-auto flex gap-2">
+          <FaPen
+            className="text-gray-600 cursor-pointer mt-1 mr-4"
+            color="121212"
+            size={18}
+            onClick={showTitleModal}
+          />
           {fileData?.isMine && ( // fileData?.isMine이 true일 때만 삭제 버튼 렌더링
             <Button danger type="primary" onClick={showDeleteModal}>
               삭제
@@ -284,6 +323,18 @@ const FileList_ListView: React.FC = () => {
             {fileData?.isMine ? "공유" : "복사"}
           </Button>
         </div>
+        <Modal
+          title="바구니 제목 수정"
+          open={isTitleModalOpen}
+          onOk={handleTitleChange}
+          onCancel={handleTitleCancel}
+        >
+          <Input
+            value={editedTitle}
+            onChange={(e) => setEditedTitle(e.target.value)}
+            placeholder="새로운 제목을 입력하세요"
+          />
+        </Modal>
         <Modal
           title={fileData?.isMine ? "바구니 공유" : "바구니 복사"}
           open={isModalOpen}
