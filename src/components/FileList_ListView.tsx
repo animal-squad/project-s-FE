@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Table, Tag, Button, Modal, Switch, Input } from "antd";
-import type { TableProps } from "antd";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaPen } from "react-icons/fa";
 import axios from "axios";
@@ -79,59 +78,6 @@ interface DataType {
   linkId: string;
 }
 
-const columns: TableProps<DataType>["columns"] = [
-  {
-    title: "URL",
-    dataIndex: "title",
-    key: "title",
-    width: "50%",
-    render: (text, record) => (
-      <a
-        onClick={() => {
-          // PUT 요청으로 조회수 증가
-          axios
-            .put(
-              `${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/${
-                record.linkId
-              }/view`,
-              { withCredentians: true }
-            )
-            .then(() => {
-              console.log("View count updated for link:", record.linkId);
-            })
-            .catch((error) => {
-              console.error("Failed to update view count:", error);
-            });
-          window.open(record.URL); // URL 열기
-        }}
-      >
-        {text}
-      </a>
-    ),
-  },
-  {
-    title: "Tags",
-    key: "tags",
-    dataIndex: "tags",
-    width: "50%",
-    render: (_, { tags }) => (
-      <>
-        {tags.map((tag) => {
-          let color = colorMapping(tag.length);
-          if (tag === "loser") {
-            color = "volcano";
-          }
-          return (
-            <Tag color={color} key={tag}>
-              {tag.toUpperCase()}
-            </Tag>
-          );
-        })}
-      </>
-    ),
-  },
-];
-
 const data: DataType[] = [];
 
 const FileList_ListView: React.FC = () => {
@@ -145,6 +91,83 @@ const FileList_ListView: React.FC = () => {
   const [url, setUrl] = useState("");
   const [initialPublicState, setInitialPublicState] = useState(false); // 모달 초기 상태 저장용
   const [editedTitle, setEditedTitle] = useState(""); // 제목 수정 상태
+  const [isLinkTitleModalOpen, setIsLinkTitleModalOpen] = useState(false);
+  const [editedLinkTitle, setEditedLinkTitle] = useState("");
+  const [currentLinkId, setCurrentLinkId] = useState<string | null>(null);
+
+  const getColumns = () => [
+    {
+      title: "URL",
+      dataIndex: "title",
+      key: "title",
+      width: "47%",
+      render: (text: string, record: DataType) => (
+        <a
+          onClick={() => {
+            // PUT 요청으로 조회수 증가
+            axios
+              .put(
+                `${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/${
+                  record.linkId
+                }/view`,
+                { withCredentians: true }
+              )
+              .then(() => {
+                console.log("View count updated for link:", record.linkId);
+              })
+              .catch((error) => {
+                console.error("Failed to update view count:", error);
+              });
+            window.open(record.URL); // URL 열기
+          }}
+        >
+          {text}
+        </a>
+      ),
+    },
+    {
+      title: "Tags",
+      key: "tags",
+      dataIndex: "tags",
+      width: "47%",
+      render: (tags: string[]) => (
+        <>
+          {tags.map((tag) => {
+            let color = colorMapping(tag.length);
+            if (tag === "loser") {
+              color = "volcano";
+            }
+            return (
+              <Tag color={color} key={tag}>
+                {tag.toUpperCase()}
+              </Tag>
+            );
+          })}
+        </>
+      ),
+    },
+    {
+      title: "수정",
+      dataIndex: "edit",
+      key: "edit",
+      width: "6%",
+      render: (_: unknown, record: DataType) => (
+        <FaPen
+          style={{ cursor: "pointer" }}
+          onClick={() => {
+            setEditedLinkTitle(
+              typeof record.title === "string"
+                ? record.title
+                : record.title?.toString() || "" // URL일 경우 toString()으로 변환
+            );
+            // null 또는 undefined 처리
+            setCurrentLinkId(record.linkId); // linkId 설정
+            setIsLinkTitleModalOpen(true); // 모달 열기
+          }}
+        />
+      ),
+    },
+  ];
 
   const showModal = () => {
     setInitialPublicState(isPublic);
@@ -158,6 +181,28 @@ const FileList_ListView: React.FC = () => {
   const showTitleModal = () => {
     setEditedTitle(fileData?.title || ""); // 현재 제목을 기본값으로 설정
     setIsTitleModalOpen(true);
+  };
+
+  const handleLinkTitleSave = async () => {
+    if (!currentLinkId || !editedLinkTitle) return;
+
+    try {
+      await axios.put(
+        `${import.meta.env.VITE_BACKEND_DOMAIN}/link/${currentLinkId}/title`,
+        {
+          title: editedLinkTitle,
+        }
+      );
+      setIsLinkTitleModalOpen(false);
+      window.location.reload(); // 새로고침으로 업데이트 반영
+    } catch (error) {
+      console.error("Failed to update link title:", error);
+    }
+  };
+
+  // --- Link 제목 수정 취소 핸들러 ---
+  const handleLinkTitleCancel = () => {
+    setIsLinkTitleModalOpen(false);
   };
 
   const handleTitleChange = () => {
@@ -380,9 +425,21 @@ const FileList_ListView: React.FC = () => {
             <p>바구니를 삭제하시겠습니까?</p>
           </div>
         </Modal>
+        <Modal
+          title="링크 제목 수정"
+          open={isLinkTitleModalOpen}
+          onOk={handleLinkTitleSave}
+          onCancel={handleLinkTitleCancel}
+        >
+          <Input
+            value={editedLinkTitle}
+            onChange={(e) => setEditedLinkTitle(e.target.value)}
+            placeholder="새로운 링크 제목을 입력하세요"
+          />
+        </Modal>
       </div>
       <Table<DataType>
-        columns={columns}
+        columns={getColumns()}
         dataSource={tableData}
         tableLayout="fixed"
         pagination={{
