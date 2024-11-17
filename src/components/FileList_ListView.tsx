@@ -188,7 +188,7 @@ const FileList_ListView: React.FC = () => {
       })
       .then((response) => {
         console.log("Bucket deleted:", response.data);
-        navigate("/bucket"); // 삭제 후 메인 페이지로 이동
+        navigate("/main/bucket"); // 삭제 후 메인 페이지로 이동
       })
       .catch((error) => {
         console.error("Failed to delete bucket:", error);
