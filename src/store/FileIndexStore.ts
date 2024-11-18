@@ -27,7 +27,10 @@ interface FolderState {
   page: number;
   setSelectedFolderIndex: (index: number) => void;
   setPage: (page: number) => void;
-  fetchFolders: (page?: number) => Promise<void>;
+  fetchFolders: (
+    page?: number,
+    navigate?: (path: string) => void
+  ) => Promise<void>;
 }
 
 export const useFolderStore = create<FolderState>((set) => ({
@@ -45,7 +48,7 @@ export const useFolderStore = create<FolderState>((set) => ({
   page: 1, // 기본값을 1로 설정
   setSelectedFolderIndex: (index) => set({ selectedFolderIndex: index }),
   setPage: (page) => set({ page }),
-  fetchFolders: async (page = 1) => {
+  fetchFolders: async (page = 1, navigate?: (path: string) => void) => {
     try {
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_DOMAIN}/api/bucket`,
@@ -59,7 +62,16 @@ export const useFolderStore = create<FolderState>((set) => ({
         meta: response.data.meta,
       });
     } catch (error) {
-      console.error("Failed to fetch folders", error);
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401 && navigate) {
+          console.error("Unauthorized access. Redirecting to /unauthorized.");
+          navigate("/unauthorized");
+        } else {
+          console.error("Axios error occurred:", error.message);
+        }
+      } else {
+        console.error("An unexpected error occurred:", error);
+      }
     }
   },
 }));

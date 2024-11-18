@@ -2,6 +2,7 @@
 import React from "react";
 import { Table, Tag } from "antd";
 import { useFolderStore } from "../store/FileIndexStore"; // Zustand store import
+import { useNavigate } from "react-router-dom";
 
 interface Folder {
   bucketId: string;
@@ -20,7 +21,11 @@ const FolderComponent: React.FC<FolderComponentProps> = ({
   folders,
   onFolderClick,
 }) => {
-  const { meta, setPage, fetchFolders } = useFolderStore();
+
+  const navigate = useNavigate();
+
+  const { meta, setPage } = useFolderStore();
+  const fetchFolders = useFolderStore((state) => state.fetchFolders);
   const columns = [
     {
       title: "바구니",
@@ -57,7 +62,7 @@ const FolderComponent: React.FC<FolderComponentProps> = ({
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage); // 현재 페이지를 상태로 업데이트
-    fetchFolders(newPage); // 새로운 페이지 데이터를 가져오기 위해 fetchFolders 호출
+    fetchFolders(newPage, navigate); // 새로운 페이지 데이터를 가져오기 위해 fetchFolders 호출
   };
 
   return (

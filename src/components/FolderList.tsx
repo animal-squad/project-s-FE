@@ -6,11 +6,12 @@ import { useFolderStore } from "../store/FileIndexStore";
 
 const FolderList: React.FC = () => {
   const navigate = useNavigate();
-  const { folders, setSelectedFolderIndex, fetchFolders } = useFolderStore();
+  const { folders, page, setSelectedFolderIndex, fetchFolders } =
+    useFolderStore();
 
   useEffect(() => {
-    fetchFolders(); // 컴포넌트 로드 시 항상 데이터 가져오기
-  }, [fetchFolders]);
+    fetchFolders(page, navigate); // 컴포넌트 로드 시 항상 데이터 가져오기
+  }, [fetchFolders, navigate, page]);
 
   const handleFolderClick = (bucketId: string) => {
     const index = folders.findIndex((folder) => folder.bucketId === bucketId);
