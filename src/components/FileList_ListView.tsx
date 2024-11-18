@@ -116,7 +116,11 @@ const FileList_ListView: React.FC = () => {
                 console.log("View count updated for link:", record.linkId);
               })
               .catch((error) => {
-                console.error("Failed to update view count:", error);
+                if (error.response?.status === 401) {
+                  navigate("/unautorized"); // 401 에러 발생 시 /unauthorized로 리디렉션
+                } else {
+                  console.error("Failed to update view count:", error);
+                }
               });
             window.open(record.URL); // URL 열기
           }}
@@ -187,12 +191,20 @@ const FileList_ListView: React.FC = () => {
     if (!currentLinkId || !editedLinkTitle) return;
 
     try {
-      await axios.put(
-        `${import.meta.env.VITE_BACKEND_DOMAIN}/link/${currentLinkId}/title`,
-        {
-          title: editedLinkTitle,
-        }
-      );
+      await axios
+        .put(
+          `${import.meta.env.VITE_BACKEND_DOMAIN}/link/${currentLinkId}/title`,
+          {
+            title: editedLinkTitle,
+          }
+        )
+        .catch((error) => {
+          if (error.response?.status === 401) {
+            navigate("/unautorized"); // 401 에러 발생 시 /unauthorized로 리디렉션
+          } else {
+            console.error("Failed to update link title:", error);
+          }
+        });
       setIsLinkTitleModalOpen(false);
       window.location.reload(); // 새로고침으로 업데이트 반영
     } catch (error) {
@@ -220,7 +232,11 @@ const FileList_ListView: React.FC = () => {
           );
         })
         .catch((error) => {
-          console.error("Failed to update title:", error);
+          if (error.response?.status === 401) {
+            navigate("/unautorized"); // 401 에러 발생 시 /unauthorized로 리디렉션
+          } else {
+            console.error("Failed to update title:", error);
+          }
         });
     }
     setIsTitleModalOpen(false);
@@ -236,7 +252,11 @@ const FileList_ListView: React.FC = () => {
         navigate("/main/bucket"); // 삭제 후 메인 페이지로 이동
       })
       .catch((error) => {
-        console.error("Failed to delete bucket:", error);
+        if (error.response?.status === 401) {
+          navigate("/unautorized"); // 401 에러 발생 시 /unauthorized로 리디렉션
+        } else {
+          console.error("Failed to delete bucket:", error);
+        }
       })
       .finally(() => {
         setIsDeleteModalOpen(false);
@@ -265,7 +285,11 @@ const FileList_ListView: React.FC = () => {
           console.log("Permission updated:", response.data);
         })
         .catch((error) => {
-          console.error("Failed to update permission:", error);
+          if (error.response?.status === 401) {
+            navigate("/unautorized"); // 401 에러 발생 시 /unauthorized로 리디렉션
+          } else {
+            console.error("Failed to update permission:", error);
+          }
         });
     } else {
       axios
@@ -285,7 +309,11 @@ const FileList_ListView: React.FC = () => {
           }
         })
         .catch((error) => {
-          console.error("Failed to copy bucket:", error);
+          if (error.response?.status === 401) {
+            navigate("/unautorized"); // 401 에러 발생 시 /unauthorized로 리디렉션
+          } else {
+            console.error("Failed to copy bucket:", error);
+          }
         });
     }
     setIsModalOpen(false);
@@ -328,8 +356,10 @@ const FileList_ListView: React.FC = () => {
           setUrl(response.data.isShared ? window.location.href : ""); // 초기 URL 상태 설정
         })
         .catch((error) => {
-          if (error.response?.status === 401) {
-            navigate("/unshared"); // 401 에러 발생 시 /unshared로 리디렉션
+          if (error.response?.status === 403) {
+            navigate("/unshared"); // 403 에러 발생 시 /unshared로 리디렉션
+          } else if (error.response?.status === 401) {
+            navigate("/unauthorized");
           } else {
             console.error("Failed to fetch file data:", error);
           }
