@@ -9,7 +9,7 @@ export function ImagesSliderDemo() {
   const navigate = useNavigate();
 
   axios
-    .get(`${import.meta.env.VITE_BACKEND_DOMAIN}api/user/check`, {
+    .get(`${import.meta.env.VITE_BACKEND_DOMAIN}/api/user/check`, {
       withCredentials: true,
     })
     .then((response) => {
