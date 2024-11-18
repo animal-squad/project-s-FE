@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Tag, Button, Modal, Switch, Input } from "antd";
+import { Table, Tag, Button, Modal, Switch, Input, message } from "antd";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaPen } from "react-icons/fa";
 import axios from "axios";
@@ -86,11 +86,9 @@ const FileList_ListView: React.FC = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPublic, setIsPublic] = useState(false); // Switch 상태
-  const [isTitleModalOpen, setIsTitleModalOpen] = useState(false); // 제목 수정 모달 상태
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // 삭제 모달 상태
   const [url, setUrl] = useState("");
   const [initialPublicState, setInitialPublicState] = useState(false); // 모달 초기 상태 저장용
-  const [editedTitle, setEditedTitle] = useState(""); // 제목 수정 상태
   const [isLinkTitleModalOpen, setIsLinkTitleModalOpen] = useState(false);
   const [editedLinkTitle, setEditedLinkTitle] = useState("");
   const [currentLinkId, setCurrentLinkId] = useState<string | null>(null);
@@ -130,6 +128,27 @@ const FileList_ListView: React.FC = () => {
       ),
     },
     {
+      title: "",
+      dataIndex: "edit",
+      key: "edit",
+      width: "3%",
+      render: (_: unknown, record: DataType) => (
+        <FaPen
+          style={{ cursor: "pointer" }}
+          onClick={() => {
+            setEditedLinkTitle(
+              typeof record.title === "string"
+                ? record.title
+                : record.title?.toString() || "" // URL일 경우 toString()으로 변환
+            );
+            // null 또는 undefined 처리
+            setCurrentLinkId(record.linkId); // linkId 설정
+            setIsLinkTitleModalOpen(true); // 모달 열기
+          }}
+        />
+      ),
+    },
+    {
       title: "Tags",
       key: "tags",
       dataIndex: "tags",
@@ -151,23 +170,23 @@ const FileList_ListView: React.FC = () => {
       ),
     },
     {
-      title: "수정",
+      title: "",
       dataIndex: "edit",
       key: "edit",
-      width: "6%",
-      render: (_: unknown, record: DataType) => (
+      width: "3%",
+      render: () => (
         <FaPen
           style={{ cursor: "pointer" }}
-          onClick={() => {
-            setEditedLinkTitle(
-              typeof record.title === "string"
-                ? record.title
-                : record.title?.toString() || "" // URL일 경우 toString()으로 변환
-            );
-            // null 또는 undefined 처리
-            setCurrentLinkId(record.linkId); // linkId 설정
-            setIsLinkTitleModalOpen(true); // 모달 열기
-          }}
+          // onClick={() => {
+          //   setEditedLinkTitle(
+          //     typeof record.title === "string"
+          //       ? record.title
+          //       : record.title?.toString() || "" // URL일 경우 toString()으로 변환
+          //   );
+          //   // null 또는 undefined 처리
+          //   setCurrentLinkId(record.linkId); // linkId 설정
+          //   setIsLinkTitleModalOpen(true); // 모달 열기
+          // }}
         />
       ),
     },
@@ -180,11 +199,6 @@ const FileList_ListView: React.FC = () => {
 
   const showDeleteModal = () => {
     setIsDeleteModalOpen(true);
-  };
-
-  const showTitleModal = () => {
-    setEditedTitle(fileData?.title || ""); // 현재 제목을 기본값으로 설정
-    setIsTitleModalOpen(true);
   };
 
   const handleLinkTitleSave = async () => {
@@ -208,6 +222,7 @@ const FileList_ListView: React.FC = () => {
             console.error("Failed to update link title:", error);
           }
         });
+      message.success("링크 제목이 성공적으로 수정되었습니다.");
       setIsLinkTitleModalOpen(false);
       window.location.reload(); // 새로고침으로 업데이트 반영
     } catch (error) {
@@ -220,31 +235,6 @@ const FileList_ListView: React.FC = () => {
     setIsLinkTitleModalOpen(false);
   };
 
-  const handleTitleChange = () => {
-    if (editedTitle !== fileData?.title) {
-      axios
-        .put(
-          `${import.meta.env.VITE_BACKEND_DOMAIN}/api/bucket/${bucketId}`,
-          { title: editedTitle },
-          { withCredentials: true }
-        )
-        .then((response) => {
-          console.log("Title updated:", response.data);
-          setFileData((prev) =>
-            prev ? { ...prev, title: editedTitle } : prev
-          );
-        })
-        .catch((error) => {
-          if (error.response?.status === 401) {
-            navigate("/unauthorized"); // 401 에러 발생 시 /unauthorized로 리디렉션
-          } else {
-            console.error("Failed to update title:", error);
-          }
-        });
-    }
-    setIsTitleModalOpen(false);
-  };
-
   const handleDelete = () => {
     axios
       .delete(`${import.meta.env.VITE_BACKEND_DOMAIN}/api/bucket/${bucketId}`, {
@@ -252,6 +242,7 @@ const FileList_ListView: React.FC = () => {
       })
       .then((response) => {
         console.log("Bucket deleted:", response.data);
+        message.success("바구니가 성공적으로 삭제되었습니다.");
         navigate("/main/bucket"); // 삭제 후 메인 페이지로 이동
       })
       .catch((error) => {
@@ -270,10 +261,6 @@ const FileList_ListView: React.FC = () => {
     setIsDeleteModalOpen(false);
   };
 
-  const handleTitleCancel = () => {
-    setIsTitleModalOpen(false);
-  };
-
   const handleOk = () => {
     if (fileData?.isMine) {
       axios
@@ -285,6 +272,11 @@ const FileList_ListView: React.FC = () => {
           { withCredentials: true }
         )
         .then((response) => {
+          message.success(
+            isPublic
+              ? "바구니가 공개 상태로 전환되었습니다."
+              : "바구니가 비공개 상태로 전환되었습니다."
+          );
           console.log("Permission updated:", response.data);
         })
         .catch((error) => {
@@ -304,6 +296,7 @@ const FileList_ListView: React.FC = () => {
           { withCredentials: true }
         )
         .then((response) => {
+          message.success("바구니가 복사되었습니다.");
           console.log("Bucket copied:", response.data);
           const newBucketId = response.data.bucketId; // 응답에서 새로운 bucketId 추출
           if (newBucketId) {
@@ -386,12 +379,6 @@ const FileList_ListView: React.FC = () => {
           {fileData?.title || "Title"}
         </h1>
         <div className="ml-auto flex gap-2">
-          <FaPen
-            className="text-gray-600 cursor-pointer mt-1 mr-4"
-            color="121212"
-            size={18}
-            onClick={showTitleModal}
-          />
           {fileData?.isMine && ( // fileData?.isMine이 true일 때만 삭제 버튼 렌더링
             <Button danger type="primary" onClick={showDeleteModal}>
               삭제
@@ -401,18 +388,6 @@ const FileList_ListView: React.FC = () => {
             {fileData?.isMine ? "공유" : "복사"}
           </Button>
         </div>
-        <Modal
-          title="바구니 제목 수정"
-          open={isTitleModalOpen}
-          onOk={handleTitleChange}
-          onCancel={handleTitleCancel}
-        >
-          <Input
-            value={editedTitle}
-            onChange={(e) => setEditedTitle(e.target.value)}
-            placeholder="새로운 제목을 입력하세요"
-          />
-        </Modal>
         <Modal
           title={fileData?.isMine ? "바구니 공유" : "바구니 복사"}
           open={isModalOpen}

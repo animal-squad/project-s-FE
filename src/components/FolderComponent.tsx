@@ -1,8 +1,10 @@
-// ListViewApp.tsx
-import React from "react";
-import { Table, Tag } from "antd";
+// FolderComponent.tsx
+import React, { useState } from "react";
+import { Table, Tag, Modal, Input, message } from "antd";
 import { useFolderStore } from "../store/FileIndexStore"; // Zustand store import
 import { useNavigate } from "react-router-dom";
+import { FaPen } from "react-icons/fa";
+import axios from "axios";
 
 interface Folder {
   bucketId: string;
@@ -21,19 +23,75 @@ const FolderComponent: React.FC<FolderComponentProps> = ({
   folders,
   onFolderClick,
 }) => {
-
   const navigate = useNavigate();
 
   const { meta, setPage } = useFolderStore();
   const fetchFolders = useFolderStore((state) => state.fetchFolders);
+
+  const [isTitleModalOpen, setIsTitleModalOpen] = useState(false);
+  const [currentRow, setCurrentRow] = useState<Folder | null>(null);
+  const [newTitle, setNewTitle] = useState("");
+
+  // 바구니 제목 수정 모달 열기
+  const openEditModal = (row: Folder) => {
+    setCurrentRow(row);
+    setNewTitle(row.title); // Set the initial title to the current row title
+    setIsTitleModalOpen(true);
+  };
+
+  // 바구니 제목 수정 모달 닫기
+  const handleTitleCancel = () => {
+    setIsTitleModalOpen(false);
+    setCurrentRow(null);
+    setNewTitle("");
+  };
+
+  // 제목 변경 로직
+  const handleTitleChange = async () => {
+    if (currentRow && newTitle && newTitle !== currentRow.title) {
+      // API call to update the title
+      await axios
+        .put(
+          `${import.meta.env.VITE_BACKEND_DOMAIN}/api/bucket/${
+            currentRow.bucketId
+          }`,
+          { title: newTitle },
+          { withCredentials: true }
+        )
+        .catch((error) => {
+          if (error.response?.status === 401) {
+            navigate("/unauthorized"); // 401 에러 발생 시 /unauthorized로 리디렉션
+          } else {
+            console.error("Failed to update title:", error);
+          }
+        });
+      message.success("바구니 제목이 성공적으로 변경되었습니다!");
+      setIsTitleModalOpen(false);
+      fetchFolders(meta?.page || 1, navigate); // Refresh folder data
+    } else {
+      message.info("변경 사항이 없습니다.");
+    }
+  };
   const columns = [
     {
       title: "바구니",
       dataIndex: "title",
       key: "title",
-      width: "55%",
+      width: "52%",
       render: (text: string, record: Folder) => (
         <a onClick={() => onFolderClick(record.bucketId)}>{text}</a>
+      ),
+    },
+    {
+      title: "",
+      dataIndex: "edit",
+      key: "edit",
+      width: "3%",
+      render: (text: string, record: Folder) => (
+        <FaPen
+          style={{ cursor: "pointer" }}
+          onClick={() => openEditModal(record)}
+        />
       ),
     },
     {
@@ -84,6 +142,18 @@ const FolderComponent: React.FC<FolderComponentProps> = ({
           onChange: handlePageChange,
         }}
       />
+      <Modal
+        title="바구니 제목 수정"
+        open={isTitleModalOpen}
+        onOk={handleTitleChange}
+        onCancel={handleTitleCancel}
+      >
+        <Input
+          value={newTitle}
+          onChange={(e) => setNewTitle(e.target.value)}
+          placeholder="새로운 제목을 입력하세요"
+        />
+      </Modal>
     </div>
   );
 };
