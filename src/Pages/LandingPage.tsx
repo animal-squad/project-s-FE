@@ -3,9 +3,18 @@ import { motion } from "framer-motion";
 import React from "react";
 import { ImagesSlider } from "../ui/images-slider.tsx";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export function ImagesSliderDemo() {
   const navigate = useNavigate();
+
+  axios
+    .get(`${import.meta.env.VITE_BACKEND_DOMAIN}api/user/check`, {
+      withCredentials: true,
+    })
+    .then((response) => {
+      if (response.status === 200) navigate("/main/bucket");
+    });
 
   const images = [
     "/assets/images/Capture_1.png",
