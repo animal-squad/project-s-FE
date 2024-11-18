@@ -117,7 +117,7 @@ const FileList_ListView: React.FC = () => {
               })
               .catch((error) => {
                 if (error.response?.status === 401) {
-                  navigate("/unautorized"); // 401 에러 발생 시 /unauthorized로 리디렉션
+                  navigate("/unauthorized"); // 401 에러 발생 시 /unauthorized로 리디렉션
                 } else {
                   console.error("Failed to update view count:", error);
                 }
@@ -203,7 +203,7 @@ const FileList_ListView: React.FC = () => {
         )
         .catch((error) => {
           if (error.response?.status === 401) {
-            navigate("/unautorized"); // 401 에러 발생 시 /unauthorized로 리디렉션
+            navigate("/unauthorized"); // 401 에러 발생 시 /unauthorized로 리디렉션
           } else {
             console.error("Failed to update link title:", error);
           }
@@ -236,7 +236,7 @@ const FileList_ListView: React.FC = () => {
         })
         .catch((error) => {
           if (error.response?.status === 401) {
-            navigate("/unautorized"); // 401 에러 발생 시 /unauthorized로 리디렉션
+            navigate("/unauthorized"); // 401 에러 발생 시 /unauthorized로 리디렉션
           } else {
             console.error("Failed to update title:", error);
           }
@@ -256,7 +256,7 @@ const FileList_ListView: React.FC = () => {
       })
       .catch((error) => {
         if (error.response?.status === 401) {
-          navigate("/unautorized"); // 401 에러 발생 시 /unauthorized로 리디렉션
+          navigate("/unauthorized"); // 401 에러 발생 시 /unauthorized로 리디렉션
         } else {
           console.error("Failed to delete bucket:", error);
         }
@@ -289,7 +289,7 @@ const FileList_ListView: React.FC = () => {
         })
         .catch((error) => {
           if (error.response?.status === 401) {
-            navigate("/unautorized"); // 401 에러 발생 시 /unauthorized로 리디렉션
+            navigate("/unauthorized"); // 401 에러 발생 시 /unauthorized로 리디렉션
           } else {
             console.error("Failed to update permission:", error);
           }
@@ -313,7 +313,7 @@ const FileList_ListView: React.FC = () => {
         })
         .catch((error) => {
           if (error.response?.status === 401) {
-            navigate("/unautorized"); // 401 에러 발생 시 /unauthorized로 리디렉션
+            navigate("/unauthorized"); // 401 에러 발생 시 /unauthorized로 리디렉션
           } else {
             console.error("Failed to copy bucket:", error);
           }
