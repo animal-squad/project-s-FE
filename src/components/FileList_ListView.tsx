@@ -193,10 +193,13 @@ const FileList_ListView: React.FC = () => {
     try {
       await axios
         .put(
-          `${import.meta.env.VITE_BACKEND_DOMAIN}/link/${currentLinkId}/title`,
+          `${
+            import.meta.env.VITE_BACKEND_DOMAIN
+          }/api/link/${currentLinkId}/title`,
           {
             title: editedLinkTitle,
-          }
+          },
+          { withCredentials: true }
         )
         .catch((error) => {
           if (error.response?.status === 401) {
@@ -218,7 +221,7 @@ const FileList_ListView: React.FC = () => {
   };
 
   const handleTitleChange = () => {
-    if (fileData && editedTitle !== fileData.title) {
+    if (editedTitle !== fileData?.title) {
       axios
         .put(
           `${import.meta.env.VITE_BACKEND_DOMAIN}/api/bucket/${bucketId}`,
