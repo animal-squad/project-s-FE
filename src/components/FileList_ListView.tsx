@@ -90,36 +90,36 @@ interface DataType {
 }
 
 const data: DataType[] = [
-  {
-    title: "Google",
-    tags: ["search", "technology", "web"],
-    URL: "https://www.google.com",
-    linkId: "1",
-  },
-  {
-    title: "GitHub",
-    tags: ["code", "repository", "developer"],
-    URL: "https://www.github.com",
-    linkId: "2",
-  },
-  {
-    title: "Stack Overflow",
-    tags: ["programming", "questions", "community"],
-    URL: "https://stackoverflow.com",
-    linkId: "3",
-  },
-  {
-    title: "MDN Web Docs",
-    tags: ["documentation", "web", "JavaScript"],
-    URL: "https://developer.mozilla.org",
-    linkId: "4",
-  },
-  {
-    title: "Wikipedia",
-    tags: ["information", "encyclopedia", "education"],
-    URL: "https://www.wikipedia.org",
-    linkId: "5",
-  },
+  // {
+  //   title: "Google",
+  //   tags: ["search", "technology", "web"],
+  //   URL: "https://www.google.com",
+  //   linkId: "1",
+  // },
+  // {
+  //   title: "GitHub",
+  //   tags: ["code", "repository", "developer"],
+  //   URL: "https://www.github.com",
+  //   linkId: "2",
+  // },
+  // {
+  //   title: "Stack Overflow",
+  //   tags: ["programming", "questions", "community"],
+  //   URL: "https://stackoverflow.com",
+  //   linkId: "3",
+  // },
+  // {
+  //   title: "MDN Web Docs",
+  //   tags: ["documentation", "web", "JavaScript"],
+  //   URL: "https://developer.mozilla.org",
+  //   linkId: "4",
+  // },
+  // {
+  //   title: "Wikipedia",
+  //   tags: ["information", "encyclopedia", "education"],
+  //   URL: "https://www.wikipedia.org",
+  //   linkId: "5",
+  // },
 ];
 
 const FileList_ListView: React.FC = () => {
