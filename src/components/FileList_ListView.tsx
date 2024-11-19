@@ -227,7 +227,7 @@ const FileList_ListView: React.FC = () => {
               .put(
                 `${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/${
                   record.linkId
-                }/view`,[],
+                }/view`,{},
                 { withCredentials: true }
               )
               .then(() => {
