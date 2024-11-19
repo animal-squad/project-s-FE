@@ -170,7 +170,7 @@ const FileList_ListView: React.FC = () => {
       console.log(`Sending API request for linkId ${linkId}:`, tags);
       const response = await axios.put(
         `${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/${linkId}/tag`,
-        { tags },
+        { tags: tags },
         { withCredentials: true }
       );
       console.log(`API response for linkId ${linkId}:`, response.data);
@@ -227,7 +227,7 @@ const FileList_ListView: React.FC = () => {
               .put(
                 `${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/${
                   record.linkId
-                }/view`,
+                }/view`,[],
                 { withCredentials: true }
               )
               .then(() => {
