@@ -1,8 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { Table, Tag, Button, Modal, Switch, Input, message } from "antd";
+import React, { useEffect, useState, useCallback } from "react";
+import {
+  Table,
+  Tag,
+  Button,
+  Modal,
+  Switch,
+  Input,
+  message,
+  Select,
+} from "antd";
+import type { SelectProps } from "antd";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaPen } from "react-icons/fa";
 import axios from "axios";
+import debounce from "lodash/debounce";
 
 interface Link {
   linkId: string;
@@ -78,7 +89,38 @@ interface DataType {
   linkId: string;
 }
 
-const data: DataType[] = [];
+const data: DataType[] = [
+  // {
+  //   title: "Google",
+  //   tags: ["search", "technology", "web"],
+  //   URL: "https://www.google.com",
+  //   linkId: "1",
+  // },
+  // {
+  //   title: "GitHub",
+  //   tags: ["code", "repository", "developer"],
+  //   URL: "https://www.github.com",
+  //   linkId: "2",
+  // },
+  // {
+  //   title: "Stack Overflow",
+  //   tags: ["programming", "questions", "community"],
+  //   URL: "https://stackoverflow.com",
+  //   linkId: "3",
+  // },
+  // {
+  //   title: "MDN Web Docs",
+  //   tags: ["documentation", "web", "JavaScript"],
+  //   URL: "https://developer.mozilla.org",
+  //   linkId: "4",
+  // },
+  // {
+  //   title: "Wikipedia",
+  //   tags: ["information", "encyclopedia", "education"],
+  //   URL: "https://www.wikipedia.org",
+  //   linkId: "5",
+  // },
+];
 
 const FileList_ListView: React.FC = () => {
   const { bucketId } = useParams<{ bucketId: string }>(); // URL에서 bucketId 추출
@@ -92,13 +134,91 @@ const FileList_ListView: React.FC = () => {
   const [isLinkTitleModalOpen, setIsLinkTitleModalOpen] = useState(false);
   const [editedLinkTitle, setEditedLinkTitle] = useState("");
   const [currentLinkId, setCurrentLinkId] = useState<string | null>(null);
+  const [selectedTags, setSelectedTags] = useState<Record<string, string[]>>(
+    {}
+  );
+
+  const handleTagChange = (linkId: string, tags: string[]) => {
+    setSelectedTags((prev) => {
+      let updatedTags = [...tags];
+
+      // 조건 1: tags가 비어 있으면 '기타' 추가
+      if (updatedTags.length === 0) {
+        updatedTags = ["기타"];
+      }
+      // 조건 2: tags가 '기타'를 포함하면서 2개 이상의 요소가 있으면 '기타' 제거
+      else if (updatedTags.includes("기타") && updatedTags.length > 1) {
+        updatedTags = updatedTags.filter((tag) => tag !== "기타");
+      }
+
+      const newTagsState = { ...prev, [linkId]: updatedTags };
+
+      console.log(
+        `Updated tags for row with linkId ${linkId}:`,
+        newTagsState[linkId]
+      );
+
+      // debouncedUpdateTags 호출
+      debouncedUpdateTags(linkId, newTagsState[linkId]);
+
+      return newTagsState;
+    });
+  };
+
+  const updateTags = async (linkId: string, tags: string[]) => {
+    try {
+      console.log(`Sending API request for linkId ${linkId}:`, tags);
+      const response = await axios.put(
+        `${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/${linkId}/tag`,
+        { tags: tags },
+        { withCredentials: true }
+      );
+      console.log(`API response for linkId ${linkId}:`, response.data);
+    } catch (error) {
+      console.error(`Failed to update tags for linkId ${linkId}:`, error);
+    }
+  };
+
+  // 디바운스된 함수 (지연시간 1000ms)
+  const debouncedUpdateTags = useCallback(
+    debounce((linkId: string, tags: string[]) => {
+      updateTags(linkId, tags);
+    }, 2000),
+    []
+  );
+
+  const tagRender: SelectProps["tagRender"] = (props) => {
+    const { label, value, closable, onClose } = props;
+    const onPreventMouseDown = (event: React.MouseEvent<HTMLSpanElement>) => {
+      event.preventDefault();
+      event.stopPropagation();
+    };
+
+    let color =
+      typeof value === "string" ? colorMapping(value.length) : "default";
+
+      if(value === "기타")
+          color = "default";
+
+    return (
+      <Tag
+        color={color}
+        onMouseDown={onPreventMouseDown}
+        closable={closable && value !== "기타"}
+        onClose={onClose}
+        style={{ marginInlineEnd: 4 }}
+      >
+        {label}
+      </Tag>
+    );
+  };
 
   const getColumns = () => [
     {
       title: "URL",
       dataIndex: "title",
       key: "title",
-      width: "47%",
+      width: "46%",
       render: (text: string, record: DataType) => (
         <a
           onClick={() => {
@@ -107,8 +227,8 @@ const FileList_ListView: React.FC = () => {
               .put(
                 `${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/${
                   record.linkId
-                }/view`,
-                { withCredentians: true }
+                }/view`,{},
+                { withCredentials: true }
               )
               .then(() => {
                 console.log("View count updated for link:", record.linkId);
@@ -131,7 +251,7 @@ const FileList_ListView: React.FC = () => {
       title: "",
       dataIndex: "edit",
       key: "edit",
-      width: "3%",
+      width: "4%",
       render: (_: unknown, record: DataType) => (
         <FaPen
           style={{ cursor: "pointer" }}
@@ -152,41 +272,42 @@ const FileList_ListView: React.FC = () => {
       title: "Tags",
       key: "tags",
       dataIndex: "tags",
-      width: "47%",
-      render: (tags: string[]) => (
-        <>
-          {tags.map((tag) => {
-            let color = colorMapping(tag.length);
-            if (tag === "loser") {
-              color = "volcano";
-            }
-            return (
-              <Tag color={color} key={tag}>
-                {tag.toUpperCase()}
-              </Tag>
-            );
-          })}
-        </>
-      ),
-    },
-    {
-      title: "",
-      dataIndex: "edit",
-      key: "edit",
-      width: "3%",
-      render: () => (
-        <FaPen
-          style={{ cursor: "pointer" }}
-          // onClick={() => {
-          //   setEditedLinkTitle(
-          //     typeof record.title === "string"
-          //       ? record.title
-          //       : record.title?.toString() || "" // URL일 경우 toString()으로 변환
-          //   );
-          //   // null 또는 undefined 처리
-          //   setCurrentLinkId(record.linkId); // linkId 설정
-          //   setIsLinkTitleModalOpen(true); // 모달 열기
-          // }}
+      width: "50%",
+      render: (tags: string[] | undefined, record: DataType) => (
+        <Select
+          mode="multiple"
+          tagRender={tagRender}
+          maxCount={3}
+          placeholder="Borderless"
+          variant="borderless"
+          value={selectedTags[record.linkId] || tags || []}
+          suffixIcon={
+            <span>
+              {selectedTags[record.linkId]?.length ??
+                (record.tags ? record.tags.length : 0)}{" "}
+              / 3
+            </span>
+          }
+          onChange={(values) => handleTagChange(record.linkId, values)}
+          style={{ width: "100%" }}
+          options={[
+            { value: "웹 개발", label: "웹 개발" },
+            { value: "모바일 개발", label: "모바일 개발" },
+            { value: "AI/머신러닝", label: "AI/머신러닝" },
+            { value: "데이터 엔지니어링", label: "데이터 엔지니어링" },
+            { value: "클라우드 및 인프라", label: "클라우드 및 인프라" },
+            { value: "보안 및 개인정보 보호", label: "보안 및 개인정보 보호" },
+            { value: "컴퓨터 공학 기초", label: "컴퓨터 공학 기초" },
+            { value: "임베디드 및 IoT", label: "임베디드 및 IoT" },
+            {
+              value: "IT 산업 동향 및 기술 트렌드",
+              label: "IT 산업 동향 및 기술 트렌드",
+            },
+            {
+              value: "프로젝트 관리 및 협업 도구",
+              label: "프로젝트 관리 및 협업 도구",
+            },
+          ]}
         />
       ),
     },
