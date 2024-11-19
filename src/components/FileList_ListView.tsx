@@ -140,15 +140,28 @@ const FileList_ListView: React.FC = () => {
 
   const handleTagChange = (linkId: string, tags: string[]) => {
     setSelectedTags((prev) => {
-      const updatedTags = { ...prev, [linkId]: tags };
+      let updatedTags = [...tags];
+
+      // 조건 1: tags가 비어 있으면 '기타' 추가
+      if (updatedTags.length === 0) {
+        updatedTags = ["기타"];
+      }
+      // 조건 2: tags가 '기타'를 포함하면서 2개 이상의 요소가 있으면 '기타' 제거
+      else if (updatedTags.includes("기타") && updatedTags.length > 1) {
+        updatedTags = updatedTags.filter((tag) => tag !== "기타");
+      }
+
+      const newTagsState = { ...prev, [linkId]: updatedTags };
+
       console.log(
         `Updated tags for row with linkId ${linkId}:`,
-        updatedTags[linkId]
+        newTagsState[linkId]
       );
 
-      debouncedUpdateTags(linkId, updatedTags[linkId]);
+      // debouncedUpdateTags 호출
+      debouncedUpdateTags(linkId, newTagsState[linkId]);
 
-      return updatedTags;
+      return newTagsState;
     });
   };
 
@@ -181,14 +194,17 @@ const FileList_ListView: React.FC = () => {
       event.stopPropagation();
     };
 
-    const color =
+    let color =
       typeof value === "string" ? colorMapping(value.length) : "default";
+
+      if(value === "기타")
+          color = "default";
 
     return (
       <Tag
         color={color}
         onMouseDown={onPreventMouseDown}
-        closable={closable}
+        closable={closable && value !== "기타"}
         onClose={onClose}
         style={{ marginInlineEnd: 4 }}
       >
@@ -262,6 +278,8 @@ const FileList_ListView: React.FC = () => {
           mode="multiple"
           tagRender={tagRender}
           maxCount={3}
+          placeholder="Borderless"
+          variant="borderless"
           value={selectedTags[record.linkId] || tags || []}
           suffixIcon={
             <span>
@@ -289,7 +307,6 @@ const FileList_ListView: React.FC = () => {
               value: "프로젝트 관리 및 협업 도구",
               label: "프로젝트 관리 및 협업 도구",
             },
-            { value: "기타", label: "기타" },
           ]}
         />
       ),
