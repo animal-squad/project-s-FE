@@ -3,6 +3,7 @@ import { IconType } from "react-icons";
 import { FiChevronsRight } from "react-icons/fi";
 import { IoMdLink, IoIosLogOut } from "react-icons/io";
 import { CgProfile } from "react-icons/cg";
+import { VscHome } from "react-icons/vsc";
 import { motion } from "framer-motion";
 import Divider from "@mui/material/Divider";
 import { useSidebarStore } from "../store/sidebarStore";
@@ -36,7 +37,6 @@ const Sidebar = () => {
 
   useEffect(() => {
     userFetch();
-
     setSelectedTab(0);
 
     // URL과 일치하는 상태로 setSelected 호출
@@ -93,6 +93,15 @@ const Sidebar = () => {
           open={open}
         />
         <Divider className="pt-5" />
+        <div className="h-5" />
+        <Option
+          Icon={VscHome}
+          IconColor="#2196f3"
+          title="Go to Main"
+          selected={selected}
+          setSelected={setSelected}
+          open={open}
+        />
         <Option
           Icon={IoIosLogOut}
           IconColor="#2196f3"
@@ -130,6 +139,8 @@ const Option = ({
   handleLogout?: () => void; // handleLogout을 함수로 수정
   isCustomIcon?: boolean;
 }) => {
+  const navigate = useNavigate();
+
   const getLinkPath = () => {
     switch (title) {
       case "Bucket":
@@ -138,6 +149,8 @@ const Option = ({
         return "/main/link";
       case "Texts":
         return "/main/texts";
+      case "Go to Main":
+        return "/"; // Main으로 이동하는 경로 추가
       default:
         return "#";
     }
@@ -146,8 +159,10 @@ const Option = ({
   const handleClick = () => {
     if (handleLogout) {
       handleLogout(); // 로그아웃 함수 호출
+    } else if (title === "Go to Main") {
+      navigate("/"); // "Go to Main" 클릭 시 메인 경로로 이동
     } else {
-      setSelected(title);
+      setSelected(title); // 다른 옵션은 상태 업데이트
     }
   };
 
