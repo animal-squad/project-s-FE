@@ -1,8 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { Table, Tag, Button, Modal, Switch, Input } from "antd";
+import React, { useEffect, useState, useCallback } from "react";
+import {
+  Table,
+  Tag,
+  Button,
+  Modal,
+  Switch,
+  Input,
+  message,
+  Select,
+} from "antd";
+import type { SelectProps } from "antd";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaPen } from "react-icons/fa";
 import axios from "axios";
+import debounce from "lodash/debounce";
 
 interface Link {
   linkId: string;
@@ -78,7 +89,38 @@ interface DataType {
   linkId: string;
 }
 
-const data: DataType[] = [];
+const data: DataType[] = [
+  // {
+  //   title: "Google",
+  //   tags: ["search", "technology", "web"],
+  //   URL: "https://www.google.com",
+  //   linkId: "1",
+  // },
+  // {
+  //   title: "GitHub",
+  //   tags: ["code", "repository", "developer"],
+  //   URL: "https://www.github.com",
+  //   linkId: "2",
+  // },
+  // {
+  //   title: "Stack Overflow",
+  //   tags: ["programming", "questions", "community"],
+  //   URL: "https://stackoverflow.com",
+  //   linkId: "3",
+  // },
+  // {
+  //   title: "MDN Web Docs",
+  //   tags: ["documentation", "web", "JavaScript"],
+  //   URL: "https://developer.mozilla.org",
+  //   linkId: "4",
+  // },
+  // {
+  //   title: "Wikipedia",
+  //   tags: ["information", "encyclopedia", "education"],
+  //   URL: "https://www.wikipedia.org",
+  //   linkId: "5",
+  // },
+];
 
 const FileList_ListView: React.FC = () => {
   const { bucketId } = useParams<{ bucketId: string }>(); // URL에서 bucketId 추출
@@ -86,21 +128,97 @@ const FileList_ListView: React.FC = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPublic, setIsPublic] = useState(false); // Switch 상태
-  const [isTitleModalOpen, setIsTitleModalOpen] = useState(false); // 제목 수정 모달 상태
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // 삭제 모달 상태
   const [url, setUrl] = useState("");
   const [initialPublicState, setInitialPublicState] = useState(false); // 모달 초기 상태 저장용
-  const [editedTitle, setEditedTitle] = useState(""); // 제목 수정 상태
   const [isLinkTitleModalOpen, setIsLinkTitleModalOpen] = useState(false);
   const [editedLinkTitle, setEditedLinkTitle] = useState("");
   const [currentLinkId, setCurrentLinkId] = useState<string | null>(null);
+  const [selectedTags, setSelectedTags] = useState<Record<string, string[]>>(
+    {}
+  );
+
+  const handleTagChange = (linkId: string, tags: string[]) => {
+    setSelectedTags((prev) => {
+      let updatedTags = [...tags];
+
+      // 조건 1: tags가 비어 있으면 '기타' 추가
+      if (updatedTags.length === 0) {
+        updatedTags = ["기타"];
+      }
+      // 조건 2: tags가 '기타'를 포함하면서 2개 이상의 요소가 있으면 '기타' 제거
+      else if (updatedTags.includes("기타") && updatedTags.length > 1) {
+        updatedTags = updatedTags.filter((tag) => tag !== "기타");
+      }
+
+      const newTagsState = { ...prev, [linkId]: updatedTags };
+
+      console.log(
+        `Updated tags for row with linkId ${linkId}:`,
+        newTagsState[linkId]
+      );
+
+      // debouncedUpdateTags 호출
+      debouncedUpdateTags(linkId, newTagsState[linkId]);
+
+      return newTagsState;
+    });
+  };
+
+  const updateTags = async (linkId: string, tags: string[]) => {
+    try {
+      console.log(`Sending API request for linkId ${linkId}:`, tags);
+      const response = await axios.put(
+        `${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/${linkId}/tag`,
+        { tags: tags },
+        { withCredentials: true }
+      );
+      console.log(`API response for linkId ${linkId}:`, response.data);
+    } catch (error) {
+      console.error(`Failed to update tags for linkId ${linkId}:`, error);
+    }
+  };
+
+  // 디바운스된 함수 (지연시간 1000ms)
+  const debouncedUpdateTags = useCallback(
+    debounce((linkId: string, tags: string[]) => {
+      updateTags(linkId, tags);
+    }, 2000),
+    []
+  );
+
+  const tagRender: SelectProps["tagRender"] = (props) => {
+    const { label, value, closable, onClose } = props;
+    const onPreventMouseDown = (event: React.MouseEvent<HTMLSpanElement>) => {
+      event.preventDefault();
+      event.stopPropagation();
+    };
+
+    let color =
+      typeof value === "string" ? colorMapping(value.length) : "default";
+
+      if(value === "기타")
+          color = "default";
+
+    return (
+      <Tag
+        color={color}
+        onMouseDown={onPreventMouseDown}
+        closable={closable && value !== "기타"}
+        onClose={onClose}
+        style={{ marginInlineEnd: 4 }}
+      >
+        {label}
+      </Tag>
+    );
+  };
 
   const getColumns = () => [
     {
       title: "URL",
       dataIndex: "title",
       key: "title",
-      width: "47%",
+      width: "46%",
       render: (text: string, record: DataType) => (
         <a
           onClick={() => {
@@ -109,8 +227,8 @@ const FileList_ListView: React.FC = () => {
               .put(
                 `${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/${
                   record.linkId
-                }/view`,
-                { withCredentians: true }
+                }/view`,{},
+                { withCredentials: true }
               )
               .then(() => {
                 console.log("View count updated for link:", record.linkId);
@@ -130,31 +248,10 @@ const FileList_ListView: React.FC = () => {
       ),
     },
     {
-      title: "Tags",
-      key: "tags",
-      dataIndex: "tags",
-      width: "47%",
-      render: (tags: string[]) => (
-        <>
-          {tags.map((tag) => {
-            let color = colorMapping(tag.length);
-            if (tag === "loser") {
-              color = "volcano";
-            }
-            return (
-              <Tag color={color} key={tag}>
-                {tag.toUpperCase()}
-              </Tag>
-            );
-          })}
-        </>
-      ),
-    },
-    {
-      title: "수정",
+      title: "",
       dataIndex: "edit",
       key: "edit",
-      width: "6%",
+      width: "4%",
       render: (_: unknown, record: DataType) => (
         <FaPen
           style={{ cursor: "pointer" }}
@@ -171,6 +268,49 @@ const FileList_ListView: React.FC = () => {
         />
       ),
     },
+    {
+      title: "Tags",
+      key: "tags",
+      dataIndex: "tags",
+      width: "50%",
+      render: (tags: string[] | undefined, record: DataType) => (
+        <Select
+          mode="multiple"
+          tagRender={tagRender}
+          maxCount={3}
+          placeholder="Borderless"
+          variant="borderless"
+          value={selectedTags[record.linkId] || tags || []}
+          suffixIcon={
+            <span>
+              {selectedTags[record.linkId]?.length ??
+                (record.tags ? record.tags.length : 0)}{" "}
+              / 3
+            </span>
+          }
+          onChange={(values) => handleTagChange(record.linkId, values)}
+          style={{ width: "100%" }}
+          options={[
+            { value: "웹 개발", label: "웹 개발" },
+            { value: "모바일 개발", label: "모바일 개발" },
+            { value: "AI/머신러닝", label: "AI/머신러닝" },
+            { value: "데이터 엔지니어링", label: "데이터 엔지니어링" },
+            { value: "클라우드 및 인프라", label: "클라우드 및 인프라" },
+            { value: "보안 및 개인정보 보호", label: "보안 및 개인정보 보호" },
+            { value: "컴퓨터 공학 기초", label: "컴퓨터 공학 기초" },
+            { value: "임베디드 및 IoT", label: "임베디드 및 IoT" },
+            {
+              value: "IT 산업 동향 및 기술 트렌드",
+              label: "IT 산업 동향 및 기술 트렌드",
+            },
+            {
+              value: "프로젝트 관리 및 협업 도구",
+              label: "프로젝트 관리 및 협업 도구",
+            },
+          ]}
+        />
+      ),
+    },
   ];
 
   const showModal = () => {
@@ -180,11 +320,6 @@ const FileList_ListView: React.FC = () => {
 
   const showDeleteModal = () => {
     setIsDeleteModalOpen(true);
-  };
-
-  const showTitleModal = () => {
-    setEditedTitle(fileData?.title || ""); // 현재 제목을 기본값으로 설정
-    setIsTitleModalOpen(true);
   };
 
   const handleLinkTitleSave = async () => {
@@ -208,6 +343,7 @@ const FileList_ListView: React.FC = () => {
             console.error("Failed to update link title:", error);
           }
         });
+      message.success("링크 제목이 성공적으로 수정되었습니다.");
       setIsLinkTitleModalOpen(false);
       window.location.reload(); // 새로고침으로 업데이트 반영
     } catch (error) {
@@ -220,31 +356,6 @@ const FileList_ListView: React.FC = () => {
     setIsLinkTitleModalOpen(false);
   };
 
-  const handleTitleChange = () => {
-    if (editedTitle !== fileData?.title) {
-      axios
-        .put(
-          `${import.meta.env.VITE_BACKEND_DOMAIN}/api/bucket/${bucketId}`,
-          { title: editedTitle },
-          { withCredentials: true }
-        )
-        .then((response) => {
-          console.log("Title updated:", response.data);
-          setFileData((prev) =>
-            prev ? { ...prev, title: editedTitle } : prev
-          );
-        })
-        .catch((error) => {
-          if (error.response?.status === 401) {
-            navigate("/unauthorized"); // 401 에러 발생 시 /unauthorized로 리디렉션
-          } else {
-            console.error("Failed to update title:", error);
-          }
-        });
-    }
-    setIsTitleModalOpen(false);
-  };
-
   const handleDelete = () => {
     axios
       .delete(`${import.meta.env.VITE_BACKEND_DOMAIN}/api/bucket/${bucketId}`, {
@@ -252,6 +363,7 @@ const FileList_ListView: React.FC = () => {
       })
       .then((response) => {
         console.log("Bucket deleted:", response.data);
+        message.success("바구니가 성공적으로 삭제되었습니다.");
         navigate("/main/bucket"); // 삭제 후 메인 페이지로 이동
       })
       .catch((error) => {
@@ -270,10 +382,6 @@ const FileList_ListView: React.FC = () => {
     setIsDeleteModalOpen(false);
   };
 
-  const handleTitleCancel = () => {
-    setIsTitleModalOpen(false);
-  };
-
   const handleOk = () => {
     if (fileData?.isMine) {
       axios
@@ -285,6 +393,11 @@ const FileList_ListView: React.FC = () => {
           { withCredentials: true }
         )
         .then((response) => {
+          message.success(
+            isPublic
+              ? "바구니가 공개 상태로 전환되었습니다."
+              : "바구니가 비공개 상태로 전환되었습니다."
+          );
           console.log("Permission updated:", response.data);
         })
         .catch((error) => {
@@ -304,6 +417,7 @@ const FileList_ListView: React.FC = () => {
           { withCredentials: true }
         )
         .then((response) => {
+          message.success("바구니가 복사되었습니다.");
           console.log("Bucket copied:", response.data);
           const newBucketId = response.data.bucketId; // 응답에서 새로운 bucketId 추출
           if (newBucketId) {
@@ -386,12 +500,6 @@ const FileList_ListView: React.FC = () => {
           {fileData?.title || "Title"}
         </h1>
         <div className="ml-auto flex gap-2">
-          <FaPen
-            className="text-gray-600 cursor-pointer mt-1 mr-4"
-            color="121212"
-            size={18}
-            onClick={showTitleModal}
-          />
           {fileData?.isMine && ( // fileData?.isMine이 true일 때만 삭제 버튼 렌더링
             <Button danger type="primary" onClick={showDeleteModal}>
               삭제
@@ -401,18 +509,6 @@ const FileList_ListView: React.FC = () => {
             {fileData?.isMine ? "공유" : "복사"}
           </Button>
         </div>
-        <Modal
-          title="바구니 제목 수정"
-          open={isTitleModalOpen}
-          onOk={handleTitleChange}
-          onCancel={handleTitleCancel}
-        >
-          <Input
-            value={editedTitle}
-            onChange={(e) => setEditedTitle(e.target.value)}
-            placeholder="새로운 제목을 입력하세요"
-          />
-        </Modal>
         <Modal
           title={fileData?.isMine ? "바구니 공유" : "바구니 복사"}
           open={isModalOpen}

@@ -3,6 +3,7 @@ import { IconType } from "react-icons";
 import { FiChevronsRight } from "react-icons/fi";
 import { IoMdLink, IoIosLogOut } from "react-icons/io";
 import { CgProfile } from "react-icons/cg";
+import { VscHome } from "react-icons/vsc";
 import { motion } from "framer-motion";
 import Divider from "@mui/material/Divider";
 import { useSidebarStore } from "../store/sidebarStore";
@@ -14,7 +15,7 @@ import { useFolderStore } from "../store/FileIndexStore";
 
 export const Example = () => {
   return (
-    <div className="flex bg-indigo-50">
+    <div className="flex bg-transparent">
       <Sidebar />
       <ExampleContent />
     </div>
@@ -36,7 +37,6 @@ const Sidebar = () => {
 
   useEffect(() => {
     userFetch();
-
     setSelectedTab(0);
 
     // URL과 일치하는 상태로 setSelected 호출
@@ -93,6 +93,15 @@ const Sidebar = () => {
           open={open}
         />
         <Divider className="pt-5" />
+        <div className="h-5" />
+        <Option
+          Icon={VscHome}
+          IconColor="#2196f3"
+          title="Go to Main"
+          selected={selected}
+          setSelected={setSelected}
+          open={open}
+        />
         <Option
           Icon={IoIosLogOut}
           IconColor="#2196f3"
@@ -130,6 +139,8 @@ const Option = ({
   handleLogout?: () => void; // handleLogout을 함수로 수정
   isCustomIcon?: boolean;
 }) => {
+  const navigate = useNavigate();
+
   const getLinkPath = () => {
     switch (title) {
       case "Bucket":
@@ -138,6 +149,8 @@ const Option = ({
         return "/main/link";
       case "Texts":
         return "/main/texts";
+      case "Go to Main":
+        return "/"; // Main으로 이동하는 경로 추가
       default:
         return "#";
     }
@@ -146,8 +159,10 @@ const Option = ({
   const handleClick = () => {
     if (handleLogout) {
       handleLogout(); // 로그아웃 함수 호출
+    } else if (title === "Go to Main") {
+      navigate("/"); // "Go to Main" 클릭 시 메인 경로로 이동
     } else {
-      setSelected(title);
+      setSelected(title); // 다른 옵션은 상태 업데이트
     }
   };
 
@@ -191,7 +206,7 @@ const Option = ({
             }}
             style={{ y: "-50%" }}
             transition={{ delay: 0.5 }}
-            className="absolute right-2 top-1/2 size-4 rounded bg-indigo-500 text-xs text-primary_text"
+            className="absolute right-2 top-1/2 size-4 rounded text-xs text-primary_text"
           >
             {notifs}
           </motion.span>
@@ -212,7 +227,7 @@ const TitleSection = ({
 }) => {
   return (
     <div className="mb-3 pb-3 ">
-      <div className="flex cursor-pointer items-center justify-between rounded-md transition-colors hover:bg-slate-100">
+      <div className="flex cursor-pointer items-center justify-between rounded-md transition-colors">
         <div className="flex items-center gap-2">
           {photo ? (
             <img
@@ -246,7 +261,7 @@ const Logo = () => {
   return (
     <motion.div
       layout
-      className="grid size-10 shrink-0 place-content-center rounded-md bg-indigo-600"
+      className="grid size-10 shrink-0 place-content-center rounded-md"
     >
       <CgProfile size="40" color="#212121" className="ml-10" />
     </motion.div>
@@ -264,7 +279,7 @@ const ToggleClose = ({
     <motion.button
       layout
       onClick={() => setOpen((pv) => !pv)}
-      className="absolute bottom-0 left-0 right-0 border-t border-slate-300 transition-colors bg-transparent text-primary_text hover:bg-slate-100"
+      className="absolute bottom-0 left-0 right-0 border-t border-slate-300 transition-colors bg-transparent text-primary_text"
     >
       <div className="flex items-center p-2">
         <motion.div
