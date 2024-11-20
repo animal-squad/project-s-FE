@@ -14,7 +14,7 @@ import { useFolderStore } from "../store/FileIndexStore";
 
 export const Example = () => {
   return (
-    <div className="flex bg-indigo-50">
+    <div className="flex bg-transparent">
       <Sidebar />
       <ExampleContent />
     </div>
@@ -191,7 +191,7 @@ const Option = ({
             }}
             style={{ y: "-50%" }}
             transition={{ delay: 0.5 }}
-            className="absolute right-2 top-1/2 size-4 rounded bg-indigo-500 text-xs text-primary_text"
+            className="absolute right-2 top-1/2 size-4 rounded text-xs text-primary_text"
           >
             {notifs}
           </motion.span>
@@ -212,7 +212,7 @@ const TitleSection = ({
 }) => {
   return (
     <div className="mb-3 pb-3 ">
-      <div className="flex cursor-pointer items-center justify-between rounded-md transition-colors hover:bg-slate-100">
+      <div className="flex cursor-pointer items-center justify-between rounded-md transition-colors">
         <div className="flex items-center gap-2">
           {photo ? (
             <img
@@ -246,7 +246,7 @@ const Logo = () => {
   return (
     <motion.div
       layout
-      className="grid size-10 shrink-0 place-content-center rounded-md bg-indigo-600"
+      className="grid size-10 shrink-0 place-content-center rounded-md"
     >
       <CgProfile size="40" color="#212121" className="ml-10" />
     </motion.div>
@@ -264,7 +264,7 @@ const ToggleClose = ({
     <motion.button
       layout
       onClick={() => setOpen((pv) => !pv)}
-      className="absolute bottom-0 left-0 right-0 border-t border-slate-300 transition-colors bg-transparent text-primary_text hover:bg-slate-100"
+      className="absolute bottom-0 left-0 right-0 border-t border-slate-300 transition-colors bg-transparent text-primary_text"
     >
       <div className="flex items-center p-2">
         <motion.div
