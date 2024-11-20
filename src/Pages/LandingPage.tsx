@@ -3,7 +3,7 @@ import React from "react";
 import { StickyScroll } from "../ui/sticky-scroll-reveal";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Image } from "antd";
+// import { Image } from "antd";
 
 const content = [
   {
@@ -20,13 +20,13 @@ const content = [
       "탭을 너무 많이 열어두어 관리가 힘드셨나요? 링킷 크롬 확장 프로그램으로 지금 열려 있는 탭을 한 번에 저장해 보세요!",
     content: (
       <div className="h-full w-full bg-[url('/assets/images/Extension_Image.png')] bg-center bg-no-repeat bg-contain flex items-center justify-center">
-        <Image
+        {/* <Image
           src="/linear.webp"
           width={600}
           height={600}
           className="h-full w-full object-cover"
           alt="linear board demo"
-        />
+        /> */}
       </div>
     ),
   },
