@@ -112,16 +112,22 @@ export function ImagesSliderDemo() {
                 }
               });
           }}
-          className="p-0 m-0 border-none bg-transparent backdrop-blur-sm border border-blue-300/20 text-white text-center rounded-full" // 여백 제거
-          // className="px-4 py-2 backdrop-blur-sm border bg-primary_text border-blue-300/20 text-white text-center rounded-full"
+          className={`flex items-center justify-center ${
+            buttonText === "로그인"
+              ? "p-0 bg-primary_text"
+              : "px-4 py-2 bg-primary_text"
+          } m-0 border backdrop-blur-sm border-blue-300/20 text-white text-center rounded-full`}
         >
-          <img
-            src="/assets/images/web_neutral_rd_ctn.svg"
-            alt="Continue with Google"
-            className="w-52 h-auto" // 이미지 크기 조정
-          />
-          {/* <span>{buttonText}</span> */}
-          <div className="absolute inset-x-0 h-px -bottom-px bg-gradient-to-r w-3/4 mx-auto from-transparent via-blue-300 to-transparent " />
+          {buttonText === "로그인" ? (
+            <img
+              src="/assets/images/web_neutral_rd_ctn.svg"
+              alt="Continue with Google"
+              className="w-52 h-auto"
+            />
+          ) : (
+            <span>{buttonText}</span>
+          )}
+          <div className="absolute inset-x-0 h-px -bottom-px bg-gradient-to-r w-3/4 mx-auto from-transparent via-blue-300 to-transparent" />
         </button>
       </div>
       <div className="w-full h-full flex flex-col justify-center overflow-auto">
