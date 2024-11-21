@@ -9,7 +9,7 @@ export const StickyScroll = ({
   contentClassName,
 }: {
   content: {
-    title: string;
+    title: React.ReactNode;
     description: string;
     content?: React.ReactNode;
   }[];
@@ -48,7 +48,7 @@ export const StickyScroll = ({
     "var(--neutral-900)",
     "var(--slate-900)",
     "var(--black)",
-    "var(--black)"
+    "var(--black)",
   ];
   const linearGradients = useMemo(
     () => [
@@ -80,7 +80,7 @@ export const StickyScroll = ({
       <div className="div relative flex items-start px-4">
         <div className="max-w-2xl">
           {content.map((item, index) => (
-            <div key={item.title + index} className="my-20">
+            <div key={`${item.title || "default"}_${index}`} className="my-20">
               <motion.h2
                 initial={{
                   opacity: 0,
