@@ -65,6 +65,7 @@ const content = [
         </button>
       </div>
     ),
+    description: "",
   },
 ];
 
