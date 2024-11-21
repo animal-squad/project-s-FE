@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { StickyScroll } from "../ui/sticky-scroll-reveal";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -50,7 +50,9 @@ const content = [
     title: "피드백",
     description:
       "서비스에 대한 의견이 있거나 버그를 찾으셨다면 구글 폼을 작성해 주세요. 여러분의 소중한 의견 하나하나가 서비스를 개선하는 데 큰 도움이 됩니다.",
-    content: (
+  },
+  {
+    title: (
       <div className="h-full w-full bg-[linear-gradient(to bottom right, var(--pink-500), var(--indigo-500))] flex items-center justify-center text-white">
         <button
           onClick={() => {
@@ -68,6 +70,18 @@ const content = [
 
 export function ImagesSliderDemo() {
   const navigate = useNavigate();
+  const [buttonText, setButtonText] = useState("로그인");
+
+  axios
+    .get(`${import.meta.env.VITE_BACKEND_DOMAIN}/api/user/check`, {
+      withCredentials: true,
+    })
+    .then((response) => {
+      if (response.status === 200) setButtonText("바구니 페이지로");
+    })
+    .catch((error) => {
+      if (error.response?.status === 401) setButtonText("로그인");
+    });
 
   return (
     <div className="relative flex items-center justify-center w-screen h-screen bg-[#000000]">
@@ -100,7 +114,7 @@ export function ImagesSliderDemo() {
           }}
           className="px-4 py-2 backdrop-blur-sm border bg-primary_text border-blue-300/20 text-white text-center rounded-full"
         >
-          <span>로그인</span>
+          <span>{buttonText}</span>
           <div className="absolute inset-x-0 h-px -bottom-px bg-gradient-to-r w-3/4 mx-auto from-transparent via-blue-300 to-transparent" />
         </button>
       </div>

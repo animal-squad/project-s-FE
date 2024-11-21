@@ -43,11 +43,12 @@ export const StickyScroll = ({
   });
 
   const backgroundColors = [
-    "var(--slate-900)",
     "var(--black)",
+    "var(--slate-900)",
     "var(--neutral-900)",
     "var(--slate-900)",
     "var(--black)",
+    "var(--black)"
   ];
   const linearGradients = useMemo(
     () => [
