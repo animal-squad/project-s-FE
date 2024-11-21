@@ -197,8 +197,7 @@ const FileList_ListView: React.FC = () => {
     let color =
       typeof value === "string" ? colorMapping(value.length) : "default";
 
-      if(value === "기타")
-          color = "default";
+    if (value === "기타") color = "default";
 
     return (
       <Tag
@@ -227,7 +226,8 @@ const FileList_ListView: React.FC = () => {
               .put(
                 `${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/${
                   record.linkId
-                }/view`,{},
+                }/view`,
+                {},
                 { withCredentials: true }
               )
               .then(() => {
@@ -278,7 +278,6 @@ const FileList_ListView: React.FC = () => {
           mode="multiple"
           tagRender={tagRender}
           maxCount={3}
-          placeholder="Borderless"
           variant="borderless"
           value={selectedTags[record.linkId] || tags || []}
           suffixIcon={
@@ -487,7 +486,7 @@ const FileList_ListView: React.FC = () => {
   const tableData = fileData
     ? fileData.links.map((link) => ({
         title: link.title || "Untitled",
-        tags: link.tags,
+        tags: link.tags?.length ? link.tags : ["기타"],
         URL: link.URL,
         linkId: link.linkId,
       }))

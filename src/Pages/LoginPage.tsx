@@ -1,5 +1,4 @@
 import React from "react";
-import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 // import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
@@ -34,17 +33,10 @@ const LoginPage = () => {
     }
   };
 
-  const lottieAnimation = import.meta.env.VITE_LOTTIE_FILE;
   const googleLoginButton = import.meta.env.VITE_GOOGLE_BUTTON;
 
   return (
     <div className="relative flex items-center justify-center v-screen w-full">
-      <DotLottieReact // Lottie 애니메이션
-        src={lottieAnimation}
-        loop
-        autoplay
-        className="absolute z-0 items-center"
-      />
       <div className="relative z-10 flex justify-center w-screen">
         <form className="rounded px-8 pt-6 pb-8 mb-4 bg-white bg-opacity-20 backdrop-blur-md shadow-lg">
           <div className="mb-4">

@@ -65,6 +65,7 @@ const content = [
         </button>
       </div>
     ),
+    description: "",
   },
 ];
 
@@ -108,14 +109,19 @@ export function ImagesSliderDemo() {
                   window.location.href = `${
                     import.meta.env.VITE_BACKEND_DOMAIN
                   }/api/auth/google`;
-                  // 로그인 성공 시 메인 페이지로 이동
                 }
               });
           }}
-          className="px-4 py-2 backdrop-blur-sm border bg-primary_text border-blue-300/20 text-white text-center rounded-full"
+          className="p-0 m-0 border-none bg-transparent backdrop-blur-sm border border-blue-300/20 text-white text-center rounded-full" // 여백 제거
+          // className="px-4 py-2 backdrop-blur-sm border bg-primary_text border-blue-300/20 text-white text-center rounded-full"
         >
-          <span>{buttonText}</span>
-          <div className="absolute inset-x-0 h-px -bottom-px bg-gradient-to-r w-3/4 mx-auto from-transparent via-blue-300 to-transparent" />
+          <img
+            src="/assets/images/web_neutral_rd_ctn.svg"
+            alt="Continue with Google"
+            className="w-52 h-auto" // 이미지 크기 조정
+          />
+          {/* <span>{buttonText}</span> */}
+          <div className="absolute inset-x-0 h-px -bottom-px bg-gradient-to-r w-3/4 mx-auto from-transparent via-blue-300 to-transparent " />
         </button>
       </div>
       <div className="w-full h-full flex flex-col justify-center overflow-auto">
