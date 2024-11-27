@@ -39,6 +39,7 @@ module.exports = {
         dark_primary_color: "#1976d2",
         divider: "#bdbdbd",
         folder_color: "#ebc351",
+        primary_brown: "#fcefef",
       },
     },
   },
