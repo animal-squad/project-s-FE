@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { ConfigProvider, Pagination } from "antd";
 import { FaLink } from "react-icons/fa";
 import NewHeader from "../../Layout/NewHeader";
-import Searchbox from "../../ui/Searchbox";
 import FloatButton from "../../ui/FloatButton";
+import TagSelect from "../../ui/TagSelect";
 
 const Bucket_Gridview = () => {
   const bucketData = Array(10).fill({
@@ -12,7 +12,10 @@ const Bucket_Gridview = () => {
     dateCreated: "2024.11.26",
     count: 5,
     imageUrl: "https://via.placeholder.com/113x106",
+    tags: ["극락도 락이다", "나락도 락이다", "느에에에엥"],
   });
+
+  const bucketTitle = "My Bucket Title"; // Bucket Title
 
   // 각 항목의 체크 상태를 관리하는 배열
   const [checkedItems, setCheckedItems] = useState<boolean[]>(
@@ -35,8 +38,38 @@ const Bucket_Gridview = () => {
     setCheckedItems(newCheckedItems);
   };
 
+  // 태그 선택 관리 배열
+  const [selectedTags, setSelectedTags] = useState<Record<string, string[]>>(
+    {}
+  );
+
+  // 태그 변경 로직 추가
+  const handleTagChange = (linkId: string, tags: string[]) => {
+    setSelectedTags((prev) => {
+      let updatedTags = [...tags];
+
+      // 조건 1: tags가 비어 있으면 '기타' 추가
+      if (updatedTags.length === 0) {
+        updatedTags = ["기타"];
+      }
+      // 조건 2: tags가 '기타'를 포함하면서 2개 이상의 요소가 있으면 '기타' 제거
+      else if (updatedTags.includes("기타") && updatedTags.length > 1) {
+        updatedTags = updatedTags.filter((tag) => tag !== "기타");
+      }
+
+      const newTagsState = { ...prev, [linkId]: updatedTags };
+
+      console.log(
+        `Updated tags for row with linkId ${linkId}:`,
+        newTagsState[linkId]
+      );
+
+      return newTagsState;
+    });
+  };
+
   return (
-    <div className="absolute h-[2149px] top-0 left-0 w-full h-full bg-[#fcefef] z-0">
+    <div className="absolute top-0 left-0 w-full bg-[#fcefef] z-0 h-[2139px]">
       {/* Border */}
       <div
         className="h-[2059px] absolute bg-[#fff6f1] rounded-[19px] mt-10 drop-shadow-2xl"
@@ -47,8 +80,10 @@ const Bucket_Gridview = () => {
       />
       {/* NewHeader */}
       <NewHeader />
-      {/* Searchbox */}
-      <Searchbox />
+      {/* Bucket Title */}
+      <div className="relative w-full text-center py-4 top-[254px]">
+        <h1 className="text-[40px] font-bold text-primary_text">{bucketTitle}</h1>
+      </div>
       {/* 전체 선택 체크박스 */}
       <div
         className="absolute flex items-center top-[373px] ml-4"
@@ -106,6 +141,7 @@ const Bucket_Gridview = () => {
           {/* 내부 구조 */}
           <div className="flex items-center h-full px-4">
             {/* 체크박스 */}
+
             <input
               type="checkbox"
               id={`bucket-${index}`}
@@ -149,11 +185,13 @@ const Bucket_Gridview = () => {
                 <span>{bucket.dateCreated}</span>
               </div>
             </div>
-            {/* 카운트 */}
-            <div className="flex items-center justify-center w-[78px] h-[78px] bg-[#c69172] rounded-full">
-              <span className="text-white text-2xl font-semibold">
-                {bucket.count}
-              </span>
+            {/* Tags */}
+            <div className="ml-4 flex-1">
+              <TagSelect
+                value={selectedTags[index.toString()] || bucket.tags}
+                onChange={(tags) => handleTagChange(index.toString(), tags)}
+                linkId={index.toString()}
+              />
             </div>
           </div>
         </div>
