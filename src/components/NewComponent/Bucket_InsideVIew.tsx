@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ConfigProvider, Pagination, Dropdown, Menu } from "antd";
 import { FaLink, FaEllipsisH } from "react-icons/fa";
 import NewHeader from "../../Layout/NewHeader";
@@ -21,6 +21,17 @@ const Bucket_Gridview = () => {
   const [checkedItems, setCheckedItems] = useState<boolean[]>(
     new Array(bucketData.length).fill(false)
   );
+
+  // 상단 네비게이션 바 표시 상태
+  const [showNavBar, setShowNavBar] = useState(false);
+
+  // 체크된 항목 수 계산
+  const checkedCount = checkedItems.filter((item) => item).length;
+
+  // 체크박스 상태 변화 감지
+  useEffect(() => {
+    setShowNavBar(checkedItems.some((item) => item));
+  }, [checkedItems]);
 
   // 전체 선택 체크박스의 상태
   const isAllSelected = checkedItems.every((item) => item);
@@ -112,6 +123,23 @@ const Bucket_Gridview = () => {
   return (
     <div className="absolute top-0 left-0 w-full bg-[#fcefef] z-0 h-[2139px]">
       {/* Border */}
+      <div
+        className={`fixed bottom-0 left-0 w-full bg-[#c69172] shadow-md transition-transform duration-300 z-50 ${
+          showNavBar ? "translate-y-0" : "translate-y-full"
+        }`}
+      >
+        <div className="flex items-center justify-between px-6 py-4">
+          <span className="text-lg text-white font-semibold">{checkedCount}개 선택됨</span>
+          <button
+            onClick={() => {
+              setCheckedItems(new Array(bucketData.length).fill(false));
+            }}
+            className="px-4 py-2 bg-red-500 text-white rounded-lg"
+          >
+            삭제
+          </button>
+        </div>
+      </div>
       <div
         className="h-[2059px] absolute bg-[#fff6f1] rounded-[19px] mt-10 drop-shadow-2xl"
         style={{
