@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { ConfigProvider, Pagination } from "antd";
-import { FaLink } from "react-icons/fa";
+import { ConfigProvider, Pagination, Dropdown, Menu } from "antd";
+import { FaLink, FaEllipsisH } from "react-icons/fa";
 import NewHeader from "../../Layout/NewHeader";
 import FloatButton from "../../ui/FloatButton";
 import TagSelect from "../../ui/TagSelect";
@@ -68,6 +68,47 @@ const Bucket_Gridview = () => {
     });
   };
 
+  const bucketmenu = (
+    <Menu
+      items={[
+        {
+          key: "1",
+          label: "제목 수정",
+        },
+        {
+          key: "2",
+          label: "삭제",
+        },
+        {
+          key: "3",
+          label: "공유",
+          disabled: true,
+        },
+        {
+          key: "4",
+          label: "복사",
+          disabled: true,
+        },
+      ]}
+    />
+  );
+
+  // 드롭다운 메뉴
+  const linkmenu = (
+    <Menu
+      items={[
+        {
+          key: "1",
+          label: "제목 수정",
+        },
+        {
+          key: "2",
+          label: "삭제",
+        },
+      ]}
+    />
+  );
+
   return (
     <div className="absolute top-0 left-0 w-full bg-[#fcefef] z-0 h-[2139px]">
       {/* Border */}
@@ -82,7 +123,23 @@ const Bucket_Gridview = () => {
       <NewHeader />
       {/* Bucket Title */}
       <div className="relative w-full text-center py-4 top-[254px]">
-        <h1 className="text-[40px] font-bold text-primary_text">{bucketTitle}</h1>
+        <h1 className="text-[40px] font-bold text-primary_text">
+          {bucketTitle}
+        </h1>
+        {/* 제목 옆 드롭다운 메뉴 */}
+        <div
+          className="absolute flex justify-end items-center pr-4"
+          style={{
+            width: "80%",
+            left: "10%",
+            top: 4, // 제목 상단 정렬
+            height: "100%", // 제목 영역 내 중앙 정렬 유지
+          }}
+        >
+          <Dropdown overlay={bucketmenu} trigger={["click"]}>
+            <FaEllipsisH className="text-xl cursor-pointer text-[#959595]" />
+          </Dropdown>
+        </div>
       </div>
       {/* 전체 선택 체크박스 */}
       <div
@@ -141,7 +198,6 @@ const Bucket_Gridview = () => {
           {/* 내부 구조 */}
           <div className="flex items-center h-full px-4">
             {/* 체크박스 */}
-
             <input
               type="checkbox"
               id={`bucket-${index}`}
@@ -184,6 +240,12 @@ const Bucket_Gridview = () => {
                 <div className="w-[1px] h-[20px] mx-4 bg-[#959595]" />
                 <span>{bucket.dateCreated}</span>
               </div>
+            </div>
+            {/* 드롭다운 메뉴 */}
+            <div className="absolute right-4 top-4">
+              <Dropdown overlay={linkmenu} trigger={["click"]}>
+                <FaEllipsisH className="text-xl cursor-pointer text-[#959595]" />
+              </Dropdown>
             </div>
             {/* Tags */}
             <div className="ml-4 flex-1">
