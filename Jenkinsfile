@@ -1,49 +1,82 @@
 pipeline {
-    agent any
+    agent {
+        kubernetes {
+            label 'nodejs-build-pod'
+            defaultContainer 'nodejs'
+            yaml """
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: nodejs-build
+spec:
+  containers:
+  - name: nodejs
+    image: node:node:23.3.0-slim
+    command:
+    - cat
+    tty: true
+"""
+        }
+    }
     environment {
-        S3_BUCKET = 'sean-local-fe-test'
+        S3_BUCKET = 'your-s3-bucket-name'
+        AWS_DEFAULT_REGION = 'ap-northeast-2'
     }
     stages {
-        /*stage('Checkout') {
+        stage('Checkout') {
             steps {
-                checkout scm
-                //git 'https://github.com/animal-squad/project-s-FE.git'
+                container('nodejs') {
+                    checkout scm
+                }
             }
-        }*/
+        }
+        stage('Install Dependencies') {
+            steps {
+                container('nodejs') {
+                    sh 'npm install'
+                }
+            }
+        }
         stage('Build') {
             steps {
-                sh 'npm install' //install dependancy
-                sh 'npm run build' //
+                container('nodejs') {
+                    sh 'npm run build'
+                }
             }
         }
         stage('Deploy to S3') {
             steps {
-                withAWS(region:'ap-northeast-2', credentials:'AWS_CREDENTIALS') {
-                    s3Upload acl: 'PublicRead', bucket: "${env.S3_BUCKET}", path: '', workingDir: 'build', includePathPattern: '**/*'
+                withAWS(region: "${AWS_DEFAULT_REGION}", credentials: 'AWS_CREDENTIALS') {
+                    s3Upload(
+                        acl: 'PublicRead',
+                        bucket: "${S3_BUCKET}",
+                        path: '',
+                        workingDir: 'build',
+                        includePathPattern: '**/*'
+                    )
                 }
-            }
-        }
-        stage('Clean Workspace') {
-            steps {
-                cleanWs ()
             }
         }
     }
     post {
         always {
+            cleanWs()
             script {
                 currentBuild.result = currentBuild.result ?: 'SUCCESS'
             }
             echo "Build Result: ${currentBuild.result}"
             withCredentials([string(credentialsId: 'Discord-Webhook', variable: 'DISCORD')]) {
-                discordSend title: "빌드 결과: ${env.JOB_NAME}",
-                            description: """
-                            **커밋 메시지**: `${env.GIT_COMMIT_MESSAGE}`
-                            **커밋 ID**: `${env.GIT_COMMIT_SHORT}`
-                            **빌드 번호**: `#${env.BUILD_NUMBER}`
-                            **상태**: ${currentBuild.result == 'SUCCESS' ? '🟢 **성공**' : '❌ **실패**'}
-                            """,
-                            webhookURL: DISCORD
+                discordSend(
+                    title: "Build Result: ${env.JOB_NAME}",
+                    description: """
+                    **Commit Message**: `${env.GIT_COMMIT_MESSAGE}`
+                    **Commit ID**: `${env.GIT_COMMIT_SHORT}`
+                    **Build Number**: `#${env.BUILD_NUMBER}`
+                    **Status**: ${currentBuild.result == 'SUCCESS' ? '🟢 **Success**' : '❌ **Failure**'}
+                    """,
+                    webhookURL: DISCORD
+                )
             }
         }
     }
