@@ -4,15 +4,16 @@ pipeline {
         S3_BUCKET = 'sean-local-fe-test'
     }
     stages {
-        stage('Checkout') {
+        /*stage('Checkout') {
             steps {
                 checkout scm
                 //git 'https://github.com/animal-squad/project-s-FE.git'
             }
-        }
+        }*/
         stage('Build') {
             steps {
-                sh 'npm run build'
+                sh 'npm install' //install dependancy
+                sh 'npm run build' //
             }
         }
         stage('Deploy to S3') {
@@ -20,6 +21,11 @@ pipeline {
                 withAWS(region:'ap-northeast-2', credentials:'AWS_CREDENTIALS') {
                     s3Upload acl: 'PublicRead', bucket: "${env.S3_BUCKET}", path: '', workingDir: 'build', includePathPattern: '**/*'
                 }
+            }
+        }
+        stage('Clean Workspace') {
+            stpes {
+                cleanWs ()
             }
         }
     }
