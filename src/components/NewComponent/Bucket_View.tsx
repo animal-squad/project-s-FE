@@ -1,7 +1,8 @@
 import React from "react";
 import { ConfigProvider, Pagination } from "antd";
-import NewHeader from "../Layout/NewHeader";
-import Searchbox from "../ui/Searchbox";
+import NewHeader from "../../Layout/NewHeader";
+import Searchbox from "../../ui/Searchbox";
+import FloatButton from "../../ui/FloatButton";
 
 const Bucket_Gridview = () => {
   const bucketData = Array(10).fill({
@@ -13,7 +14,7 @@ const Bucket_Gridview = () => {
   });
 
   return (
-    <div className="absolute h-[2139px] top-0 left-0 w-full h-full bg-[#fcefef] z-0">
+    <div className="absolute h-[2149px] top-0 left-0 w-full h-full bg-[#fcefef] z-0">
       {/* Border */}
       <div
         className="h-[2059px] absolute bg-[#fff6f1] rounded-[19px] mt-10 drop-shadow-2xl"
@@ -103,9 +104,7 @@ const Bucket_Gridview = () => {
         </ConfigProvider>
       </div>
       {/* FloatButton */}
-      <div className="fixed bottom-8 right-12 w-[70px] h-[70px] bg-[#c69172] rounded-full shadow-lg flex items-center justify-center">
-        <span className="text-white text-[32px] font-semibold">+</span>
-      </div>
+      <FloatButton onClick={() => console.log("FloatButton clicked!")} />
     </div>
   );
 };
