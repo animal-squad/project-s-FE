@@ -5,7 +5,7 @@ pipeline {
         AWS_DEFAULT_REGION = 'ap-northeast-2'
     }
     stages {
-        stage('Clean Workspace') {
+        stage('Clean Workspace before start') {
             steps {
                 cleanWs ()
             }
@@ -33,7 +33,7 @@ pipeline {
                 }
             }
         }
-        stage('Clean Workspace') {
+        stage('Clean Workspace after CD') {
             steps {
                 cleanWs ()
             }
