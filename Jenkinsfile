@@ -6,7 +6,8 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/animal-squad/project-s-FE.git'
+                checkout scm
+                //git 'https://github.com/animal-squad/project-s-FE.git'
             }
         }
         stage('Build') {
