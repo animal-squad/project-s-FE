@@ -32,7 +32,7 @@ pipeline {
                         acl: 'PublicRead',
                         bucket: "${S3_BUCKET}",
                         path: '',
-                        workingDir: 'build',
+                        workingDir: 'dist',
                         includePathPattern: '**/*'
                     )
                 }
