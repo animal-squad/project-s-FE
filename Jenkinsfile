@@ -1,46 +1,18 @@
 pipeline {
-    agent any /*{
-        kubernetes {
-            label 'nodejs-build-pod'
-            defaultContainer 'nodejs'
-            yaml """
-apiVersion: v1
-kind: Pod
-metadata:
-  labels:
-    app: nodejs-build
-spec:
-  containers:
-  - name: nodejs
-    image: node:node:23.3.0-slim
-    command:
-    - cat
-    tty: true
-"""
-        }
-    }*/
+    agent any
     environment {
         S3_BUCKET = 'sean-local-fe-test'
         AWS_DEFAULT_REGION = 'ap-northeast-2'
     }
     stages {
-        /*stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }*/
         stage('Install Dependencies') {
             steps {
-                    {
-                    sh 'npm install'
-                }
+                sh 'npm install'
             }
         }
         stage('Build') {
             steps {
-                {
-                    sh 'npm run build'
-                }
+                sh 'npm run build'
             }
         }
         stage('Deploy to S3') {
