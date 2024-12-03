@@ -17,7 +17,7 @@ pipeline {
         }
         stage('Deploy to S3') {
             steps {
-                withCredentials(region:'ap-northeast-2', credentials:'AWS_CREDENTIALS') {
+                withAWS(region:'ap-northeast-2', credentials:'AWS_CREDENTIALS') {
                     s3Upload acl: 'PublicRead', bucket: "${env.S3_BUCKET}", path: '', workingDir: 'build', includePathPattern: '**/*'
                 }
             }
