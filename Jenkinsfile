@@ -56,10 +56,14 @@ spec:
                 }
             }
         }
+        stage('Clean Workspace') {
+            steps {
+                cleanWs ()
+            }
+        }
     }
     post {
         always {
-            cleanWs()
             script {
                 currentBuild.result = currentBuild.result ?: 'SUCCESS'
             }
