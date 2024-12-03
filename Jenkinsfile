@@ -5,6 +5,11 @@ pipeline {
         AWS_DEFAULT_REGION = 'ap-northeast-2'
     }
     stages {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs ()
+            }
+        }
         stage('Install Dependencies') {
             steps {
                 sh 'npm install'
