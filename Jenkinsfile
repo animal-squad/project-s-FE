@@ -29,7 +29,7 @@ pipeline {
             steps {
                 withAWS(region: "${AWS_DEFAULT_REGION}", credentials: 'AWS_CREDENTIALS') {
                     s3Upload(
-                        acl: 'PublicRead',
+                        //acl: 'PublicRead',
                         bucket: "${S3_BUCKET}",
                         path: '',
                         workingDir: 'dist',
