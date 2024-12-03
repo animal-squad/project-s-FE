@@ -20,7 +20,7 @@ spec:
         }
     }*/
     environment {
-        S3_BUCKET = 'your-s3-bucket-name'
+        S3_BUCKET = 'sean-local-fe-test'
         AWS_DEFAULT_REGION = 'ap-northeast-2'
     }
     stages {
@@ -31,14 +31,14 @@ spec:
         }*/
         stage('Install Dependencies') {
             steps {
-                container('nodejs') {
+                    {
                     sh 'npm install'
                 }
             }
         }
         stage('Build') {
             steps {
-                container('nodejs') {
+                {
                     sh 'npm run build'
                 }
             }
