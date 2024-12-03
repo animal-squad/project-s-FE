@@ -1,5 +1,5 @@
 pipeline {
-    agent {
+    agent any /*{
         kubernetes {
             label 'nodejs-build-pod'
             defaultContainer 'nodejs'
@@ -18,19 +18,17 @@ spec:
     tty: true
 """
         }
-    }
+    }*/
     environment {
         S3_BUCKET = 'your-s3-bucket-name'
         AWS_DEFAULT_REGION = 'ap-northeast-2'
     }
     stages {
-        stage('Checkout') {
+        /*stage('Checkout') {
             steps {
-                container('nodejs') {
-                    checkout scm
-                }
+                checkout scm
             }
-        }
+        }*/
         stage('Install Dependencies') {
             steps {
                 container('nodejs') {
