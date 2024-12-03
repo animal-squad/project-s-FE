@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        S3_BUCKET = 'sean-local-fe-test'
+        S3_BUCKET = 'linket-web-hosting-for-test'
         AWS_DEFAULT_REGION = 'ap-northeast-2'
     }
     stages {
