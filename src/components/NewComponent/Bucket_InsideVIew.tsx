@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   ConfigProvider,
   Pagination,
@@ -7,6 +7,8 @@ import {
   Modal,
   message,
   Input,
+  Switch,
+  Button,
 } from "antd";
 import { FaLink, FaEllipsisH } from "react-icons/fa";
 import NewHeader from "../../Layout/NewHeader";
@@ -16,13 +18,16 @@ import { useLinkStore } from "../../store/linkStore";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import debounce from "lodash/debounce";
 
 const Bucket_Gridview: React.FC = () => {
-  const { links, title, linkCount, isMine, fetchLinks } = useLinkStore();
+  const { links, title, linkCount, isMine, isShared, fetchLinks } =
+    useLinkStore();
   const { bucketId } = useParams<{ bucketId: string }>(); // URL에서 bucketId 추출
 
   const navigate = useNavigate();
 
+  // <체크박스 및 네비게이션 바>
   // 각 항목의 체크 상태를 관리하는 배열
   const [checkedItems, setCheckedItems] = useState<boolean[]>(
     new Array(links.length).fill(false)
@@ -55,12 +60,15 @@ const Bucket_Gridview: React.FC = () => {
     setCheckedItems(newCheckedItems);
   };
 
-  // 제목 수정 Modal 열렸는지 여부
+  // <제목 수정 모달>
+  // 제목 수정 모달 열렸는지 여부
   const [isTitleModalOpen, setIsTitleModalOpen] = useState(false);
+
+  // 새로운 제목 (기존 제목과 비교하기 위해서)
   const [newTitle, setNewTitle] = useState("");
 
   // 바구니 제목 수정 모달 열기
-  const openEditModal = () => {
+  const openTitleModal = () => {
     setNewTitle(title || ""); // 기본값으로 현재 제목 설정
     setIsTitleModalOpen(true);
   };
@@ -95,6 +103,87 @@ const Bucket_Gridview: React.FC = () => {
       message.info("변경 사항이 없습니다.");
     }
   };
+
+  // <바구니 공유 모달>
+  // 바구니 공유 모달 열렸는지 여부
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+
+  // URL 상태관리
+  const [url, setUrl] = useState("");
+
+  // 모달 초기 상태 저장용 (공유 여부 초기화용)
+  const [initialPublicState, setInitialPublicState] = useState(false); 
+
+  // 바구니 공유 모달 열기
+  const openShareModal = () => {
+    setIsShareModalOpen(true);
+  };
+
+  // 바구니 공유 모달 닫기
+  const handleShareCancel = () => {
+    setIsPublic(initialPublicState);
+    setUrl(initialPublicState ? window.location.href : "");
+    setIsShareModalOpen(false);
+  };
+
+  // Switch 상태
+  const [isPublic, setIsPublic] = useState(false);
+
+  // 스위치 변경
+  const handleSwitchChange = (checked: boolean) => {
+    setIsPublic(checked);
+    setUrl(checked ? window.location.href : "");
+    debouncedShare();
+  };
+
+  // URL 주소 복사 로직
+  const handleCopy = () => {
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        console.log("URL copied to clipboard:", url);
+        message.success("공유 URL이 복사되었습니다.");
+      })
+      .catch((err) => {
+        console.error("Failed to copy URL:", err);
+      });
+  };
+
+  // 바구니 공유 로직
+  const handleShare = () => {
+    axios
+      .put(
+        `${import.meta.env.VITE_BACKEND_DOMAIN}/api/bucket/${bucketId}/share`,
+        {
+          permission: isPublic,
+        },
+        { withCredentials: true }
+      )
+      .then((response) => {
+        message.success(
+          isPublic
+            ? "바구니가 공개 상태로 전환되었습니다."
+            : "바구니가 비공개 상태로 전환되었습니다."
+        );
+        console.log("Permission updated:", response.data);
+      })
+      .catch((error) => {
+        if (error.response?.status === 401) {
+          navigate("/unauthorized"); // 401 에러 발생 시 /unauthorized로 리디렉션
+        } else {
+          console.error("Failed to update permission:", error);
+        }
+      });
+  };
+
+  // 바구니 debounce 함수
+  const debouncedShare = useCallback(
+    debounce(() => {
+      handleShare();
+    }, 500),
+    []
+  );
+
   // 태그 선택 관리 배열
   const [selectedTags, setSelectedTags] = useState<Record<string, string[]>>(
     {}
@@ -144,19 +233,18 @@ const Bucket_Gridview: React.FC = () => {
 
   // 제목 수정
   const handleEditTitle = () => {
-    openEditModal();
-    // 제목 수정 로직 추가
+    openTitleModal();
   };
 
   // 삭제
   const handleDeleteBucket = () => {
-    console.log("버킷 삭제 버튼 클릭됨");
     // 삭제 로직 추가
   };
 
   // 공유
   const handleShareBucket = () => {
-    console.log("공유 버튼 클릭됨");
+    setInitialPublicState(isShared);
+    openShareModal();
     // 공유 로직 추가
   };
 
@@ -438,6 +526,32 @@ const Bucket_Gridview: React.FC = () => {
           onChange={(e) => setNewTitle(e.target.value)}
           placeholder="새로운 제목을 입력하세요"
         />
+      </Modal>
+      <Modal
+        title="바구니 공유"
+        open={isShareModalOpen}
+        footer={null}
+        onCancel={handleShareCancel}
+      >
+        <div className="flex flex-col items-center mt-4 gap-4">
+          <div className="flex justify-center items-center gap-2">
+            <span>Private</span>
+            <Switch
+              size="small"
+              onChange={handleSwitchChange}
+              checked={isPublic}
+            />
+            <span>Public</span>
+          </div>
+          {isPublic && (
+            <div className="flex items-center gap-2 border p-2 rounded-md">
+              <span>{url}</span>
+              <Button size="small" onClick={handleCopy}>
+                복사
+              </Button>
+            </div>
+          )}
+        </div>
       </Modal>
     </div>
   );
