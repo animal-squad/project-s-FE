@@ -2,12 +2,12 @@
 import React, { useEffect } from "react";
 import FolderComponent from "./FolderComponent";
 import { useNavigate } from "react-router-dom";
-import { useFolderStore } from "../store/FileIndexStore";
+import { useBucketStore } from "../store/BucketStore";
 
 const FolderList: React.FC = () => {
   const navigate = useNavigate();
   const { folders, page, setSelectedFolderIndex, fetchFolders } =
-    useFolderStore();
+  useBucketStore();
 
   useEffect(() => {
     fetchFolders(page, navigate); // 컴포넌트 로드 시 항상 데이터 가져오기

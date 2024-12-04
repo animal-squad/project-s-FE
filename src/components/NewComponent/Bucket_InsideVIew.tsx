@@ -4,22 +4,16 @@ import { FaLink, FaEllipsisH } from "react-icons/fa";
 import NewHeader from "../../Layout/NewHeader";
 import FloatButton from "../../ui/FloatButton";
 import TagSelect from "../../ui/TagSelect";
+import { useLinkStore } from "../../store/linkStore";
+import { useParams } from "react-router-dom";
 
-const Bucket_Gridview = () => {
-  const bucketData = Array(10).fill({
-    title: "실리카겔 (Silica Gel) - NO PAIN [MV]",
-    origin: "https://youtube.com",
-    dateCreated: "2024.11.26",
-    count: 5,
-    imageUrl: "https://via.placeholder.com/113x106",
-    tags: ["극락도 락이다", "나락도 락이다", "느에에에엥"],
-  });
-
-  const bucketTitle = "My Bucket Title"; // Bucket Title
+const Bucket_Gridview: React.FC = () => {
+  const { links, title, linkCount, isMine, fetchLinks } = useLinkStore();
+  const { bucketId } = useParams<{ bucketId: string }>(); // URL에서 bucketId 추출
 
   // 각 항목의 체크 상태를 관리하는 배열
   const [checkedItems, setCheckedItems] = useState<boolean[]>(
-    new Array(bucketData.length).fill(false)
+    new Array(links.length).fill(false)
   );
 
   // 상단 네비게이션 바 표시 상태
@@ -38,7 +32,7 @@ const Bucket_Gridview = () => {
 
   // 전체 선택/해제 핸들러
   const handleSelectAll = () => {
-    const newCheckedItems = new Array(bucketData.length).fill(!isAllSelected);
+    const newCheckedItems = new Array(links.length).fill(!isAllSelected);
     setCheckedItems(newCheckedItems);
   };
 
@@ -79,6 +73,23 @@ const Bucket_Gridview = () => {
     });
   };
 
+  // URL에서 origin 추출
+  const getOriginFromUrl = (url: string): string => {
+    try {
+      return new URL(url).origin;
+    } catch {
+      return "Invalid URL";
+    }
+  };
+
+  useEffect(() => {
+    if (bucketId) {
+      fetchLinks(bucketId, (path) => {
+        window.location.href = path; // 리디렉션 처리
+      });
+    }
+  }, [bucketId, fetchLinks]);
+
   const bucketmenu = (
     <Menu
       items={[
@@ -93,12 +104,12 @@ const Bucket_Gridview = () => {
         {
           key: "3",
           label: "공유",
-          disabled: true,
+          disabled: isMine? true: false,
         },
         {
           key: "4",
           label: "복사",
-          disabled: true,
+          disabled: isMine? false: true,
         },
       ]}
     />
@@ -129,10 +140,12 @@ const Bucket_Gridview = () => {
         }`}
       >
         <div className="flex items-center justify-between px-6 py-4">
-          <span className="text-lg text-white font-semibold">{checkedCount}개 선택됨</span>
+          <span className="text-lg text-white font-semibold">
+            {checkedCount}개 선택됨
+          </span>
           <button
             onClick={() => {
-              setCheckedItems(new Array(bucketData.length).fill(false));
+              setCheckedItems(new Array(links.length).fill(false));
             }}
             className="px-4 py-2 bg-red-500 text-white rounded-lg"
           >
@@ -151,9 +164,7 @@ const Bucket_Gridview = () => {
       <NewHeader />
       {/* Bucket Title */}
       <div className="relative w-full text-center py-4 top-[254px]">
-        <h1 className="text-[40px] font-bold text-primary_text">
-          {bucketTitle}
-        </h1>
+        <h1 className="text-[40px] font-bold text-primary_text">{title}</h1>
         {/* 제목 옆 드롭다운 메뉴 */}
         <div
           className="absolute flex justify-end items-center pr-4"
@@ -212,7 +223,7 @@ const Bucket_Gridview = () => {
           전체 선택
         </label>
       </div>
-      {bucketData.map((bucket, index) => (
+      {links.map((link, index) => (
         <div
           key={index}
           className="absolute bg-white rounded-[14px] border border-[#b4b4b4]"
@@ -256,17 +267,17 @@ const Bucket_Gridview = () => {
             </label>
             {/* FaLink 아이콘 */}
             <div className="w-[113px] h-[106px] flex items-center justify-center rounded-3xl">
-              <FaLink className="text-[#959595] text-4xl ml-2" />
+              <FaLink className="text-[#959595] text-4xl" />
             </div>
             {/* 텍스트 정보 */}
-            <div className="ml-4 flex-1 min-w-0">
+            <div className="flex-1 min-w-0">
               <div className="text-black text-2xl overflow-hidden whitespace-nowrap text-ellipsis max-w-full">
-                {bucket.title}
+                {link.title || "Untitled"}
               </div>
-              <div className="flex items-center text-[#959595] text-xl font-semibold mt-2">
-                <span>{bucket.origin}</span>
+              <div className="flex items-center text-[#959595] text-m font-semibold mt-2">
+                <span>{getOriginFromUrl(link.URL)}</span>
                 <div className="w-[1px] h-[20px] mx-4 bg-[#959595]" />
-                <span>{bucket.dateCreated}</span>
+                <span>{new Date(link.createdAt).toLocaleDateString()}</span>
               </div>
             </div>
             {/* 드롭다운 메뉴 */}
@@ -276,11 +287,11 @@ const Bucket_Gridview = () => {
               </Dropdown>
             </div>
             {/* Tags */}
-            <div className="ml-4 flex-1">
+            <div className="flex-1">
               <TagSelect
-                value={selectedTags[index.toString()] || bucket.tags}
-                onChange={(tags) => handleTagChange(index.toString(), tags)}
-                linkId={index.toString()}
+                value={selectedTags[link.linkId] || link.tags}
+                onChange={(tags) => handleTagChange(link.linkId, tags)}
+                linkId={link.linkId}
               />
             </div>
           </div>
@@ -301,7 +312,7 @@ const Bucket_Gridview = () => {
             },
           }}
         >
-          <Pagination defaultCurrent={1} total={50} />
+          <Pagination defaultCurrent={1} total={linkCount || 1} />
         </ConfigProvider>
       </div>
       {/* FloatButton */}

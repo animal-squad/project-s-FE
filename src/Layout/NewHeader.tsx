@@ -1,6 +1,9 @@
 import React from "react";
+import { userStore } from "../store/userStore";
 
 const NewHeader = () => {
+  const { photo } = userStore();
+
   return (
     <div
       className="h-[140px] absolute bg-[#c69172] top-[40px] rounded-t-[19px]"
@@ -18,7 +21,7 @@ const NewHeader = () => {
         {/* 프로필 */}
         <img
           className="w-[114px] h-[114px] rounded-full"
-          src="https://via.placeholder.com/114x114"
+          src={photo ? photo : "https://via.placeholder.com/114x114"}
           alt="Profile"
         />
       </div>
