@@ -104,6 +104,43 @@ const Bucket_Gridview: React.FC = () => {
     }
   };
 
+  // <바구니 삭제 모달>
+  // 바구니 삭제 모달 열렸는지 여부
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  // 바구니 삭제 모달 열기
+  const openDeleteModal = () => {
+    setIsDeleteModalOpen(true);
+  };
+
+  // 바구니 삭제 모달 닫기
+  const handleDeleteCancel = () => {
+    setIsDeleteModalOpen(false);
+  };
+
+  // 바구니 삭제 로직
+  const handleDelete = () => {
+    axios
+      .delete(`${import.meta.env.VITE_BACKEND_DOMAIN}/api/bucket/${bucketId}`, {
+        withCredentials: true,
+      })
+      .then((response) => {
+        console.log("Bucket deleted:", response.data);
+        message.success("바구니가 성공적으로 삭제되었습니다.");
+        navigate("/main/bucket"); // 삭제 후 메인 페이지로 이동
+      })
+      .catch((error) => {
+        if (error.response?.status === 401) {
+          navigate("/unauthorized"); // 401 에러 발생 시 /unauthorized로 리디렉션
+        } else {
+          console.error("Failed to delete bucket:", error);
+        }
+      })
+      .finally(() => {
+        setIsDeleteModalOpen(false);
+      });
+  };
+
   // <바구니 공유 모달>
   // 바구니 공유 모달 열렸는지 여부
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -112,7 +149,7 @@ const Bucket_Gridview: React.FC = () => {
   const [url, setUrl] = useState("");
 
   // 모달 초기 상태 저장용 (공유 여부 초기화용)
-  const [initialPublicState, setInitialPublicState] = useState(false); 
+  const [initialPublicState, setInitialPublicState] = useState(false);
 
   // 바구니 공유 모달 열기
   const openShareModal = () => {
@@ -238,7 +275,7 @@ const Bucket_Gridview: React.FC = () => {
 
   // 삭제
   const handleDeleteBucket = () => {
-    // 삭제 로직 추가
+    openDeleteModal();
   };
 
   // 공유
@@ -551,6 +588,19 @@ const Bucket_Gridview: React.FC = () => {
               </Button>
             </div>
           )}
+        </div>
+      </Modal>
+      <Modal
+        title="바구니 삭제"
+        open={isDeleteModalOpen}
+        onOk={handleDelete}
+        onCancel={handleDeleteCancel}
+        okText="Delete"
+        cancelText="Cancel"
+        okButtonProps={{ danger: true }}
+      >
+        <div className="flex flex-col items-center mt-4 gap-4">
+          <p>바구니를 삭제하시겠습니까?</p>
         </div>
       </Modal>
     </div>
