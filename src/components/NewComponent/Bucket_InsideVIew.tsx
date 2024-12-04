@@ -25,6 +25,8 @@ const Bucket_Gridview: React.FC = () => {
     useLinkStore();
   const { bucketId } = useParams<{ bucketId: string }>(); // URL에서 bucketId 추출
 
+  const fullBucketData = { ...useLinkStore.getState() };
+
   const navigate = useNavigate();
 
   // <체크박스 및 네비게이션 바>
@@ -174,7 +176,7 @@ const Bucket_Gridview: React.FC = () => {
   };
 
   // URL 주소 복사 로직
-  const handleCopy = () => {
+  const handleURLCopy = () => {
     navigator.clipboard
       .writeText(url)
       .then(() => {
@@ -221,6 +223,73 @@ const Bucket_Gridview: React.FC = () => {
     []
   );
 
+  // <바구니 복사 모달>
+  // 바구니 복사 모달 열렸는지 여부
+  const [isCopyModalOpen, setIsCopyModalOpen] = useState(false);
+
+  // 바구니 복사 모달 열기
+  const openCopyModal = () => {
+    setIsCopyModalOpen(true);
+  };
+
+  // 바구니 복사 모달 닫기
+  const handleCopyCancel = () => {
+    setIsCopyModalOpen(false);
+  };
+
+  // 바구니 복사 로직
+  const handleCopy = () => {
+    axios
+      .post(
+        `${import.meta.env.VITE_BACKEND_DOMAIN}/api/bucket/${bucketId}/paste`,
+        {
+          bucket: fullBucketData,
+        },
+        { withCredentials: true }
+      )
+      .then((response) => {
+        message.success("바구니가 복사되었습니다.");
+        console.log("Bucket copied:", response.data);
+        const newBucketId = response.data.bucketId; // 응답에서 새로운 bucketId 추출
+        if (newBucketId) {
+          // 새 창에서 /main/bucket/:newBucketId 열기
+          window.open(`/main/bucket/${newBucketId}`, "_blank");
+        }
+      })
+      .catch((error) => {
+        if (error.response?.status === 401) {
+          navigate("/unauthorized"); // 401 에러 발생 시 /unauthorized로 리디렉션
+        } else {
+          console.error("Failed to copy bucket:", error);
+        }
+      });
+  };
+
+  // <바구니 기능 모음>
+  // 제목 수정
+  const handleEditTitle = () => {
+    openTitleModal();
+  };
+
+  // 삭제
+  const handleDeleteBucket = () => {
+    openDeleteModal();
+  };
+
+  // 공유
+  const handleShareBucket = () => {
+    setInitialPublicState(isShared);
+    openShareModal();
+    // 공유 로직 추가
+  };
+
+  // 복사
+  const handleCopyBucket = () => {
+    openCopyModal();
+    // 복사 로직 추가
+  };
+
+  // <태그>
   // 태그 선택 관리 배열
   const [selectedTags, setSelectedTags] = useState<Record<string, string[]>>(
     {}
@@ -268,29 +337,6 @@ const Bucket_Gridview: React.FC = () => {
     }
   }, [bucketId, fetchLinks]);
 
-  // 제목 수정
-  const handleEditTitle = () => {
-    openTitleModal();
-  };
-
-  // 삭제
-  const handleDeleteBucket = () => {
-    openDeleteModal();
-  };
-
-  // 공유
-  const handleShareBucket = () => {
-    setInitialPublicState(isShared);
-    openShareModal();
-    // 공유 로직 추가
-  };
-
-  // 복사
-  const handleCopyBucket = () => {
-    console.log("복사 버튼 클릭됨");
-    // 복사 로직 추가
-  };
-
   const bucketmenu = (
     <Menu
       items={[
@@ -308,13 +354,13 @@ const Bucket_Gridview: React.FC = () => {
           key: "3",
           label: "공유",
           onClick: () => handleShareBucket(),
-          disabled: isMine ? true : false,
+          disabled: isMine ? false : true,
         },
         {
           key: "4",
           label: "복사",
           onClick: () => handleCopyBucket(),
-          disabled: isMine ? false : true,
+          disabled: isMine ? true : false,
         },
       ]}
     />
@@ -536,6 +582,7 @@ const Bucket_Gridview: React.FC = () => {
       </div>
       {/* FloatButton */}
       <FloatButton onClick={() => console.log("FloatButton clicked!")} />
+      {/* 바구니 제목 모달 */}
       <Modal
         title="바구니 제목 수정"
         open={isTitleModalOpen}
@@ -564,6 +611,7 @@ const Bucket_Gridview: React.FC = () => {
           placeholder="새로운 제목을 입력하세요"
         />
       </Modal>
+      {/* 바구니 공유 모달 */}
       <Modal
         title="바구니 공유"
         open={isShareModalOpen}
@@ -583,24 +631,52 @@ const Bucket_Gridview: React.FC = () => {
           {isPublic && (
             <div className="flex items-center gap-2 border p-2 rounded-md">
               <span>{url}</span>
-              <Button size="small" onClick={handleCopy}>
+              <Button size="small" onClick={handleURLCopy}>
                 복사
               </Button>
             </div>
           )}
         </div>
       </Modal>
+      {/* 바구니 삭제 모달 */}
       <Modal
         title="바구니 삭제"
         open={isDeleteModalOpen}
         onOk={handleDelete}
         onCancel={handleDeleteCancel}
-        okText="Delete"
-        cancelText="Cancel"
+        okText="삭제"
+        cancelText="취소"
         okButtonProps={{ danger: true }}
       >
         <div className="flex flex-col items-center mt-4 gap-4">
           <p>바구니를 삭제하시겠습니까?</p>
+        </div>
+      </Modal>
+      {/* 바구니 복사 모달 */}
+      <Modal
+        title="바구니 복사"
+        open={isCopyModalOpen}
+        onOk={handleCopy}
+        onCancel={handleCopyCancel}
+        okButtonProps={{
+          style: {
+            backgroundColor: "#c69172",
+            borderColor: "#c69172",
+            color: "white",
+          },
+        }}
+        cancelButtonProps={{
+          style: {
+            backgroundColor: "#ef4444",
+            borderColor: "#ef4444",
+            color: "white",
+          }, // 취소 버튼 스타일도 조정
+        }}
+        okText="복사"
+        cancelText="취소"
+      >
+        <div className="flex flex-col items-center mt-4 gap-4">
+          <p>바구니를 복사하시겠습니까?</p>
         </div>
       </Modal>
     </div>
