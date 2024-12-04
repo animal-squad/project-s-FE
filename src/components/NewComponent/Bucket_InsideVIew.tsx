@@ -1,15 +1,27 @@
 import React, { useState, useEffect } from "react";
-import { ConfigProvider, Pagination, Dropdown, Menu } from "antd";
+import {
+  ConfigProvider,
+  Pagination,
+  Dropdown,
+  Menu,
+  Modal,
+  message,
+  Input,
+} from "antd";
 import { FaLink, FaEllipsisH } from "react-icons/fa";
 import NewHeader from "../../Layout/NewHeader";
 import FloatButton from "../../ui/FloatButton";
 import TagSelect from "../../ui/TagSelect";
 import { useLinkStore } from "../../store/linkStore";
 import { useParams } from "react-router-dom";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Bucket_Gridview: React.FC = () => {
   const { links, title, linkCount, isMine, fetchLinks } = useLinkStore();
   const { bucketId } = useParams<{ bucketId: string }>(); // URL에서 bucketId 추출
+
+  const navigate = useNavigate();
 
   // 각 항목의 체크 상태를 관리하는 배열
   const [checkedItems, setCheckedItems] = useState<boolean[]>(
@@ -43,6 +55,46 @@ const Bucket_Gridview: React.FC = () => {
     setCheckedItems(newCheckedItems);
   };
 
+  // 제목 수정 Modal 열렸는지 여부
+  const [isTitleModalOpen, setIsTitleModalOpen] = useState(false);
+  const [newTitle, setNewTitle] = useState("");
+
+  // 바구니 제목 수정 모달 열기
+  const openEditModal = () => {
+    setNewTitle(title || ""); // 기본값으로 현재 제목 설정
+    setIsTitleModalOpen(true);
+  };
+
+  // 바구니 제목 수정 모달 닫기
+  const handleTitleCancel = () => {
+    setIsTitleModalOpen(false);
+    setNewTitle("");
+  };
+
+  // 제목 변경 로직
+  const handleTitleChange = async () => {
+    if (newTitle && newTitle !== title) {
+      try {
+        await axios.put(
+          `${import.meta.env.VITE_BACKEND_DOMAIN}/api/bucket/${bucketId}`,
+          { title: newTitle },
+          { withCredentials: true }
+        );
+        message.success("바구니 제목이 성공적으로 변경되었습니다!");
+        setIsTitleModalOpen(false);
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          if (error.response?.status === 401) {
+            navigate("/unauthorized");
+          } else {
+            console.error("Failed to update title:", error);
+          }
+        }
+      }
+    } else {
+      message.info("변경 사항이 없습니다.");
+    }
+  };
   // 태그 선택 관리 배열
   const [selectedTags, setSelectedTags] = useState<Record<string, string[]>>(
     {}
@@ -90,30 +142,70 @@ const Bucket_Gridview: React.FC = () => {
     }
   }, [bucketId, fetchLinks]);
 
+  // 제목 수정
+  const handleEditTitle = () => {
+    openEditModal();
+    // 제목 수정 로직 추가
+  };
+
+  // 삭제
+  const handleDeleteBucket = () => {
+    console.log("버킷 삭제 버튼 클릭됨");
+    // 삭제 로직 추가
+  };
+
+  // 공유
+  const handleShareBucket = () => {
+    console.log("공유 버튼 클릭됨");
+    // 공유 로직 추가
+  };
+
+  // 복사
+  const handleCopyBucket = () => {
+    console.log("복사 버튼 클릭됨");
+    // 복사 로직 추가
+  };
+
   const bucketmenu = (
     <Menu
       items={[
         {
           key: "1",
           label: "제목 수정",
+          onClick: () => handleEditTitle(),
         },
         {
           key: "2",
           label: "삭제",
+          onClick: () => handleDeleteBucket(),
         },
         {
           key: "3",
           label: "공유",
-          disabled: isMine? true: false,
+          onClick: () => handleShareBucket(),
+          disabled: isMine ? true : false,
         },
         {
           key: "4",
           label: "복사",
-          disabled: isMine? false: true,
+          onClick: () => handleCopyBucket(),
+          disabled: isMine ? false : true,
         },
       ]}
     />
   );
+
+  // 링크 제목 수정
+  const handleEditLink = () => {
+    console.log("링크 제목 수정 버튼 클릭됨");
+    // 링크 제목 수정 로직 추가
+  };
+
+  // 링크 삭제
+  const handleDeleteLink = () => {
+    console.log("링크 삭제 버튼 클릭됨");
+    // 링크 삭제 로직 추가
+  };
 
   // 드롭다운 메뉴
   const linkmenu = (
@@ -122,10 +214,12 @@ const Bucket_Gridview: React.FC = () => {
         {
           key: "1",
           label: "제목 수정",
+          onClick: () => handleEditLink(),
         },
         {
           key: "2",
           label: "삭제",
+          onClick: () => handleDeleteLink(),
         },
       ]}
     />
@@ -317,6 +411,34 @@ const Bucket_Gridview: React.FC = () => {
       </div>
       {/* FloatButton */}
       <FloatButton onClick={() => console.log("FloatButton clicked!")} />
+      <Modal
+        title="바구니 제목 수정"
+        open={isTitleModalOpen}
+        onOk={handleTitleChange}
+        onCancel={handleTitleCancel}
+        okButtonProps={{
+          style: {
+            backgroundColor: "#c69172",
+            borderColor: "#c69172",
+            color: "white",
+          },
+        }}
+        cancelButtonProps={{
+          style: {
+            backgroundColor: "#ef4444",
+            borderColor: "#ef4444",
+            color: "white",
+          }, // 취소 버튼 스타일도 조정
+        }}
+        okText="변경"
+        cancelText="취소"
+      >
+        <Input
+          value={newTitle}
+          onChange={(e) => setNewTitle(e.target.value)}
+          placeholder="새로운 제목을 입력하세요"
+        />
+      </Modal>
     </div>
   );
 };
