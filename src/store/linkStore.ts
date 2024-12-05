@@ -10,6 +10,7 @@ interface Link {
   views: number;
   tags: string[];
   title: string | null;
+  keywords: string[];
 }
 
 interface LinkStore {
@@ -38,6 +39,7 @@ export const useLinkStore = create<LinkStore>((set) => ({
       views: 10,
       tags: ["example", "test"],
       title: "Example Link",
+      keywords: [],
     },
     {
       linkId: "2",
@@ -48,6 +50,7 @@ export const useLinkStore = create<LinkStore>((set) => ({
       views: 20,
       tags: ["another", "demo"],
       title: "Another Example",
+      keywords: [],
     },
   ],
   title: "Example Bucket",
