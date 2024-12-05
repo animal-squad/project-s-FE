@@ -1,6 +1,6 @@
 // FileList.tsx
 import React from "react";
-import { useFolderStore } from "../store/FileIndexStore";
+import { useBucketStore } from "../store/BucketStore";
 import FileComponent from "./FileComponent_GridView";
 
 const files = [
@@ -70,7 +70,7 @@ const files = [
 ];
 
 const FileList: React.FC = () => {
-  const selectedFolderIndex = useFolderStore(
+  const selectedFolderIndex = useBucketStore(
     (state) => state.selectedFolderIndex
   );
   console.log(selectedFolderIndex);

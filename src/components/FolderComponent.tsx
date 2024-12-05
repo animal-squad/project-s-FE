@@ -1,7 +1,7 @@
 // FolderComponent.tsx
 import React, { useState } from "react";
 import { Table, Tag, Modal, Input, message } from "antd";
-import { useFolderStore } from "../store/FileIndexStore"; // Zustand store import
+import { useBucketStore } from "../store/BucketStore"; // Zustand store import
 import { useNavigate } from "react-router-dom";
 import { FaPen } from "react-icons/fa";
 import axios from "axios";
@@ -25,8 +25,8 @@ const FolderComponent: React.FC<FolderComponentProps> = ({
 }) => {
   const navigate = useNavigate();
 
-  const { meta, setPage } = useFolderStore();
-  const fetchFolders = useFolderStore((state) => state.fetchFolders);
+  const { meta, setPage } = useBucketStore();
+  const fetchFolders = useBucketStore((state) => state.fetchFolders);
 
   const [isTitleModalOpen, setIsTitleModalOpen] = useState(false);
   const [currentRow, setCurrentRow] = useState<Folder | null>(null);
