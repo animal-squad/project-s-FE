@@ -15,7 +15,7 @@ const App = () => {
   return (
     <Router>
       <Routes>
-        <Route path="" element={<Bucket_Insideview />} />
+        <Route path="" element={<ImagesSliderDemo />} />
         <Route path="/privacypolicy" element={<PrivacyPolicy />} />
         <Route path="/login" element={<Login />} />
         <Route path="/main/bucket" element={<MainPage />} />
