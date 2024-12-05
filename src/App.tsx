@@ -6,6 +6,9 @@ import UnauthorizedPage from "./Pages/UnauthorizedPage";
 import UnsharedPage from "./Pages/UnsharedPage";
 import { ImagesSliderDemo } from "./Pages/LandingPage";
 import PrivacyPolicy from "./Pages/PrivacyPolicyPage";
+import Bucket_view from "./components/NewComponent/Bucket_View";
+import Bucket_Insideview from "./components/NewComponent/Bucket_InsideView";
+
 // endpoint별로 렌더링
 
 const App = () => {

@@ -1,4 +1,4 @@
-// store/FileIndexStore.ts
+// store/bucketstore.ts
 import { create } from "zustand";
 import axios from "axios";
 
@@ -33,7 +33,7 @@ interface FolderState {
   ) => Promise<void>;
 }
 
-export const useFolderStore = create<FolderState>((set) => ({
+export const useBucketStore = create<FolderState>((set) => ({
   // 더미 데이터를 초기값으로 설정
   folders: [],
   meta: {
