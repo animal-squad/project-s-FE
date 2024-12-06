@@ -1,13 +1,13 @@
 pipeline {
     agent {
         kubernetes {
-            defaultContainer "Nodejs"
+            defaultContainer "nodejs"
             yaml '''
 apiVersion: v1
 kind: Pod
 spec:
     containers:
-        - name: Nodejs
+        - name: nodejs
           image: node:22.12.0-alpine
             '''
 
