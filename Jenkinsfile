@@ -28,7 +28,7 @@ spec:
         // }
         stage('Checkout') {
             steps {
-                checkout scm
+                // checkout scm
                 script {
                     env.GIT_COMMIT_SHORT = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
                     env.GIT_COMMIT_MESSAGE = sh(script: 'git log -1 --pretty=%B', returnStdout: true).trim()
