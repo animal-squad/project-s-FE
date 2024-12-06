@@ -9,6 +9,9 @@ spec:
     containers:
         - name: nodejs
           image: node:22.12.0-alpine
+          command:
+            - cat 
+          tty: true
             '''
 
         }
