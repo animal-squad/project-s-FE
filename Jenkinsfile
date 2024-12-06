@@ -1,5 +1,18 @@
 pipeline {
-    agent any
+    agent {
+        kubernetes {
+            defaultContainer "Nodejs"
+            yaml '''
+apiVersion: v1
+kind: Pod
+spec:
+    containers:
+        - name: Nodejs
+          image: node:22.12.0-alpine
+            '''
+
+        }
+    }
     environment {
         S3_BUCKET = 'linket-web-hosting-for-test'
         AWS_DEFAULT_REGION = 'ap-northeast-2'
