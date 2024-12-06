@@ -21,11 +21,11 @@ spec:
         AWS_DEFAULT_REGION = 'ap-northeast-2'
     }
     stages {
-        stage('Clean Workspace before start') {
-            steps {
-                cleanWs ()
-            }
-        }
+        // stage('Clean Workspace before start') {
+        //     steps {
+        //         cleanWs ()
+        //     }
+        // }
         stage('Checkout') {
             steps {
                 checkout scm
@@ -60,11 +60,11 @@ spec:
                 }
             }
         }
-        stage('Clean Workspace after CD') {
-            steps {
-                cleanWs ()
-            }
-        }
+        // stage('Clean Workspace after CD') {
+        //     steps {
+        //         cleanWs ()
+        //     }
+        // }
     }
     post {
         always {
