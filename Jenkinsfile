@@ -21,11 +21,11 @@ spec:
         AWS_DEFAULT_REGION = 'ap-northeast-2'
     }
     stages {
-        // stage('Clean Workspace before start') {
-        //     steps {
-        //         cleanWs ()
-        //     }
-        // }
+         stage('Install Git') {
+             steps {
+                 sh 'apk update && apk add git'
+             }
+         }
         stage('Checkout') {
             steps {
                 // checkout scm
