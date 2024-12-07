@@ -1,18 +1,39 @@
 pipeline {
-    agent any
+    agent {
+        kubernetes {
+            defaultContainer "nodejs"
+            yaml '''
+apiVersion: v1
+kind: Pod
+spec:
+    containers:
+        - name: nodejs
+          image: node:22.12.0-alpine
+          command:
+            - cat 
+          tty: true
+            '''
+
+        }
+    }
     environment {
         S3_BUCKET = 'linket-web-hosting-for-test'
         AWS_DEFAULT_REGION = 'ap-northeast-2'
     }
     stages {
-        stage('Clean Workspace before start') {
+        stage('Install Git') {
             steps {
-                cleanWs ()
+                sh 'apk update && apk add git'
+            }
+        }
+        stage('Configure Git Safe Directory') {
+            steps {
+                sh "git config --global --add safe.directory '*'"
             }
         }
         stage('Checkout') {
             steps {
-                checkout scm
+                // checkout scm
                 script {
                     env.GIT_COMMIT_SHORT = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
                     env.GIT_COMMIT_MESSAGE = sh(script: 'git log -1 --pretty=%B', returnStdout: true).trim()
@@ -44,11 +65,11 @@ pipeline {
                 }
             }
         }
-        stage('Clean Workspace after CD') {
-            steps {
-                cleanWs ()
-            }
-        }
+        // stage('Clean Workspace after CD') {
+        //     steps {
+        //         cleanWs ()
+        //     }
+        // }
     }
     post {
         always {
