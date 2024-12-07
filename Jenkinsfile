@@ -21,11 +21,16 @@ spec:
         AWS_DEFAULT_REGION = 'ap-northeast-2'
     }
     stages {
-         stage('Install Git') {
-             steps {
-                 sh 'apk update && apk add git'
-             }
-         }
+        stage('Install Git') {
+            steps {
+                sh 'apk update && apk add git'
+            }
+        }
+        stage('Configure Git Safe Directory') {
+            steps {
+                sh "git config --global --add safe.directory '*'"
+            }
+        }
         stage('Checkout') {
             steps {
                 // checkout scm
