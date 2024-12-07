@@ -1,13 +1,11 @@
-const defaultTheme = require("tailwindcss/defaultTheme");
-const colors = require("tailwindcss/colors");
-const {
-  default: flattenColorPalette,
-} = require("tailwindcss/lib/util/flattenColorPalette");
+import defaultTheme from "tailwindcss/defaultTheme";
+import colors from "tailwindcss/colors";
+import flattenColorPalette from "tailwindcss/lib/util/flattenColorPalette";
 
 function addVariablesForColors({ addBase, theme }) {
   // 사용자 정의 색상 + 기본 색상 병합
-  let allColors = flattenColorPalette(theme("colors"));
-  let customVars = Object.fromEntries(
+  const allColors = flattenColorPalette(theme("colors"));
+  const customVars = Object.fromEntries(
     Object.entries(allColors).map(([key, val]) => [`--${key}`, val])
   );
 
@@ -18,7 +16,7 @@ function addVariablesForColors({ addBase, theme }) {
 }
 
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+const config = {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -45,3 +43,5 @@ module.exports = {
   },
   plugins: [addVariablesForColors],
 };
+
+export default config;
