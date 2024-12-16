@@ -17,6 +17,7 @@ const App = () => {
         <Route path="" element={<ImagesSliderDemo />} />
         <Route path="/privacypolicy" element={<PrivacyPolicy />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/bucket" element={<Bucket_InsideView />} />
         <Route path="/main/bucket" element={<MainPage />} />
         <Route path="/main/bucket/:bucketId" element={<MainPage />} />
         <Route path="/main/link" element={<MainPage />} />

@@ -289,6 +289,64 @@ const Bucket_Gridview: React.FC = () => {
     // 복사 로직 추가
   };
 
+  // <링크 제목 수정 모달>
+  // 링크 제목 수정 모달 열렸는지 여부
+  const [isLinkTitleModalOpen, setIsLinkTitleModalOpen] = useState(false);
+
+  // 링크 ID 상태관리
+  const [currentLinkId, setCurrentLinkId] = useState<string | null>(null);
+
+  // 수정된 제목 상태관리
+  const [editedLinkTitle, setEditedLinkTitle] = useState<string>("");
+
+  // 링크 제목 수정 모달 열기
+  const openLinkTitleModal = (linkId: string, currentTitle: string) => {
+    setCurrentLinkId(linkId);
+    setEditedLinkTitle(currentTitle);
+    setIsLinkTitleModalOpen(true);
+  };
+
+  // 링크 제목 수정 모달 닫기
+  const closeLinkTitleModal = () => {
+    setIsLinkTitleModalOpen(false);
+    setCurrentLinkId(null);
+    setEditedLinkTitle("");
+  };
+
+  // 링크 제목 저장 요청
+  const handleLinkTitleSave = async () => {
+    if (!currentLinkId || !editedLinkTitle) return;
+
+    try {
+      await axios
+        .put(
+          `${
+            import.meta.env.VITE_BACKEND_DOMAIN
+          }/api/link/${currentLinkId}/title`,
+          { title: editedLinkTitle },
+          { withCredentials: true }
+        )
+        .then(() => {
+          message.success("링크 제목이 성공적으로 수정되었습니다.");
+          setIsLinkTitleModalOpen(false);
+          if (bucketId) {
+            fetchLinks(bucketId, (path) => {
+              window.location.href = path; // 리디렉션 처리
+            });
+          } // 링크 목록 다시 불러오기
+        })
+        .catch((error) => {
+          if (error.response?.status === 401) {
+            navigate("/unauthorized"); // 401 에러 발생 시 리디렉션
+          } else {
+            console.error("Failed to update link title:", error);
+          }
+        });
+    } catch (error) {
+      console.error("Failed to update link title:", error);
+    }
+  };
+
   // <태그>
   // 태그 선택 관리 배열
   const [selectedTags, setSelectedTags] = useState<Record<string, string[]>>(
@@ -377,24 +435,6 @@ const Bucket_Gridview: React.FC = () => {
     console.log("링크 삭제 버튼 클릭됨");
     // 링크 삭제 로직 추가
   };
-
-  // 드롭다운 메뉴
-  const linkmenu = (
-    <Menu
-      items={[
-        {
-          key: "1",
-          label: "제목 수정",
-          onClick: () => handleEditLink(),
-        },
-        {
-          key: "2",
-          label: "삭제",
-          onClick: () => handleDeleteLink(),
-        },
-      ]}
-    />
-  );
 
   return (
     <div className="absolute top-0 left-0 w-full bg-[#fcefef] z-0 h-[2139px]">
@@ -547,7 +587,26 @@ const Bucket_Gridview: React.FC = () => {
             </div>
             {/* 드롭다운 메뉴 */}
             <div className="absolute right-4 top-4">
-              <Dropdown overlay={linkmenu} trigger={["click"]}>
+              <Dropdown
+                overlay={
+                  <Menu
+                    items={[
+                      {
+                        key: "1",
+                        label: "제목 수정",
+                        onClick: () =>
+                          openLinkTitleModal(link.linkId, link.title || ""),
+                      },
+                      {
+                        key: "2",
+                        label: "삭제",
+                        onClick: () => handleDeleteLink(), // 삭제 로직 추가 필요
+                      },
+                    ]}
+                  />
+                }
+                trigger={["click"]}
+              >
                 <FaEllipsisH className="text-xl cursor-pointer text-[#959595]" />
               </Dropdown>
             </div>
@@ -678,6 +737,35 @@ const Bucket_Gridview: React.FC = () => {
         <div className="flex flex-col items-center mt-4 gap-4">
           <p>바구니를 복사하시겠습니까?</p>
         </div>
+      </Modal>
+      {/* 링크 제목 수정 모달 */}
+      <Modal
+        title="링크 제목 수정"
+        open={isLinkTitleModalOpen}
+        onOk={handleLinkTitleSave}
+        onCancel={closeLinkTitleModal}
+        okButtonProps={{
+          style: {
+            backgroundColor: "#c69172",
+            borderColor: "#c69172",
+            color: "white",
+          },
+        }}
+        cancelButtonProps={{
+          style: {
+            backgroundColor: "#ef4444",
+            borderColor: "#ef4444",
+            color: "white",
+          },
+        }}
+        okText="저장"
+        cancelText="취소"
+      >
+        <Input
+          value={editedLinkTitle}
+          onChange={(e) => setEditedLinkTitle(e.target.value)}
+          placeholder="새로운 제목을 입력하세요"
+        />
       </Modal>
     </div>
   );
