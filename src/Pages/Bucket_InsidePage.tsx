@@ -11,10 +11,10 @@ import {
   Button,
 } from "antd";
 import { FaLink, FaEllipsisH } from "react-icons/fa";
-import NewHeader from "../../Layout/NewHeader";
-import FloatButton from "../../ui/FloatButton";
-import TagSelect from "../../ui/TagSelect";
-import { useLinkStore } from "../../store/linkStore";
+import NewHeader from "../Layout/NewHeader";
+import FloatButton from "../ui/FloatButton";
+import TagSelect from "../ui/TagSelect";
+import { useLinkStore } from "../store/linkStore";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -28,6 +28,15 @@ const Bucket_Gridview: React.FC = () => {
   const fullBucketData = { ...useLinkStore.getState() };
 
   const navigate = useNavigate();
+
+  // 렌더링 시 fetch
+  useEffect(() => {
+    if (bucketId) {
+      fetchLinks(bucketId, (path) => {
+        window.location.href = path; // 리디렉션 처리
+      });
+    }
+  }, [bucketId, fetchLinks]); // 의존성 배열에 bucketId와 fetchLinks 추가
 
   // <체크박스 및 네비게이션 바>
   // 각 항목의 체크 상태를 관리하는 배열
@@ -608,10 +617,10 @@ const Bucket_Gridview: React.FC = () => {
       </div>
       {/* 전체 선택 체크박스 */}
       <div
-        className="absolute flex items-center top-[373px] ml-4"
+        className="absolute flex items-center top-[373px] justify-end"
         style={{
           width: "80%",
-          left: "10%",
+          right: "10%", // 오른쪽 여백 설정
         }}
       >
         <input
@@ -623,7 +632,7 @@ const Bucket_Gridview: React.FC = () => {
         />
         <label
           htmlFor="selectAll"
-          className="w-8 h-8 border-2 border-[#b4b4b4] rounded-sm flex items-center justify-center cursor-pointer peer-checked:bg-[#c69172] peer-checked:border-[#c69172] ml-6"
+          className="w-8 h-8 border-2 border-[#b4b4b4] rounded-sm flex items-center justify-center cursor-pointer peer-checked:bg-[#c69172] peer-checked:border-[#c69172] mr-6"
         >
           {isAllSelected && (
             <svg
@@ -643,7 +652,7 @@ const Bucket_Gridview: React.FC = () => {
           )}
         </label>
         <label
-          className="ml-8 text-black text-[20px] font-semibold"
+          className="mr-4 text-black text-[20px] font-semibold"
           htmlFor="selectAll"
         >
           전체 선택
