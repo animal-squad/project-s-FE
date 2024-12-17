@@ -4,7 +4,7 @@ import NewHeader from "../Layout/NewHeader";
 import Searchbox from "../ui/Searchbox";
 import FloatButton from "../ui/FloatButton";
 import { useBucketStore } from "../store/BucketStore";
-import { useSearchLinkStore } from "../store/searchLinkStore";
+import { useSearchLinkStore } from "../store/TagSearchStore";
 import { useNavigate } from "react-router-dom";
 
 const Bucket_Gridview = () => {

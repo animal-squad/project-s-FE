@@ -12,23 +12,25 @@ import { FaLink, FaEllipsisH } from "react-icons/fa";
 import NewHeader from "../Layout/NewHeader";
 import FloatButton from "../ui/FloatButton";
 import TagSelect from "../ui/TagSelect";
+import { useLinkSearchStore } from "../store/LinkSearchStore";
 import { useSearchLinkStore } from "../store/TagSearchStore";
 import debounce from "lodash/debounce";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Searchbox from "../ui/Searchbox";
 
-const Link_View = () => {
-  const { links, meta, fetchLinks, searchTags, fetchSearchTags, setTagPage } =
-    useSearchLinkStore();
+const Link_Search = () => {
+  const { links, meta, query, fetchSearchResults, setPage } =
+    useLinkSearchStore();
+  const { fetchSearchTags } = useSearchLinkStore();
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchLinks(searchTags, (path) => {
+    fetchSearchResults(query, meta?.page, meta?.take, (path) => {
       window.location.href = path; // 리디렉션 처리
     });
-  }, [fetchLinks, searchTags]);
+  }, [query, meta, fetchSearchResults]);
 
   // <체크박스 및 네비게이션 바>
   // 각 항목의 체크 상태를 관리하는 배열
@@ -103,7 +105,7 @@ const Link_View = () => {
         .then(() => {
           message.success("링크 제목이 성공적으로 수정되었습니다.");
           setIsLinkTitleModalOpen(false);
-          fetchLinks(searchTags, (path) => {
+          fetchSearchResults(query, meta?.page, meta?.take, (path) => {
             window.location.href = path; // 리디렉션 처리
           }); // 링크 목록 다시 불러오기
         })
@@ -186,10 +188,10 @@ const Link_View = () => {
   };
 
   useEffect(() => {
-    fetchLinks(searchTags, (path) => {
+    fetchSearchResults(query, meta?.page, meta?.take, (path) => {
       window.location.href = path; // 리디렉션 처리
     });
-  }, [fetchLinks, searchTags]);
+  }, [query, meta, fetchSearchResults]);
 
   // 링크 삭제 확인 모달 상태
   const [isDeleteLinksModalVisible, setIsDeleteLinksModalVisible] =
@@ -229,7 +231,7 @@ const Link_View = () => {
         .then(() => {
           message.success("선택한 링크가 성공적으로 삭제되었습니다.");
           setCheckedItems(new Array(links.length).fill(false)); // 체크박스 초기화
-          fetchLinks(searchTags, (path) => {
+          fetchSearchResults(query, meta?.page, meta?.take, (path) => {
             window.location.href = path; // 리디렉션 처리
           });
         })
@@ -274,7 +276,7 @@ const Link_View = () => {
         })
         .then(() => {
           message.success("선택한 링크가 성공적으로 삭제되었습니다.");
-          fetchLinks(searchTags, (path) => {
+          fetchSearchResults(query, meta?.page, meta?.take, (path) => {
             window.location.href = path; // 리디렉션 처리
           });
           closeOneLinkDeleteModal(); // 모달 닫기
@@ -293,8 +295,8 @@ const Link_View = () => {
   };
 
   const handlePageChange = (page: number) => {
-    setTagPage(page); // 상태 업데이트
-    navigate("/links"); // 페이지 리디렉션
+    setPage(page); // 상태 업데이트
+    navigate("/search"); // 페이지 리디렉션
   };
 
   return (
@@ -582,4 +584,4 @@ const Link_View = () => {
   );
 };
 
-export default Link_View;
+export default Link_Search;
