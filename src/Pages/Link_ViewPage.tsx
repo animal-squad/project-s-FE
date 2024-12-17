@@ -448,7 +448,27 @@ const Link_View = () => {
             </label>
             {/* FaLink 아이콘 */}
             <div className="w-[113px] h-[106px] flex items-center justify-center rounded-3xl">
-              <FaLink className="text-[#959595] text-4xl" />
+              <FaLink
+                className="text-[#959595] text-4xl cursor-pointer"
+                onClick={(e) => {
+                  window.open(link.URL, "_blank"); // 새 창에서 링크 열기
+                  e.stopPropagation(); // 클릭 이벤트 중첩 방지
+                  axios
+                    .put(
+                      `${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/${
+                        link.linkId
+                      }/view`,
+                      {}, // 빈 body
+                      { withCredentials: true } // 쿠키 전송
+                    )
+                    .then(() => {
+                      console.log("View count updated successfully.");
+                    })
+                    .catch((error) => {
+                      console.error("Failed to update view count:", error);
+                    });
+                }}
+              />
             </div>
             {/* 텍스트 정보 */}
             <div className="flex-1 min-w-0">
