@@ -25,21 +25,25 @@ interface Meta {
 }
 
 // Store 상태 인터페이스
-interface SearchLinkState {
+interface LinkSearchState {
   links: Link[];
   meta: Meta | null;
-  searchTags: string[]; // 전역 태그 상태
   loading: boolean;
   error: string | null;
-  fetchLinks: (
-    tags?: string[],
+  query: string;
+  page: number;
+  fetchSearchResults: (
+    query?: string,
+    page?: number,
+    take?: number,
     navigate?: (path: string) => void
   ) => Promise<void>;
-  fetchSearchTags: (tags: string[]) => void; // 전역 상태 업데이트 함수
+  setQuery: (query: string) => void;
+  setPage: (page: number) => void;
 }
 
 // Zustand 스토어 생성
-export const useSearchLinkStore = create<SearchLinkState>((set) => ({
+export const useLinkSearchStore = create<LinkSearchState>((set) => ({
   links: [
     {
       linkId: "1",
@@ -98,21 +102,38 @@ export const useSearchLinkStore = create<SearchLinkState>((set) => ({
     },
   ],
   meta: null,
-  searchTags: [],
   loading: false,
   error: null,
+  query: "",
+  page: 1,
+
+  // 검색어 상태 업데이트
+  setQuery: (query: string) => set({ query }),
+
+  // 페이지 상태 업데이트 및 API 호출
+  setPage: (page: number) => set({ page }),
 
   // API 요청 함수
-  fetchLinks: async (tags = [], navigate?: (path: string) => void) => {
+  fetchSearchResults: async (
+    query = "",
+    page = 1,
+    take = 10,
+    navigate?: (path: string) => void
+  ) => {
     set({ loading: true, error: null }); // 로딩 시작
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_DOMAIN}/api/link`,
+        `${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/search`,
         {
-          params: tags.length > 0 ? { tags } : {}, // 태그가 있을 경우 params로 전송
+          params: {
+            page,
+            take,
+            query,
+          },
           withCredentials: true, // 쿠키 전송 활성화
         }
       );
+
       // 데이터 업데이트
       set({
         links: response.data.links,
@@ -132,9 +153,5 @@ export const useSearchLinkStore = create<SearchLinkState>((set) => ({
       }
       set({ loading: false, error: "링크 데이터를 불러오는 데 실패했습니다." });
     }
-  },
-
-  fetchSearchTags: (tags: string[]) => {
-    set({ searchTags: tags });
   },
 }));
