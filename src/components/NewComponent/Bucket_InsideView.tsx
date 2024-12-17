@@ -35,7 +35,7 @@ const Bucket_Gridview: React.FC = () => {
     new Array(links.length).fill(false)
   );
 
-  // 상단 네비게이션 바 표시 상태
+  // 하단 네비게이션 바 표시 상태
   const [showNavBar, setShowNavBar] = useState(false);
 
   // 체크된 항목 수 계산
@@ -374,9 +374,35 @@ const Bucket_Gridview: React.FC = () => {
         newTagsState[linkId]
       );
 
+      // debouncedUpdateTags 호출
+      debouncedUpdateTags(linkId, newTagsState[linkId]);
+
       return newTagsState;
     });
   };
+
+  // 태그 업데이트 통신
+  const updateTags = async (linkId: string, tags: string[]) => {
+    try {
+      console.log(`Sending API request for linkId ${linkId}:`, tags);
+      const response = await axios.put(
+        `${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/${linkId}/tag`,
+        { tags: tags },
+        { withCredentials: true }
+      );
+      console.log(`API response for linkId ${linkId}:`, response.data);
+    } catch (error) {
+      console.error(`Failed to update tags for linkId ${linkId}:`, error);
+    }
+  };
+
+  // 디바운스된 함수 (지연시간 700ms)
+  const debouncedUpdateTags = useCallback(
+    debounce((linkId: string, tags: string[]) => {
+      updateTags(linkId, tags);
+    }, 700),
+    []
+  );
 
   // URL에서 origin 추출
   const getOriginFromUrl = (url: string): string => {
@@ -424,16 +450,109 @@ const Bucket_Gridview: React.FC = () => {
     />
   );
 
-  // 링크 제목 수정
-  const handleEditLink = () => {
-    console.log("링크 제목 수정 버튼 클릭됨");
-    // 링크 제목 수정 로직 추가
+  // 링크 삭제 확인 모달 상태
+  const [isDeleteLinksModalVisible, setIsDeleteLinksModalVisible] =
+    useState(false);
+
+  // 링크 삭제 모달 열기
+  const openLinkDeleteModal = () => {
+    if (checkedCount > 0) {
+      setIsDeleteLinksModalVisible(true);
+    } else {
+      message.warning("삭제할 링크를 선택하세요.");
+    }
   };
 
-  // 링크 삭제
-  const handleDeleteLink = () => {
-    console.log("링크 삭제 버튼 클릭됨");
-    // 링크 삭제 로직 추가
+  // 링크 삭제 모달 닫기
+  const closeLinksDeleteModal = () => {
+    setIsDeleteLinksModalVisible(false);
+  };
+
+  // 링크 삭제 로직
+  const handleDeleteLinks = async () => {
+    const selectedLinkIds = links
+      .filter((_, index) => checkedItems[index])
+      .map((link) => link.linkId); // 선택된 링크들의 linkId 추출
+
+    if (selectedLinkIds.length === 0) {
+      message.warning("삭제할 링크를 선택하세요.");
+      return;
+    }
+
+    try {
+      await axios
+        .delete(`${import.meta.env.VITE_BACKEND_DOMAIN}/api/link`, {
+          data: { linkId: selectedLinkIds },
+          withCredentials: true,
+        })
+        .then(() => {
+          message.success("선택한 링크가 성공적으로 삭제되었습니다.");
+          setCheckedItems(new Array(links.length).fill(false)); // 체크박스 초기화
+          if (bucketId) {
+            fetchLinks(bucketId, (path) => {
+              window.location.href = path; // 최신 데이터 로드
+            });
+          }
+        })
+        .catch((error) => {
+          if (error.response?.status === 401) {
+            navigate("/unauthorized"); // 401 에러 처리
+          } else {
+            console.error("Failed to delete links:", error);
+            message.error("링크 삭제에 실패했습니다.");
+          }
+        });
+    } catch (error) {
+      console.error("Failed to delete links:", error);
+    }
+  };
+
+  // 링크 단일 삭제 확인 모달 상태
+  const [isDeleteOneLinkModalVisible, setIsDeleteOneLinkModalVisible] =
+    useState(false);
+
+  // 삭제할 링크 ID 상태 관리
+  const [deleteLinkId, setDeleteLinkId] = useState<string | null>(null);
+
+  // 링크 단일 삭제 모달 열기
+  const openOneLinkDeleteModal = (linkId: string) => {
+    setDeleteLinkId(linkId); // 삭제할 링크 ID 설정
+    setIsDeleteOneLinkModalVisible(true);
+  };
+
+  // 링크 단일 삭제 모달 닫기
+  const closeOneLinkDeleteModal = () => {
+    setIsDeleteOneLinkModalVisible(false);
+  };
+
+  // 링크 단일 삭제 로직
+  const handleDeleteOneLink = async (linkId: string) => {
+    try {
+      await axios
+        .delete(`${import.meta.env.VITE_BACKEND_DOMAIN}/api/link`, {
+          data: { linkId: [linkId] }, // 단일 링크의 ID를 배열에 넣어서 전송
+          withCredentials: true,
+        })
+        .then(() => {
+          message.success("선택한 링크가 성공적으로 삭제되었습니다.");
+          if (bucketId) {
+            fetchLinks(bucketId, (path) => {
+              window.location.href = path; // 최신 데이터 로드
+            });
+          }
+          closeOneLinkDeleteModal(); // 모달 닫기
+        })
+        .catch((error) => {
+          if (error.response?.status === 401) {
+            navigate("/unauthorized"); // 401 에러 처리
+          } else {
+            console.error("Failed to delete link:", error);
+            message.error("링크 삭제에 실패했습니다.");
+          }
+        });
+    } catch (error) {
+      console.error("Failed to delete link:", error);
+    }
   };
 
   return (
@@ -445,13 +564,15 @@ const Bucket_Gridview: React.FC = () => {
         }`}
       >
         <div className="flex items-center justify-between px-6 py-4">
-          <span className="text-lg text-white font-semibold">
-            {checkedCount}개 선택됨
-          </span>
+          {checkedCount > 0 ? (
+            <span className="text-lg text-white font-semibold">
+              {checkedCount}개 선택됨
+            </span>
+          ) : (
+            <span className="text-lg text-white font-semibold" />
+          )}
           <button
-            onClick={() => {
-              setCheckedItems(new Array(links.length).fill(false));
-            }}
+            onClick={openLinkDeleteModal}
             className="px-4 py-2 bg-red-500 text-white rounded-lg"
           >
             삭제
@@ -600,7 +721,9 @@ const Bucket_Gridview: React.FC = () => {
                       {
                         key: "2",
                         label: "삭제",
-                        onClick: () => handleDeleteLink(), // 삭제 로직 추가 필요
+                        onClick: () => {
+                          openOneLinkDeleteModal(link.linkId);
+                        },
                       },
                     ]}
                   />
@@ -766,6 +889,32 @@ const Bucket_Gridview: React.FC = () => {
           onChange={(e) => setEditedLinkTitle(e.target.value)}
           placeholder="새로운 제목을 입력하세요"
         />
+      </Modal>
+      {/* 링크 다중 삭제 확인 모달 */}
+      <Modal
+        title="링크 삭제 확인"
+        open={isDeleteLinksModalVisible}
+        onOk={handleDeleteLinks} // 확인 버튼에 삭제 요청 연결
+        onCancel={closeLinksDeleteModal} // 취소 버튼에 모달 닫기 연결
+        okText="삭제"
+        cancelText="취소"
+        okButtonProps={{ danger: true }}
+      >
+        <p className="text-lg">{checkedCount}개 링크를 삭제하시겠습니까?</p>
+      </Modal>
+      {/* 링크 단일 삭제 확인 모달 */}
+      <Modal
+        title="링크 삭제 확인"
+        open={isDeleteOneLinkModalVisible}
+        onOk={() => {
+          if (deleteLinkId) handleDeleteOneLink(deleteLinkId);
+        }}
+        onCancel={closeOneLinkDeleteModal} // 취소 버튼에 모달 닫기 연결
+        okText="삭제"
+        cancelText="취소"
+        okButtonProps={{ danger: true }}
+      >
+        <p className="text-lg">해당 링크를 삭제하시겠습니까?</p>
       </Modal>
     </div>
   );
