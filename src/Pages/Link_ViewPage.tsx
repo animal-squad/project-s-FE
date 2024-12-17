@@ -19,7 +19,8 @@ import axios from "axios";
 import Searchbox from "../ui/Searchbox";
 
 const Link_View = () => {
-  const { links, meta, fetchLinks, searchTags } = useSearchLinkStore();
+  const { links, meta, fetchLinks, searchTags, fetchSearchTags } =
+    useSearchLinkStore();
 
   const navigate = useNavigate();
 
@@ -346,7 +347,10 @@ const Link_View = () => {
         {/* 링크 */}
         <div
           className="text-black text-[32px] font-semibold font-['Inter']"
-          onClick={() => navigate("/links")}
+          onClick={() => {
+            fetchSearchTags([]);
+            navigate("/links");
+          }}
         >
           링크
         </div>

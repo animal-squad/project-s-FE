@@ -35,6 +35,7 @@ interface SearchLinkState {
     tags?: string[],
     navigate?: (path: string) => void
   ) => Promise<void>;
+  fetchSearchTags: (tags: string[]) => void; // 전역 상태 업데이트 함수
 }
 
 // Zustand 스토어 생성

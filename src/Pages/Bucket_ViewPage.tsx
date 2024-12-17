@@ -4,10 +4,12 @@ import NewHeader from "../Layout/NewHeader";
 import Searchbox from "../ui/Searchbox";
 import FloatButton from "../ui/FloatButton";
 import { useBucketStore } from "../store/BucketStore";
+import { useSearchLinkStore } from "../store/searchLinkStore";
 import { useNavigate } from "react-router-dom";
 
 const Bucket_Gridview = () => {
   const { folders, fetchFolders, page, setPage, meta } = useBucketStore();
+  const { fetchSearchTags } = useSearchLinkStore();
 
   const navigate = useNavigate();
 
@@ -54,7 +56,10 @@ const Bucket_Gridview = () => {
         {/* 링크 */}
         <div
           className="text-[#bebebe] text-[32px] font-semibold font-['Inter']"
-          onClick={() => navigate("/links")}
+          onClick={() => {
+            fetchSearchTags([]);
+            navigate("/links");
+          }}
         >
           링크
         </div>
