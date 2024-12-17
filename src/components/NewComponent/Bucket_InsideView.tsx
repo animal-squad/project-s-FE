@@ -481,7 +481,7 @@ const Bucket_Gridview: React.FC = () => {
 
     try {
       await axios
-        .delete(`${import.meta.env.VITE_BACKEND_DOMAIN}/api/link`, {
+        .post(`${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/delete`, {
           data: { linkId: selectedLinkIds },
           withCredentials: true,
         })
@@ -529,7 +529,7 @@ const Bucket_Gridview: React.FC = () => {
   const handleDeleteOneLink = async (linkId: string) => {
     try {
       await axios
-        .delete(`${import.meta.env.VITE_BACKEND_DOMAIN}/api/link`, {
+        .post(`${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/delete`, {
           data: { linkId: [linkId] }, // 단일 링크의 ID를 배열에 넣어서 전송
           withCredentials: true,
         })
