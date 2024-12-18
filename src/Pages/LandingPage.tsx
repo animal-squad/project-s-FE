@@ -102,7 +102,7 @@ export function ImagesSliderDemo() {
                 withCredentials: true,
               })
               .then((response) => {
-                if (response.status === 200) navigate("/main/bucket");
+                if (response.status === 200) navigate("/bucket");
               })
               .catch((error) => {
                 if (error.response?.status === 401) {
