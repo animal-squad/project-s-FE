@@ -147,7 +147,7 @@ const Bucket_Gridview: React.FC = () => {
       .then((response) => {
         console.log("Bucket deleted:", response.data);
         message.success("바구니가 성공적으로 삭제되었습니다.");
-        navigate("/main/bucket"); // 삭제 후 메인 페이지로 이동
+        navigate("/bucket"); // 삭제 후 메인 페이지로 이동
       })
       .catch((error) => {
         if (error.response?.status === 401) {
@@ -270,8 +270,8 @@ const Bucket_Gridview: React.FC = () => {
         console.log("Bucket copied:", response.data);
         const newBucketId = response.data.bucketId; // 응답에서 새로운 bucketId 추출
         if (newBucketId) {
-          // 새 창에서 /main/bucket/:newBucketId 열기
-          window.open(`/main/bucket/${newBucketId}`, "_blank");
+          // 새 창에서 /bucket/:newBucketId 열기
+          window.open(`/bucket/${newBucketId}`, "_blank");
         }
       })
       .catch((error) => {

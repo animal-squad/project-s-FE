@@ -6,7 +6,7 @@ const LoginPage = () => {
 
   // 메인 페이지로 보내는 핸들러
   // const handleNavigateToMain = () => {
-  //   navigate("/main/bucket");
+  //   navigate("/bucket");
   // };
   function getSessionIdFromCookies() {
     const cookies = document.cookie.split('; ');
