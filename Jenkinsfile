@@ -6,6 +6,8 @@ pipeline {
 apiVersion: v1
 kind: Pod
 spec:
+    nodeSelector:
+      role: devops
     containers:
         - name: nodejs
           image: node:22.12.0-alpine
