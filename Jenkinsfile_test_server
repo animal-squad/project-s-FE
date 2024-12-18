@@ -6,7 +6,7 @@ pipeline {
 apiVersion: v1
 kind: Pod
 spec:
-    nodeSelector:
+    nodeSeletor:
       role: devops
     containers:
         - name: nodejs
@@ -19,7 +19,7 @@ spec:
         }
     }
     environment {
-        S3_BUCKET = 'linket-web-hosting-for-test'
+        S3_BUCKET = 'linket-test-web20241216150840500300000001'
         AWS_DEFAULT_REGION = 'ap-northeast-2'
     }
     stages {
@@ -67,12 +67,6 @@ spec:
                 }
             }
         }
-        // stage('Clean Workspace after CD') {
-        //     steps {
-        //         cleanWs ()
-        //     }
-        // }
-    }
     post {
         always {
             script {
