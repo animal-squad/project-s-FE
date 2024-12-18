@@ -70,6 +70,7 @@ const Bucket_Gridview = () => {
         <div
           key={bucket.bucketId}
           className="absolute bg-white rounded-[14px] border border-[#b4b4b4]"
+          onClick={() => navigate(`/bucket/${bucket.bucketId}`)}
           style={{
             top: `${446 + index * 157}px`,
             width: "80%",

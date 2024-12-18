@@ -3,12 +3,17 @@ import { userStore } from "../store/userStore";
 import { useNavigate } from "react-router-dom";
 
 const NewHeader = () => {
-  const { name, photo, clearUser } = userStore();
+  const { name, photo, clearUser, userFetch } = userStore();
 
   const [menuVisible, setMenuVisible] = useState(false); // 메뉴 상태 관리
   const menuRef = useRef<HTMLDivElement>(null); // 메뉴 참조
 
   const navigate = useNavigate();
+
+  // userFetch 호출
+  useEffect(() => {
+    userFetch();
+  }, []); // 빈 배열로 의존성을 설정하여 컴포넌트 첫 렌더링 시 한 번만 실행
 
   const handleLogout = async () => {
     try {
