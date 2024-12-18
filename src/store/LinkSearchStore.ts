@@ -43,7 +43,7 @@ interface LinkSearchState {
 }
 
 // Zustand 스토어 생성
-export const useLinkSearchStore = create<LinkSearchState>((set) => ({
+export const useLinkSearchStore = create<LinkSearchState>((set, get) => ({
   links: [
     {
       linkId: "1",
@@ -110,8 +110,11 @@ export const useLinkSearchStore = create<LinkSearchState>((set) => ({
   // 검색어 상태 업데이트
   setQuery: (query: string) => set({ query }),
 
-  // 페이지 상태 업데이트 및 API 호출
+  // 페이지 상태 업데이트
   setPage: (page: number) => set({ page }),
+
+  // 로딩 상태 업데이트
+  setLoading: (loading: boolean) => set({ loading }),
 
   // API 요청 함수
   fetchSearchResults: async (
@@ -120,25 +123,22 @@ export const useLinkSearchStore = create<LinkSearchState>((set) => ({
     take = 10,
     navigate?: (path: string) => void
   ) => {
+    const { loading } = get(); // 현재 loading 상태 가져오기
+    if (loading) return; // 로딩 중이면 실행 중단
+
     set({ loading: true, error: null }); // 로딩 시작
     try {
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/search`,
         {
-          params: {
-            page,
-            take,
-            query,
-          },
-          withCredentials: true, // 쿠키 전송 활성화
+          params: { page, take, query },
+          withCredentials: true,
         }
       );
-
-      // 데이터 업데이트
       set({
         links: response.data.links,
         meta: response.data.meta,
-        loading: false,
+        loading: false, // 로딩 종료
       });
     } catch (error) {
       if (axios.isAxiosError(error)) {
