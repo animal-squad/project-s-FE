@@ -36,9 +36,9 @@ const Searchbox = () => {
   // 검색어 입력 후 엔터 키 감지
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && searchInput.trim().length > 0) {
-      setQuery(searchInput); // 전역 상태에 검색어 저장
-      setPage(1);
-      navigate("/search"); // '/search' 페이지로 이동
+      setQuery(searchInput); // 검색어 업데이트
+      setPage(1); // 페이지 초기화
+      navigate("/search"); // 이동만 처리, 요청은 Link_Search에서
     }
   };
 
