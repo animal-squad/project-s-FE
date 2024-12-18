@@ -67,6 +67,7 @@ spec:
                 }
             }
         }
+    }
     post {
         always {
             script {
