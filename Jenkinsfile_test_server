@@ -6,7 +6,7 @@ pipeline {
 apiVersion: v1
 kind: Pod
 spec:
-    nodeSeletor:
+    nodeSelector:
       role: devops
     containers:
         - name: nodejs
