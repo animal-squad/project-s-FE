@@ -89,6 +89,15 @@ const Link_Search = () => {
     setEditedLinkTitle("");
   };
 
+  // Enter 키 입력 핸들러
+  const handleLinkTitleKeyPress = (
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (e.key === "Enter") {
+      handleLinkTitleSave(); // Enter 입력 시 링크 추가 실행
+    }
+  };
+
   // 링크 제목 저장 요청
   const handleLinkTitleSave = async () => {
     if (!currentLinkId || !editedLinkTitle) return;
@@ -572,6 +581,7 @@ const Link_Search = () => {
           value={editedLinkTitle}
           onChange={(e) => setEditedLinkTitle(e.target.value)}
           placeholder="새로운 제목을 입력하세요"
+          onKeyDown={handleLinkTitleKeyPress}
         />
       </Modal>
       {/* 링크 다중 삭제 확인 모달 */}

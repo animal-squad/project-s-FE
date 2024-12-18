@@ -90,6 +90,15 @@ const Bucket_Gridview: React.FC = () => {
     setNewTitle("");
   };
 
+  // Enter 키 입력 핸들러
+  const handleBucketTitleKeyPress = (
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (e.key === "Enter") {
+      handleTitleChange(); // Enter 입력 시 링크 추가 실행
+    }
+  };
+
   // 제목 변경 로직
   const handleTitleChange = async () => {
     if (newTitle && newTitle !== title) {
@@ -320,6 +329,15 @@ const Bucket_Gridview: React.FC = () => {
     setIsLinkTitleModalOpen(false);
     setCurrentLinkId(null);
     setEditedLinkTitle("");
+  };
+
+  // Enter 키 입력 핸들러
+  const handleLinkTitleKeyPress = (
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (e.key === "Enter") {
+      handleLinkTitleSave(); // Enter 입력 시 링크 추가 실행
+    }
   };
 
   // 링크 제목 저장 요청
@@ -821,6 +839,7 @@ const Bucket_Gridview: React.FC = () => {
           value={newTitle}
           onChange={(e) => setNewTitle(e.target.value)}
           placeholder="새로운 제목을 입력하세요"
+          onKeyDown={handleBucketTitleKeyPress}
         />
       </Modal>
       {/* 바구니 공유 모달 */}
@@ -918,6 +937,7 @@ const Bucket_Gridview: React.FC = () => {
           value={editedLinkTitle}
           onChange={(e) => setEditedLinkTitle(e.target.value)}
           placeholder="새로운 제목을 입력하세요"
+          onKeyDown={handleLinkTitleKeyPress}
         />
       </Modal>
       {/* 링크 다중 삭제 확인 모달 */}
