@@ -51,7 +51,7 @@ spec:
         }
         stage('Build') {
             steps {
-                sh 'tsc -b && vite build --mode test'
+                sh 'npm build-test'
             }
         }
         stage('Deploy to S3') {
