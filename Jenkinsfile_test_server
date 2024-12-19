@@ -51,7 +51,7 @@ spec:
         }
         stage('Build') {
             steps {
-                sh 'npm build-test'
+                sh 'npm run build-test'
             }
         }
         stage('Deploy to S3') {
