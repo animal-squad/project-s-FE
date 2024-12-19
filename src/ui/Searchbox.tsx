@@ -41,6 +41,14 @@ const Searchbox = () => {
     }
   };
 
+  // 검색 요청 로직
+  const handleSearchRequest = () => {
+    if (searchInput.trim().length > 0) {
+      const encodedSearchQuery = btoa(searchInput.trim()); // Base64 인코딩
+      navigate(`/search?query=${encodedSearchQuery}`); // 이동만 처리, 요청은 Link_Search에서
+    }
+  };
+
   return (
     <div
       className="absolute flex items-center justify-between top-[234px]"
@@ -60,7 +68,10 @@ const Searchbox = () => {
           className="w-full h-full bg-white rounded-[57px] border border-[#b4b4b4] px-8 text-[20px] text-[#121212] font-['Inter']"
         />
         {/* IoSearch 아이콘 */}
-        <IoSearch className="absolute right-6 top-1/2 transform -translate-y-1/2 text-[#b4b4b4] text-[24px]" />
+        <IoSearch
+          className="absolute right-6 top-1/2 transform -translate-y-1/2 text-[#b4b4b4] text-[24px] cursor-pointer"
+          onClick={handleSearchRequest}
+        />
       </div>
       {/* 태그 검색 버튼 */}
       <div

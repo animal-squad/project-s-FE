@@ -69,7 +69,7 @@ const Bucket_Gridview = () => {
       {folders.map((bucket, index) => (
         <div
           key={bucket.bucketId}
-          className="absolute bg-white rounded-[14px] border border-[#b4b4b4]"
+          className="absolute bg-white rounded-[14px] border border-[#b4b4b4] cursor-pointer"
           onClick={() => navigate(`/bucket/${bucket.bucketId}`)}
           style={{
             top: `${446 + index * 157}px`,
