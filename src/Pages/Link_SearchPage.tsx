@@ -15,16 +15,58 @@ import TagSelect from "../ui/TagSelect";
 import { useLinkSearchStore } from "../store/LinkSearchStore";
 import { useSearchLinkStore } from "../store/TagSearchStore";
 import debounce from "lodash/debounce";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import Searchbox from "../ui/Searchbox";
 
+// 링크 인터페이스 정의
+interface Link {
+  linkId: string;
+  userId: number;
+  URL: string;
+  createdAt: Date;
+  openedAt: Date;
+  views: number;
+  tags: string[];
+  keywords: string[];
+  title: string;
+}
+
+// 메타 정보 인터페이스
+interface Meta {
+  totalLinks: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+  page: number;
+  take: number;
+}
+
+function fetchSearchResults() {}
+
 const Link_Search = () => {
-  const { links, meta, query, fetchSearchResults, setPage } =
-    useLinkSearchStore();
+  const { links, meta, fetchSearchResults, setPage } = useLinkSearchStore();
   const { fetchSearchTags } = useSearchLinkStore();
 
   const navigate = useNavigate();
+
+  const [searchParams] = useSearchParams();
+  const query = searchParams.get("query")
+    ? atob(searchParams.get("query")!)
+    : "";
+
+  const page = searchParams.get("page")
+    ? parseInt(searchParams.get("page")!)
+    : null;
+
+  // 페이지가 없으면 기본값 1로 설정하고 navigate 호출
+  useEffect(() => {
+    if (!page) {
+      const encodedQuery = btoa(query);
+      const defaultPage = 1;
+      navigate(`/search?query=${encodedQuery}&page=${defaultPage}`, { replace: true });
+    }
+  }, [page, query, navigate]);
 
   useEffect(() => {
     fetchSearchResults(query, meta?.page, meta?.take, (path) => {
@@ -33,7 +75,7 @@ const Link_Search = () => {
   }, [query, meta, fetchSearchResults]);
 
   // <체크박스 및 네비게이션 바>
-  // 각 항목의 체크 상태를 관리하는 배열
+  // 각 항목의 체크 상태를 관리하는 배열정
   const [checkedItems, setCheckedItems] = useState<boolean[]>(
     new Array(links.length).fill(false)
   );
@@ -195,12 +237,6 @@ const Link_Search = () => {
       return "Invalid URL";
     }
   };
-
-  useEffect(() => {
-    fetchSearchResults(query, meta?.page, meta?.take, (path) => {
-      window.location.href = path; // 리디렉션 처리
-    });
-  }, [query, meta, fetchSearchResults]);
 
   // 링크 삭제 확인 모달 상태
   const [isDeleteLinksModalVisible, setIsDeleteLinksModalVisible] =
