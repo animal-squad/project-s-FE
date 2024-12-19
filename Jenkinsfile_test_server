@@ -74,7 +74,7 @@ spec:
                 currentBuild.result = currentBuild.result ?: 'SUCCESS'
             }
             echo "Build Result: ${currentBuild.result}"
-            withCredentials([string(credentialsId: 'Discord-Webhook', variable: 'DISCORD')]) {
+            withCredentials([string(credentialsId: 'Discord-Webhook-test', variable: 'DISCORD')]) {
                 discordSend(
                     title: "Build Result: ${env.JOB_NAME}",
                     description: """
