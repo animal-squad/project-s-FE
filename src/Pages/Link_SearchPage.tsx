@@ -279,6 +279,7 @@ const Link_Search = () => {
           fetchSearchResults(query, meta?.page, meta?.take, (path) => {
             window.location.href = path; // 리디렉션 처리
           });
+          closeLinksDeleteModal();
         })
         .catch((error) => {
           if (error.response?.status === 401) {
@@ -315,10 +316,10 @@ const Link_Search = () => {
   const handleDeleteOneLink = async (linkId: string) => {
     try {
       await axios
-        .post(`${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/delete`, {
-          data: { linkId: [linkId] }, // 단일 링크의 ID를 배열에 넣어서 전송
-          withCredentials: true,
-        })
+          .post(`${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/delete`,
+            { linkId: [linkId] }, // 단일 링크의 ID를 배열에 넣어서 전송
+            { withCredentials: true }
+          )
         .then(() => {
           message.success("선택한 링크가 성공적으로 삭제되었습니다.");
           fetchSearchResults(query, meta?.page, meta?.take, (path) => {
