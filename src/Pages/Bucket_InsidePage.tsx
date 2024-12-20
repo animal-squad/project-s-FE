@@ -190,7 +190,7 @@ const Bucket_Gridview: React.FC = () => {
   const handleSwitchChange = (checked: boolean) => {
     setIsPublic(checked);
     setUrl(checked ? window.location.href : "");
-    debouncedShare();
+    debouncedShare(checked);
   };
 
   // URL 주소 복사 로직
@@ -207,18 +207,18 @@ const Bucket_Gridview: React.FC = () => {
   };
 
   // 바구니 공유 로직
-  const handleShare = () => {
+  const handleShare = (checked: boolean) => {
     axios
       .put(
         `${import.meta.env.VITE_BACKEND_DOMAIN}/api/bucket/${bucketId}/share`,
         {
-          permission: isPublic,
+          permission: checked,
         },
         { withCredentials: true }
       )
       .then((response) => {
         message.success(
-          isPublic
+          checked
             ? "바구니가 공개 상태로 전환되었습니다."
             : "바구니가 비공개 상태로 전환되었습니다."
         );
@@ -235,8 +235,9 @@ const Bucket_Gridview: React.FC = () => {
 
   // 바구니 debounce 함수
   const debouncedShare = useCallback(
-    debounce(() => {
-      handleShare();
+    debounce((checked: boolean) => {
+      handleShare(checked);
+      setInitialPublicState(checked);
     }, 500),
     []
   );
