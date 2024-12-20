@@ -111,7 +111,7 @@ const Bucket_Gridview: React.FC = () => {
         message.success("바구니 제목이 성공적으로 변경되었습니다!");
         setIsTitleModalOpen(false);
         if (bucketId) {
-          fetchLinks(bucketId, (path) => {
+          await fetchLinks(bucketId, (path) => {
             window.location.href = path; // 데이터 다시 로드
           })
         }
