@@ -109,12 +109,10 @@ export const useSearchLinkStore = create<SearchLinkState>((set) => ({
   fetchLinks: async (tags = [], navigate?: (path: string) => void) => {
     set({ loading: true, error: null }); // 로딩 시작
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_DOMAIN}/api/link`,
-        {
-          params: tags.length > 0 ? { tags } : {}, // 태그가 있을 경우 params로 전송
-          withCredentials: true, // 쿠키 전송 활성화
-        }
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/list`,
+          { tags: tags }, // 태그를 body로 전송
+          { withCredentials: true} // 쿠키 전송 활성화
       );
       // 데이터 업데이트
       set({
