@@ -56,7 +56,7 @@ const Bucket_Gridview: React.FC = () => {
   }, [checkedItems]);
 
   // 전체 선택 체크박스의 상태
-  const isAllSelected = checkedItems.every((item) => item);
+  const isAllSelected = links.length > 0 && checkedItems.every((item) => item);
 
   // 전체 선택/해제 핸들러
   const handleSelectAll = () => {
@@ -113,7 +113,7 @@ const Bucket_Gridview: React.FC = () => {
         if (bucketId) {
           await fetchLinks(bucketId, (path) => {
             window.location.href = path; // 데이터 다시 로드
-          })
+          });
         }
       } catch (error) {
         if (axios.isAxiosError(error)) {

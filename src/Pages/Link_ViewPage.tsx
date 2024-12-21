@@ -19,16 +19,23 @@ import axios from "axios";
 import Searchbox from "../ui/Searchbox";
 
 const Link_View = () => {
-  const { links, meta, fetchLinks, searchTags, fetchSearchTags, setTagPage } =
-    useSearchLinkStore();
+  const {
+    links,
+    meta,
+    fetchLinks,
+    searchTags,
+    fetchSearchTags,
+    page,
+    setTagPage,
+  } = useSearchLinkStore();
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchLinks(searchTags, (path) => {
+    fetchLinks(searchTags, meta?.page || 1, 10, (path) => {
       window.location.href = path; // 리디렉션 처리
     });
-  }, [fetchLinks, searchTags]);
+  }, [fetchLinks, searchTags, meta?.page]); // meta?.page를 의존성에 추가
 
   // <체크박스 및 네비게이션 바>
   // 각 항목의 체크 상태를 관리하는 배열
@@ -48,7 +55,7 @@ const Link_View = () => {
   }, [checkedItems]);
 
   // 전체 선택 체크박스의 상태
-  const isAllSelected = checkedItems.every((item) => item);
+  const isAllSelected = links.length > 0 && checkedItems.every((item) => item);
 
   // 전체 선택/해제 핸들러
   const handleSelectAll = () => {
@@ -112,7 +119,7 @@ const Link_View = () => {
         .then(() => {
           message.success("링크 제목이 성공적으로 수정되었습니다.");
           setIsLinkTitleModalOpen(false);
-          fetchLinks(searchTags, (path) => {
+          fetchLinks(searchTags, page, 10, (path) => {
             window.location.href = path; // 리디렉션 처리
           }); // 링크 목록 다시 불러오기
         })
@@ -195,7 +202,7 @@ const Link_View = () => {
   };
 
   useEffect(() => {
-    fetchLinks(searchTags, (path) => {
+    fetchLinks(searchTags, page, 10, (path) => {
       window.location.href = path; // 리디렉션 처리
     });
   }, [fetchLinks, searchTags]);
@@ -231,14 +238,15 @@ const Link_View = () => {
 
     try {
       await axios
-        .post(`${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/delete`,
+        .post(
+          `${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/delete`,
           { linkId: selectedLinkIds },
           { withCredentials: true }
         )
         .then(() => {
           message.success("선택한 링크가 성공적으로 삭제되었습니다.");
           setCheckedItems(new Array(links.length).fill(false)); // 체크박스 초기화
-          fetchLinks(searchTags, (path) => {
+          fetchLinks(searchTags, page, 10, (path) => {
             window.location.href = path; // 리디렉션 처리
           });
           closeLinksDeleteModal();
@@ -278,13 +286,14 @@ const Link_View = () => {
   const handleDeleteOneLink = async (linkId: string) => {
     try {
       await axios
-        .post(`${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/delete`,
+        .post(
+          `${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/delete`,
           { linkId: [linkId] }, // 단일 링크의 ID를 배열에 넣어서 전송
           { withCredentials: true }
         )
         .then(() => {
           message.success("선택한 링크가 성공적으로 삭제되었습니다.");
-          fetchLinks(searchTags, (path) => {
+          fetchLinks(searchTags, page, 10, (path) => {
             window.location.href = path; // 리디렉션 처리
           });
           closeOneLinkDeleteModal(); // 모달 닫기
@@ -304,7 +313,9 @@ const Link_View = () => {
 
   const handlePageChange = (page: number) => {
     setTagPage(page); // 상태 업데이트
-    navigate("/links"); // 페이지 리디렉션
+    fetchLinks(searchTags, page, 10, (path) => {
+      window.location.href = path; // 리디렉션 처리
+    }); // 새로운 페이지 데이터를 가져옴
   };
 
   return (

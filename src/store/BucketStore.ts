@@ -35,32 +35,8 @@ interface FolderState {
 
 export const useBucketStore = create<FolderState>((set) => ({
   // 더미 데이터를 초기값으로 설정
-  folders: [
-    {
-      bucketId: "1",
-      userId: 101,
-      title: "첫 번째 바구니",
-      linkCount: 5,
-      createdAt: new Date(),
-      isShared: true,
-    },
-    {
-      bucketId: "2",
-      userId: 102,
-      title: "두 번째 바구니",
-      linkCount: 2,
-      createdAt: new Date(),
-      isShared: false,
-    },
-  ],
-  meta: {
-    totalBuckets: 1,
-    totalPages: 1,
-    hasNextPage: false,
-    hasPrevPage: false,
-    page: 1,
-    take: 10,
-  },
+  folders: [],
+  meta: null,
   selectedFolderIndex: 0,
   page: 1, // 기본값을 1로 설정
   setSelectedFolderIndex: (index) => set({ selectedFolderIndex: index }),
