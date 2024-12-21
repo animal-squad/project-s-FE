@@ -56,6 +56,7 @@ const FloatButton: React.FC<FloatButtonProps> = ({ onClick }) => {
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       handleAddLink(); // Enter 입력 시 링크 추가 실행
+      setIsModalOpen(false);
     }
   };
 
