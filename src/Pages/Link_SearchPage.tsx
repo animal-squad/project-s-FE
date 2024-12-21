@@ -61,17 +61,58 @@ const Link_Search = () => {
     });
   }
   // 상태 관리
-  const [links, setLinks] = useState<Link[]>([]);
-  const [meta, setMeta] = useState<Meta | null>(null);
+  const [links, setLinks] = useState<Link[]>([
+    {
+      linkId: "1",
+      userId: 123,
+      URL: "https://www.example.com",
+      createdAt: new Date(),
+      openedAt: new Date(),
+      views: 25,
+      tags: ["Example", "Test"],
+      keywords: ["mock", "data"],
+      title: "Example Link 1",
+    },
+    {
+      linkId: "2",
+      userId: 124,
+      URL: "https://www.another-example.com",
+      createdAt: new Date(),
+      openedAt: new Date(),
+      views: 10,
+      tags: ["Another", "Mock"],
+      keywords: ["sample", "mock"],
+      title: "Example Link 2",
+    },
+    {
+      linkId: "3",
+      userId: 125,
+      URL: "https://www.mock.com",
+      createdAt: new Date(),
+      openedAt: new Date(),
+      views: 5,
+      tags: ["Mock"],
+      keywords: ["data", "example"],
+      title: "Mock Link 3",
+    },
+  ]);
+  const [meta, setMeta] = useState<Meta | null>({
+    totalLinks: 30,
+    totalPages: 1,
+    hasNextPage: false,
+    hasPrevPage: false,
+    page: 1,
+    take: 10,
+  });
   const [loading, setLoading] = useState(false);
   const [page, setPageState] = useState<number>(initialPage);
 
   // 페이지 상태 업데이트 함수
-  const setPage = (newPage: number) => {
+  const setPage = (newPage: number, currentQuery: string) => {
     setPageState(newPage);
 
     // query와 page를 URL에 반영
-    const encodedQuery = btoa(encodeURIComponent(query));
+    const encodedQuery = btoa(encodeURIComponent(currentQuery));
     navigate(`/search?query=${encodedQuery}&page=${newPage}`, {
       replace: true,
     });
@@ -120,8 +161,7 @@ const Link_Search = () => {
     fetchSearchResults(query, page, 10, (path) => {
       window.location.href = path; // 리디렉션 처리
     });
-    // 빈 배열을 통해 렌더링 시 1회만 실행
-  }, []);
+  }, [query, page]);
 
   // <체크박스 및 네비게이션 바>
   // 각 항목의 체크 상태를 관리하는 배열정
@@ -388,9 +428,13 @@ const Link_Search = () => {
     }
   };
 
-  const handlePageChange = (page: number) => {
-    setPage(page); // 상태 업데이트
-    navigate("/search"); // 페이지 리디렉션
+  const handlePageChange = (newPage: number) => {
+    // searchParams를 다시 읽어 최신 query 값 가져오기
+    const updatedQuery = searchParams.get("query")
+      ? decodeURIComponent(atob(searchParams.get("query")!))
+      : "";
+
+    setPage(newPage, updatedQuery); // query와 page를 모두 전달
   };
 
   return (
