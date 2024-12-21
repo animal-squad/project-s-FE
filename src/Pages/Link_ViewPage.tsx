@@ -48,7 +48,7 @@ const Link_View = () => {
   }, [checkedItems]);
 
   // 전체 선택 체크박스의 상태
-  const isAllSelected = checkedItems.every((item) => item);
+  const isAllSelected = links.length > 0 && checkedItems.every((item) => item);
 
   // 전체 선택/해제 핸들러
   const handleSelectAll = () => {
@@ -231,7 +231,8 @@ const Link_View = () => {
 
     try {
       await axios
-        .post(`${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/delete`,
+        .post(
+          `${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/delete`,
           { linkId: selectedLinkIds },
           { withCredentials: true }
         )
@@ -278,7 +279,8 @@ const Link_View = () => {
   const handleDeleteOneLink = async (linkId: string) => {
     try {
       await axios
-        .post(`${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/delete`,
+        .post(
+          `${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/delete`,
           { linkId: [linkId] }, // 단일 링크의 ID를 배열에 넣어서 전송
           { withCredentials: true }
         )

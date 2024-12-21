@@ -140,7 +140,7 @@ const Link_Search = () => {
   }, [checkedItems]);
 
   // 전체 선택 체크박스의 상태
-  const isAllSelected = checkedItems.every((item) => item);
+  const isAllSelected = links.length > 0 && checkedItems.every((item) => item);
 
   // 전체 선택/해제 핸들러
   const handleSelectAll = () => {

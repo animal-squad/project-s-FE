@@ -123,7 +123,7 @@ const Bucket_Gridview = () => {
         >
           <Pagination
             current={meta?.page || 1}
-            total={meta?.totalBuckets || 0}
+            total={meta?.totalBuckets || 1}
             pageSize={meta?.take || 10}
             onChange={handlePageChange}
           />
