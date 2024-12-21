@@ -36,9 +36,16 @@ const Searchbox = () => {
   // 검색어 입력 후 엔터 키 감지
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && searchInput.trim().length > 0) {
-      setQuery(searchInput); // 검색어 업데이트
-      setPage(1); // 페이지 초기화
-      navigate("/search"); // 이동만 처리, 요청은 Link_Search에서
+      const encodedSearchQuery = btoa(encodeURIComponent(searchInput.trim())); // Base64 인코딩
+      navigate(`/search?query=${encodedSearchQuery}`); // 이동만 처리, 요청은 Link_Search에서
+    }
+  };
+
+  // 검색 요청 로직
+  const handleSearchRequest = () => {
+    if (searchInput.trim().length > 0) {
+      const encodedSearchQuery = btoa(encodeURIComponent(searchInput.trim())); // Base64 인코딩
+      navigate(`/search?query=${encodedSearchQuery}`); // 이동만 처리, 요청은 Link_Search에서
     }
   };
 
@@ -61,7 +68,10 @@ const Searchbox = () => {
           className="w-full h-full bg-white rounded-[57px] border border-[#b4b4b4] px-8 text-[20px] text-[#121212] font-['Inter']"
         />
         {/* IoSearch 아이콘 */}
-        <IoSearch className="absolute right-6 top-1/2 transform -translate-y-1/2 text-[#b4b4b4] text-[24px]" />
+        <IoSearch
+          className="absolute right-6 top-1/2 transform -translate-y-1/2 text-[#b4b4b4] text-[24px] cursor-pointer"
+          onClick={handleSearchRequest}
+        />
       </div>
       {/* 태그 검색 버튼 */}
       <div

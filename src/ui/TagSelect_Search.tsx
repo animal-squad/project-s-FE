@@ -56,7 +56,7 @@ const TagSelect: React.FC<TagSelectProps> = ({
     <Select
       mode="multiple"
       tagRender={tagRender}
-      variant="borderless"
+      variant="outlined"
       value={value} // 빈 배열 기본값 적용
       suffixIcon={<span>{value.length}</span>}
       onChange={(values) => onChange(values)}

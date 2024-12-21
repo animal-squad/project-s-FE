@@ -67,11 +67,6 @@ spec:
                 }
             }
         }
-        // stage('Clean Workspace after CD') {
-        //     steps {
-        //         cleanWs ()
-        //     }
-        // }
     }
     post {
         always {
