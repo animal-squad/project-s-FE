@@ -201,12 +201,6 @@ const Link_View = () => {
     }
   };
 
-  useEffect(() => {
-    fetchLinks(searchTags, page, 10, (path) => {
-      window.location.href = path; // 리디렉션 처리
-    });
-  }, [fetchLinks, searchTags]);
-
   // 링크 삭제 확인 모달 상태
   const [isDeleteLinksModalVisible, setIsDeleteLinksModalVisible] =
     useState(false);
