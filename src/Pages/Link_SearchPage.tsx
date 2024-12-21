@@ -61,49 +61,8 @@ const Link_Search = () => {
     });
   }
   // 상태 관리
-  const [links, setLinks] = useState<Link[]>([
-    {
-      linkId: "1",
-      userId: 123,
-      URL: "https://www.example.com",
-      createdAt: new Date(),
-      openedAt: new Date(),
-      views: 25,
-      tags: ["Example", "Test"],
-      keywords: ["mock", "data"],
-      title: "Example Link 1",
-    },
-    {
-      linkId: "2",
-      userId: 124,
-      URL: "https://www.another-example.com",
-      createdAt: new Date(),
-      openedAt: new Date(),
-      views: 10,
-      tags: ["Another", "Mock"],
-      keywords: ["sample", "mock"],
-      title: "Example Link 2",
-    },
-    {
-      linkId: "3",
-      userId: 125,
-      URL: "https://www.mock.com",
-      createdAt: new Date(),
-      openedAt: new Date(),
-      views: 5,
-      tags: ["Mock"],
-      keywords: ["data", "example"],
-      title: "Mock Link 3",
-    },
-  ]);
-  const [meta, setMeta] = useState<Meta | null>({
-    totalLinks: 30,
-    totalPages: 1,
-    hasNextPage: false,
-    hasPrevPage: false,
-    page: 1,
-    take: 10,
-  });
+  const [links, setLinks] = useState<Link[]>([]);
+  const [meta, setMeta] = useState<Meta | null>(null);
   const [loading, setLoading] = useState(false);
   const [page, setPageState] = useState<number>(initialPage);
 
