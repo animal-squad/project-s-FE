@@ -34,6 +34,8 @@ interface SearchLinkState {
   page: number;
   fetchLinks: (
     tags?: string[],
+    page?: number,
+    take?: number,
     navigate?: (path: string) => void
   ) => Promise<void>;
   fetchSearchTags: (tags: string[]) => void; // 전역 상태 업데이트 함수
@@ -99,20 +101,32 @@ export const useSearchLinkStore = create<SearchLinkState>((set) => ({
       title: "PostgreSQL 쿼리 최적화 팁",
     },
   ],
-  meta: null,
+  meta: {
+    totalLinks: 25,
+    totalPages: 2,
+    hasNextPage: true,
+    hasPrevPage: false,
+    page: 2,
+    take: 10,
+  },
   searchTags: [],
   loading: false,
   error: null,
   page: 1,
 
   // API 요청 함수
-  fetchLinks: async (tags = [], navigate?: (path: string) => void) => {
+  fetchLinks: async (
+    tags = [],
+    page = 1,
+    take = 10,
+    navigate?: (path: string) => void
+  ) => {
     set({ loading: true, error: null }); // 로딩 시작
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/list`,
-          { tags: tags }, // 태그를 body로 전송
-          { withCredentials: true} // 쿠키 전송 활성화
+        { tags, page, take }, // 태그, 페이지, 한 페이지의 항목 수를 body로 전송
+        { withCredentials: true } // 쿠키 전송 활성화
       );
       // 데이터 업데이트
       set({
