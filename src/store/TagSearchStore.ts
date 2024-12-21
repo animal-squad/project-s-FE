@@ -125,8 +125,11 @@ export const useSearchLinkStore = create<SearchLinkState>((set) => ({
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/list`,
-        { tags, page, take }, // 태그, 페이지, 한 페이지의 항목 수를 body로 전송
-        { withCredentials: true } // 쿠키 전송 활성화
+        { tags }, // body로 태그 전송
+        {
+          params: { page, take }, // query로 페이지와 take 전송
+          withCredentials: true, // 쿠키 전송 활성화
+        }
       );
       // 데이터 업데이트
       set({
