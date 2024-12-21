@@ -36,7 +36,7 @@ const Searchbox = () => {
   // 검색어 입력 후 엔터 키 감지
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && searchInput.trim().length > 0) {
-      const encodedSearchQuery = btoa(searchInput.trim()); // Base64 인코딩
+      const encodedSearchQuery = btoa(encodeURIComponent(searchInput.trim())); // Base64 인코딩
       navigate(`/search?query=${encodedSearchQuery}`); // 이동만 처리, 요청은 Link_Search에서
     }
   };
@@ -44,7 +44,7 @@ const Searchbox = () => {
   // 검색 요청 로직
   const handleSearchRequest = () => {
     if (searchInput.trim().length > 0) {
-      const encodedSearchQuery = btoa(searchInput.trim()); // Base64 인코딩
+      const encodedSearchQuery = btoa(encodeURIComponent(searchInput.trim())); // Base64 인코딩
       navigate(`/search?query=${encodedSearchQuery}`); // 이동만 처리, 요청은 Link_Search에서
     }
   };

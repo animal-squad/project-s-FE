@@ -12,7 +12,6 @@ import { FaLink, FaEllipsisH } from "react-icons/fa";
 import NewHeader from "../Layout/NewHeader";
 import FloatButton from "../ui/FloatButton";
 import TagSelect from "../ui/TagSelect";
-import { useLinkSearchStore } from "../store/LinkSearchStore";
 import { useSearchLinkStore } from "../store/TagSearchStore";
 import debounce from "lodash/debounce";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -42,37 +41,87 @@ interface Meta {
   take: number;
 }
 
-function fetchSearchResults() {}
-
 const Link_Search = () => {
-  const { links, meta, fetchSearchResults, setPage } = useLinkSearchStore();
   const { fetchSearchTags } = useSearchLinkStore();
 
   const navigate = useNavigate();
 
   const [searchParams] = useSearchParams();
-  const query = searchParams.get("query")
-    ? atob(searchParams.get("query")!)
-    : "";
+  const query =
+    searchParams.get("query") !== null
+      ? decodeURIComponent(atob(searchParams.get("query")!))
+      : ""; // "query"가 null이면 빈 문자열을 반환
 
-  const page = searchParams.get("page")
+  const initialPage = searchParams.get("page")
     ? parseInt(searchParams.get("page")!)
-    : null;
+    : 1;
+  if (!searchParams.get("page")) {
+    navigate(`${window.location.pathname}?${window.location.search}&page=1`, {
+      replace: true,
+    });
+  }
+  // 상태 관리
+  const [links, setLinks] = useState<Link[]>([]);
+  const [meta, setMeta] = useState<Meta | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [page, setPageState] = useState<number>(initialPage);
 
-  // 페이지가 없으면 기본값 1로 설정하고 navigate 호출
-  useEffect(() => {
-    if (!page) {
-      const encodedQuery = btoa(query);
-      const defaultPage = 1;
-      navigate(`/search?query=${encodedQuery}&page=${defaultPage}`, { replace: true });
+  // 페이지 상태 업데이트 함수
+  const setPage = (newPage: number) => {
+    setPageState(newPage);
+
+    // query와 page를 URL에 반영
+    const encodedQuery = btoa(encodeURIComponent(query));
+    navigate(`/search?query=${encodedQuery}&page=${newPage}`, {
+      replace: true,
+    });
+  };
+
+  // API 요청 함수
+  const fetchSearchResults = async (
+    query = "",
+    page = 1,
+    take = 10,
+    onNavigate?: (path: string) => void
+  ) => {
+    if (loading) return; // 로딩 중일 경우 중단
+    setLoading(true);
+
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/search`,
+        {
+          params: { query, page, take },
+          withCredentials: true,
+        }
+      );
+      setLinks(response.data.links);
+      setMeta(response.data.meta);
+      setLoading(false);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401 && onNavigate) {
+          onNavigate("/unauthorized");
+        }
+      }
+      setLoading(false);
+      message.error("링크 데이터를 불러오는 데 실패했습니다.");
     }
-  }, [page, query, navigate]);
+  };
 
+  // 해당하는 페이지로 navigate
   useEffect(() => {
-    fetchSearchResults(query, meta?.page, meta?.take, (path) => {
+    const encodedQuery = btoa(encodeURIComponent(query));
+    navigate(`/search?query=${encodedQuery}&page=${page}`, { replace: true });
+  }, [page]); // 빈 배열로 설정하여 최초 렌더링 시 한 번만 실행
+
+  // 검색 결과 가져오기
+  useEffect(() => {
+    fetchSearchResults(query, page, 10, (path) => {
       window.location.href = path; // 리디렉션 처리
     });
-  }, [query, meta, fetchSearchResults]);
+    // 빈 배열을 통해 렌더링 시 1회만 실행
+  }, []);
 
   // <체크박스 및 네비게이션 바>
   // 각 항목의 체크 상태를 관리하는 배열정
@@ -156,7 +205,7 @@ const Link_Search = () => {
         .then(() => {
           message.success("링크 제목이 성공적으로 수정되었습니다.");
           setIsLinkTitleModalOpen(false);
-          fetchSearchResults(query, meta?.page, meta?.take, (path) => {
+          fetchSearchResults(query, page, 10, (path) => {
             window.location.href = path; // 리디렉션 처리
           }); // 링크 목록 다시 불러오기
         })
@@ -276,7 +325,7 @@ const Link_Search = () => {
         .then(() => {
           message.success("선택한 링크가 성공적으로 삭제되었습니다.");
           setCheckedItems(new Array(links.length).fill(false)); // 체크박스 초기화
-          fetchSearchResults(query, meta?.page, meta?.take, (path) => {
+          fetchSearchResults(query, page, 10, (path) => {
             window.location.href = path; // 리디렉션 처리
           });
         })
@@ -321,7 +370,7 @@ const Link_Search = () => {
         })
         .then(() => {
           message.success("선택한 링크가 성공적으로 삭제되었습니다.");
-          fetchSearchResults(query, meta?.page, meta?.take, (path) => {
+          fetchSearchResults(query, page, 10, (path) => {
             window.location.href = path; // 리디렉션 처리
           });
           closeOneLinkDeleteModal(); // 모달 닫기
