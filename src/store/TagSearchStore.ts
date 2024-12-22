@@ -44,8 +44,16 @@ interface SearchLinkState {
 
 // Zustand 스토어 생성
 export const useSearchLinkStore = create<SearchLinkState>((set) => ({
-  links: [],
-  meta: null,
+  links: [
+  ],
+  meta: {
+    totalLinks: 25,
+    totalPages: 2,
+    hasNextPage: true,
+    hasPrevPage: false,
+    page: 2,
+    take: 10,
+  },
   searchTags: [],
   loading: false,
   error: null,
@@ -62,7 +70,7 @@ export const useSearchLinkStore = create<SearchLinkState>((set) => ({
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/list`,
-        { tags: tags }, // body로 태그 전송
+        { tags : tags }, // body로 태그 전송
         {
           params: { page, take }, // query로 페이지와 take 전송
           withCredentials: true, // 쿠키 전송 활성화

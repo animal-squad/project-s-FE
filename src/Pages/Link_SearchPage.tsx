@@ -66,8 +66,8 @@ const Link_Search = () => {
   const [loading, setLoading] = useState(false);
   const [page, setPageState] = useState<number>(initialPage);
 
-  // 페이지 상태 업데이트 함수
   const setPage = (newPage: number, currentQuery: string) => {
+    if (!currentQuery) return; // query가 없는 경우 동작하지 않도록 방지
     setPageState(newPage);
 
     // query와 page를 URL에 반영
@@ -82,7 +82,7 @@ const Link_Search = () => {
     query = "",
     page = 1,
     take = 10,
-    onNavigate?: (path: string) => void
+    navigate?: (path: string) => void
   ) => {
     if (loading) return; // 로딩 중일 경우 중단
     setLoading(true);
@@ -100,8 +100,8 @@ const Link_Search = () => {
       setLoading(false);
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        if (error.response?.status === 401 && onNavigate) {
-          onNavigate("/unauthorized");
+        if (error.response?.status === 401 && navigate) {
+          navigate("/unauthorized");
         }
       }
       setLoading(false);
@@ -115,12 +115,14 @@ const Link_Search = () => {
     navigate(`/search?query=${encodedQuery}&page=${page}`, { replace: true });
   }, [page]); // 빈 배열로 설정하여 최초 렌더링 시 한 번만 실행
 
-  // 검색 결과 가져오기
   useEffect(() => {
-    fetchSearchResults(query, page, 10, (path) => {
-      window.location.href = path; // 리디렉션 처리
-    });
-  }, [query, page]);
+    // query 또는 page가 변경될 때 검색 결과를 요청
+    if (query && page) {
+      fetchSearchResults(query, page, 10, (path) => {
+        window.location.href = path; // 리디렉션 처리
+      });
+    }
+  }, [query, page]); // query와 page가 변경될 때만 호출
 
   // <체크박스 및 네비게이션 바>
   // 각 항목의 체크 상태를 관리하는 배열정
