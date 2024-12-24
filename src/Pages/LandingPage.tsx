@@ -15,6 +15,25 @@ const content = [
     ),
   },
   {
+    title: "크롬 확장프로그램 설치",
+    description: "크롬 확장프로그램을 통한 개선된 사용자 경험을 제공합니다.",
+    content: (
+      <div className="h-full w-full bg-[linear-gradient(to bottom right, var(--pink-500), var(--indigo-500))] flex items-center justify-center text-white">
+        <button
+          onClick={() => {
+            window.open(
+              "https://chromewebstore.google.com/detail/link-bucket-extension/bhglploadpebgakocohocjckndpaamah"
+            );
+          }}
+          className="px-4 py-2 backdrop-blur-sm border bg-primary_text border-emerald-50/20 text-white text-center rounded-full"
+        >
+          <span>크롬 확장프로그램 설치하기</span>
+          <div className="absolute inset-x-0 h-px -bottom-px bg-gradient-to-r w-3/4 mx-auto from-transparent via-emerald-50 to-transparent" />
+        </button>
+      </div>
+    ),
+  },
+  {
     title: "열린 탭 저장하기",
     description:
       "탭을 너무 많이 열어두어 관리가 힘드셨나요? 링킷 크롬 확장 프로그램으로 지금 열려 있는 탭을 한 번에 저장해 보세요!",
