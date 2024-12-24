@@ -3,6 +3,7 @@ import { ConfigProvider, Pagination } from "antd";
 import NewHeader from "../Layout/NewHeader";
 import Searchbox from "../ui/Searchbox";
 import FloatButton from "../ui/FloatButton";
+import Bucket_Image from "../../public/assets/images/Bucket_Image.webp";
 import { useBucketStore } from "../store/BucketStore";
 import { useSearchLinkStore } from "../store/TagSearchStore";
 import { useNavigate } from "react-router-dom";
@@ -82,7 +83,11 @@ const Bucket_Gridview = () => {
           <div className="flex items-center h-full px-4">
             {/* 이미지 */}
             <div className="w-[113px] h-[106px] bg-gray-200 rounded-3xl flex items-center justify-center">
-              <span className="text-gray-500 text-xl">이미지</span>
+              <img
+                src={Bucket_Image}
+                alt="Bucket"
+                className="w-full h-full object-cover rounded-3xl"
+              />
             </div>
             {/* 텍스트 정보 */}
             <div className="ml-4 flex-1 min-w-0">

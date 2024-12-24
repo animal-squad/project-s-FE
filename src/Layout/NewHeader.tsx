@@ -50,7 +50,10 @@ const NewHeader = () => {
       {/* 텍스트 + 프로필 */}
       <div className="absolute inset-0 flex items-center justify-between px-8">
         {/* 링킷 */}
-        <div className="text-white text-[80px] font-normal font-['Bagel Fat One']">
+        <div
+          className="text-white text-[80px] font-normal font-['Bagel Fat One'] cursor-pointer"
+          onClick={() => navigate("/bucket")}
+        >
           Linket
         </div>
         {/* 프로필 */}
