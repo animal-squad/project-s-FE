@@ -9,7 +9,7 @@ const UnauthorizedPage = () => {
   return (
     <div className="flex items-center v-screen w-full">
       <div className="flex justify-center w-screen">
-        <form className="shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <form className="shadow-md rounded px-8 pt-6 pb-8 mb-4 bg-white">
           <div className="block text-primary_text text-m font-bold mb-2 flex justify-center">
             <RiChatPrivateFill color="000000" size="100" />
           </div>
@@ -19,12 +19,12 @@ const UnauthorizedPage = () => {
           </label>
           <br></br>
           <label className="block text-primary_text text-m font-bold mb-2 flex justify-center">
-            이전 페이지로 돌아가기
+            바구니 페이지로 돌아가기
           </label>
           <div className="flex items-center justify-center mt-5">
             <button
               type="button"
-              onClick={() => navigate(-1)}
+              onClick={() => navigate("/bucket")}
               className="p-0 m-0 border-none bg-transparent"
             >
               <IoArrowBack color="000000" size="50" />
