@@ -9,7 +9,7 @@ const UnauthorizedPage = () => {
   return (
     <div className="flex items-center v-screen w-full">
       <div className="flex justify-center w-screen">
-        <form className="shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <form className="shadow-md rounded px-8 pt-6 pb-8 mb-4 bg-white">
           <div className="block text-primary_text text-m font-bold mb-2 flex justify-center">
             <RiChatPrivateFill color="000000" size="100" />
           </div>
