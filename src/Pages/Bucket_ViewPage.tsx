@@ -24,11 +24,15 @@ const Bucket_Gridview = () => {
   };
 
   return (
-    <div className="absolute h-[2149px] top-0 left-0 w-full h-[2139px] bg-[#fcefef] z-0">
+    <div
+      className="absolute min-h-screen top-0 left-0 w-full h-[2139px] bg-[#fcefef] z-0"
+      style={{ height: `${579 + folders.length * 157}px` }}
+    >
       {/* Border */}
       <div
-        className="h-[2059px] absolute bg-[#fff6f1] rounded-[19px] mt-10 drop-shadow-2xl"
+        className="absolute bg-[#fff6f1] rounded-[19px] mt-10 drop-shadow-2xl"
         style={{
+          height: `calc(max(100vh - 80px, ${489 + folders.length * 157}px))`,
           width: "90%",
           left: "5%",
         }}
@@ -111,7 +115,12 @@ const Bucket_Gridview = () => {
       ))}
 
       {/* Pagination */}
-      <div className="absolute top-[2032px] w-full flex justify-center">
+      <div
+        className="absolute w-full flex justify-center"
+        style={{
+          top: `calc(max(${462 + 157 * folders.length}px, 100vh - 117px))`, // 최대값 계산
+        }}
+      >
         <ConfigProvider
           theme={{
             token: {
