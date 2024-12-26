@@ -313,7 +313,10 @@ const Link_View = () => {
   };
 
   return (
-    <div className="absolute top-0 left-0 w-full bg-[#fcefef] z-0 h-[2139px]">
+    <div
+      className="absolute min-h-screen top-0 left-0 w-full h-[2139px] bg-[#fcefef] z-0"
+      style={{ height: `${579 + links.length * 157}px` }}
+    >
       {/* Border */}
       <div
         className={`fixed bottom-0 left-0 w-full bg-[#c69172] shadow-md transition-transform duration-300 z-50 ${
@@ -337,8 +340,9 @@ const Link_View = () => {
         </div>
       </div>
       <div
-        className="h-[2059px] absolute bg-[#fff6f1] rounded-[19px] mt-10 drop-shadow-2xl"
+        className="absolute bg-[#fff6f1] rounded-[19px] mt-10 drop-shadow-2xl"
         style={{
+          height: `calc(max(100vh - 80px, ${489 + links.length * 157}px))`,
           width: "90%",
           left: "5%",
         }}
@@ -534,7 +538,12 @@ const Link_View = () => {
           </div>
         </div>
       ))}
-      <div className="absolute top-[2032px] w-full flex justify-center">
+      <div
+        className="absolute w-full flex justify-center"
+        style={{
+          top: `calc(max(${462 + 157 * links.length}px, 100vh - 117px))`, // 최대값 계산
+        }}
+      >
         <ConfigProvider
           theme={{
             token: {
