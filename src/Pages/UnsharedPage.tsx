@@ -19,12 +19,12 @@ const UnauthorizedPage = () => {
           </label>
           <br></br>
           <label className="block text-primary_text text-m font-bold mb-2 flex justify-center">
-            이전 페이지로 돌아가기
+            바구니 페이지로 돌아가기
           </label>
           <div className="flex items-center justify-center mt-5">
             <button
               type="button"
-              onClick={() => navigate(-1)}
+              onClick={() => navigate("/bucket")}
               className="p-0 m-0 border-none bg-transparent"
             >
               <IoArrowBack color="000000" size="50" />
