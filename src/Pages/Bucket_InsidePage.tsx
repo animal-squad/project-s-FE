@@ -189,7 +189,7 @@ const Bucket_Gridview: React.FC = () => {
   };
 
   // Switch 상태
-  const [isPublic, setIsPublic] = useState(false);
+  const [isPublic, setIsPublic] = useState(isShared);
 
   // 스위치 변경
   const handleSwitchChange = (checked: boolean) => {
