@@ -171,7 +171,7 @@ const Bucket_Gridview: React.FC = () => {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   // URL 상태관리
-  const [url, setUrl] = useState("");
+  const [url, setUrl] = useState(window.location.href);
 
   // 모달 초기 상태 저장용 (공유 여부 초기화용)
   const [initialPublicState, setInitialPublicState] = useState(false);
