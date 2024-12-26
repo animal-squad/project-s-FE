@@ -330,6 +330,7 @@ const Link_Search = () => {
           fetchSearchResults(query, page, 10, (path) => {
             window.location.href = path; // 리디렉션 처리
           });
+          closeLinksDeleteModal();
         })
         .catch((error) => {
           if (error.response?.status === 401) {

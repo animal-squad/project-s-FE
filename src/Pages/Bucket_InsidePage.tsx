@@ -527,6 +527,7 @@ const Bucket_Gridview: React.FC = () => {
               window.location.href = path; // 최신 데이터 로드
             });
           }
+          closeLinksDeleteModal();
         })
         .catch((error) => {
           if (error.response?.status === 401) {
