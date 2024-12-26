@@ -29,31 +29,8 @@ interface LinkStore {
 
 export const useLinkStore = create<LinkStore>((set) => ({
   // 초기 상태에 더미 데이터 추가
-  links: [
-    {
-      linkId: "1",
-      userId: 1,
-      URL: "https://example.com",
-      createdAt: new Date(),
-      openedAt: new Date(),
-      views: 10,
-      tags: ["example", "test"],
-      title: "Example Link",
-      keywords: [],
-    },
-    {
-      linkId: "2",
-      userId: 2,
-      URL: "https://anotherexample.com",
-      createdAt: new Date(),
-      openedAt: new Date(),
-      views: 20,
-      tags: ["another", "demo"],
-      title: "Another Example",
-      keywords: [],
-    },
-  ],
-  title: "Example Bucket",
+  links: [],
+  title: "",
   linkCount: 0,
   isShared: false,
   isMine: false,

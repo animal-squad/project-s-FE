@@ -171,7 +171,7 @@ const Bucket_Gridview: React.FC = () => {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   // URL 상태관리
-  const [url, setUrl] = useState("");
+  const [url, setUrl] = useState(window.location.href);
 
   // 모달 초기 상태 저장용 (공유 여부 초기화용)
   const [initialPublicState, setInitialPublicState] = useState(false);
@@ -189,7 +189,7 @@ const Bucket_Gridview: React.FC = () => {
   };
 
   // Switch 상태
-  const [isPublic, setIsPublic] = useState(false);
+  const [isPublic, setIsPublic] = useState(isShared);
 
   // 스위치 변경
   const handleSwitchChange = (checked: boolean) => {
@@ -589,7 +589,10 @@ const Bucket_Gridview: React.FC = () => {
   };
 
   return (
-    <div className="absolute top-0 left-0 w-full bg-[#fcefef] z-0 h-[2139px]">
+    <div
+      className="absolute min-h-screen top-0 left-0 w-full h-[2139px] bg-[#fcefef] z-0"
+      style={{ height: `${579 + links.length * 157}px` }}
+    >
       {/* Border */}
       <div
         className={`fixed bottom-0 left-0 w-full bg-[#c69172] shadow-md transition-transform duration-300 z-50 ${
@@ -613,8 +616,9 @@ const Bucket_Gridview: React.FC = () => {
         </div>
       </div>
       <div
-        className="h-[2059px] absolute bg-[#fff6f1] rounded-[19px] mt-10 drop-shadow-2xl"
+        className="absolute bg-[#fff6f1] rounded-[19px] mt-10 drop-shadow-2xl"
         style={{
+          height: `calc(max(100vh - 80px, ${489 + links.length * 157}px))`,
           width: "90%",
           left: "5%",
         }}
@@ -798,7 +802,12 @@ const Bucket_Gridview: React.FC = () => {
           </div>
         </div>
       ))}
-      <div className="absolute top-[2032px] w-full flex justify-center">
+      <div
+        className="absolute w-full flex justify-center"
+        style={{
+          top: `calc(max(${462 + 157 * links.length}px, 100vh - 117px))`, // 최대값 계산
+        }}
+      >
         <ConfigProvider
           theme={{
             token: {
