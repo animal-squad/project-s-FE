@@ -279,6 +279,7 @@ const Bucket_Gridview: React.FC = () => {
           // 새 창에서 /bucket/:newBucketId 열기
           window.open(`/bucket/${newBucketId}`, "_blank");
         }
+        setIsCopyModalOpen(false);
       })
       .catch((error) => {
         if (error.response?.status === 401) {
