@@ -23,18 +23,9 @@ const FloatButton: React.FC<FloatButtonProps> = ({ onClick }) => {
     setLinkUrl(""); // 입력값 초기화
   };
 
-  function formatURL(url: string) {
-    // URL이 http:// 또는 https://로 시작하지 않으면 기본적으로 http://를 추가
-    if (!/^(https?:\/\/)/i.test(url)) {
-      return `http://${url}`;
-    }
-    return url;
-  }
-
   function isValidURL(url: string) {
-    const formattedURL = formatURL(url); // URL 포맷팅 적용
     const urlRegex = /^(https?|ftp):\/\/(-\.)?([^\s\/?\.#-]+\.?)+(\/[^\s]*)?$/i;
-    return urlRegex.test(formattedURL);
+    return urlRegex.test(url);
   }
 
   // 링크 추가 요청
@@ -48,7 +39,7 @@ const FloatButton: React.FC<FloatButtonProps> = ({ onClick }) => {
       try {
         const response = await axios.post(
           `${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/`,
-          { URL: formatURL(linkUrl) },
+          { URL: linkUrl },
           { withCredentials: true }
         );
 
@@ -87,7 +78,6 @@ const FloatButton: React.FC<FloatButtonProps> = ({ onClick }) => {
       >
         <span className="text-white text-[32px] font-semibold">+</span>
       </div>
-
       {/* 링크 추가 모달 */}
       <Modal
         title="링크 추가"
@@ -102,6 +92,7 @@ const FloatButton: React.FC<FloatButtonProps> = ({ onClick }) => {
             type="primary"
             style={{ backgroundColor: "#c69172", borderColor: "#c69172" }}
             onClick={handleAddLink}
+            disabled={!isValidURL(linkUrl)} // URL 유효성에 따라 버튼 활성화
           >
             추가
           </Button>,
@@ -113,6 +104,12 @@ const FloatButton: React.FC<FloatButtonProps> = ({ onClick }) => {
           onChange={(e) => setLinkUrl(e.target.value)} // URL 입력 업데이트
           onKeyDown={handleKeyPress}
         />
+        {!isValidURL(linkUrl) &&
+          linkUrl.length > 0 && ( // 유효하지 않을 때 경고 메시지 표시
+            <p style={{ color: "red", marginTop: "8px", fontSize: "12px" }}>
+              링크는 반드시 "http://" 또는 "https://"로 시작해야 합니다.
+            </p>
+          )}
       </Modal>
     </>
   );
