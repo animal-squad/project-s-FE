@@ -105,7 +105,7 @@ export function ImagesSliderDemo() {
 
   return (
     <div className="relative flex items-center justify-center w-screen h-screen bg-[#000000]">
-      <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
+      <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
         <div className="flex items-center space-x-2">
           <img
             src="/assets/icons/Bucket_Icon_White.svg"
