@@ -125,11 +125,15 @@ const Link_Search = () => {
   }, [query, page]); // query와 page가 변경될 때만 호출
 
   // <체크박스 및 네비게이션 바>
-  // 각 항목의 체크 상태를 관리하는 배열정
-  const [checkedItems, setCheckedItems] = useState<boolean[]>(
-    new Array(links.length).fill(false)
-  );
+  // 각 항목의 체크 상태를 관리하는 배열
+  const [checkedItems, setCheckedItems] = useState<boolean[]>([]);
 
+  // links가 변경될 때마다 checkedItems를 초기화
+  useEffect(() => {
+    if (links.length > 0) {
+      setCheckedItems(new Array(links.length).fill(false));
+    }
+  }, [links]);
   // 하단 네비게이션 바 표시 상태
   const [showNavBar, setShowNavBar] = useState(false);
 
