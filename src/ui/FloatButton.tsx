@@ -23,6 +23,20 @@ const FloatButton: React.FC<FloatButtonProps> = ({ onClick }) => {
     setLinkUrl(""); // 입력값 초기화
   };
 
+  function formatURL(url: string) {
+    // URL이 http:// 또는 https://로 시작하지 않으면 기본적으로 http://를 추가
+    if (!/^(https?:\/\/)/i.test(url)) {
+      return `http://${url}`;
+    }
+    return url;
+  }
+
+  function isValidURL(url: string) {
+    const formattedURL = formatURL(url); // URL 포맷팅 적용
+    const urlRegex = /^(https?|ftp):\/\/(-\.)?([^\s\/?\.#-]+\.?)+(\/[^\s]*)?$/i;
+    return urlRegex.test(formattedURL);
+  }
+
   // 링크 추가 요청
   const handleAddLink = async () => {
     if (!linkUrl.trim()) {
@@ -30,25 +44,29 @@ const FloatButton: React.FC<FloatButtonProps> = ({ onClick }) => {
       return;
     }
 
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/`,
-        { URL: linkUrl },
-        { withCredentials: true }
-      );
+    if (isValidURL(linkUrl)) {
+      try {
+        const response = await axios.post(
+          `${import.meta.env.VITE_BACKEND_DOMAIN}/api/link/`,
+          { URL: formatURL(linkUrl) },
+          { withCredentials: true }
+        );
 
-      if (response.status === 201) {
-        message.success("링크가 성공적으로 추가되었습니다.");
-        setIsModalOpen(false);
-        setLinkUrl(""); // 입력값 초기화
+        if (response.status === 201) {
+          message.success("링크가 성공적으로 추가되었습니다.");
+          setIsModalOpen(false);
+          setLinkUrl(""); // 입력값 초기화
+        }
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.status === 401) {
+          navigate("/unauthorized"); // 401 리디렉션
+        } else {
+          message.error("링크 추가에 실패했습니다.");
+          console.error("Error adding link:", error);
+        }
       }
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.status === 401) {
-        navigate("/unauthorized"); // 401 리디렉션
-      } else {
-        message.error("링크 추가에 실패했습니다.");
-        console.error("Error adding link:", error);
-      }
+    } else {
+      message.error("올바르지 않은 링크입니다.");
     }
   };
 
